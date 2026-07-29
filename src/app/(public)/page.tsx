@@ -10,7 +10,7 @@ import CTASection from "@/src/app/(public)/home/components/CTASection";
 export default function HomePage() {
   return (
     <main className="bg-[#F7F7F4] min-h-screen">
-      <HeroSection />
+      <HeroSection/>
       <ServicesSection />
       <CategoriesSection />
 

@@ -17,7 +17,8 @@ export default function NewArrivalsSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    productService.getRecentProducts()
+    productService
+      .getRecentProducts()
       .then((data) => setProducts(data.slice(0, 4)))
       .catch((err) => console.error("Error fetching recent:", err))
       .finally(() => setLoading(false));
@@ -26,14 +27,30 @@ export default function NewArrivalsSection() {
   useEffect(() => {
     if (loading || products.length === 0) return;
     const ctx = gsap.context(() => {
-      gsap.fromTo(".recent-header > *", { opacity: 0, y: 24 }, {
-        opacity: 1, y: 0, duration: 0.6, stagger: 0.08, ease: "power3.out",
-        scrollTrigger: { trigger: ".recent-header", start: "top 85%" },
-      });
-      gsap.fromTo(".recent-card", { opacity: 0, y: 36 }, {
-        opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: "power3.out",
-        scrollTrigger: { trigger: ".recent-grid", start: "top 82%" },
-      });
+      gsap.fromTo(
+        ".recent-header > *",
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.08,
+          ease: "power3.out",
+          scrollTrigger: { trigger: ".recent-header", start: "top 85%" },
+        }
+      );
+      gsap.fromTo(
+        ".recent-card",
+        { opacity: 0, y: 36 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          stagger: 0.1,
+          ease: "power3.out",
+          scrollTrigger: { trigger: ".recent-grid", start: "top 82%" },
+        }
+      );
     }, containerRef);
     return () => ctx.revert();
   }, [loading, products]);
@@ -41,31 +58,59 @@ export default function NewArrivalsSection() {
   if (!loading && products.length === 0) return null;
 
   return (
-    <section ref={containerRef} className="relative bg-[#F7F7F4] py-20 md:py-28">
-      <div className="mx-auto max-w-7xl px-6 md:px-12">
-        <div className="recent-header mb-12 text-center">
-          <span className="font-body text-[10px] uppercase tracking-[0.3em] text-[#A9773C]">Just Arrived</span>
-          <h2 className="mt-4 font-display text-3xl font-bold leading-[1.1] tracking-[-0.02em] text-[#171712] md:text-[2.8rem]">
-            Latest Allocations
+    <section ref={containerRef} className="relative bg-[#FAFAFA] py-24 md:py-32">
+      {/* Background Architectural Grid Lines */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 opacity-25"
+        style={{
+          backgroundImage: "linear-gradient(to right, rgba(10, 17, 24, 0.03) 1px, transparent 1px)",
+          backgroundSize: "100px 100%",
+        }}
+        aria-hidden="true"
+      />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-12">
+        {/* Editorial Header */}
+        <div className="recent-header mb-16 text-center">
+          <div className="mb-4 flex items-center justify-center gap-3">
+            <span className="h-[1px] w-6 bg-[#B89752]" />
+            <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#B89752]">
+              Nuovi Arrivi
+            </span>
+            <span className="h-[1px] w-6 bg-[#B89752]" />
+          </div>
+
+          <h2 className="font-serif text-3xl font-light leading-[1.12] tracking-[-0.01em] text-[#0A1118] md:text-[2.8rem]">
+            Fresh From <span className="italic text-[#B89752]">Milan Ateliers</span>
           </h2>
-          <div className="mx-auto mt-6 h-px w-16 bg-gradient-to-r from-transparent via-[#1F4A38]/30 to-transparent" />
+
+          <p className="mx-auto mt-4 max-w-md font-sans text-xs leading-[1.85] text-[#4A5568]">
+            Explore the latest additions to our bespoke wardrobe — meticulously tailored seasonal arrivals.
+          </p>
+
+          <div className="mx-auto mt-6 h-px w-20 bg-gradient-to-r from-transparent via-[#B89752]/40 to-transparent" />
         </div>
 
+        {/* Loading Skeleton */}
         {loading ? (
           <div className="recent-grid grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="flex flex-col overflow-hidden rounded-sm border border-[#E7E3D8] bg-white">
-                <div className="aspect-[4/3] w-full animate-pulse bg-[#F1EFE9]" />
+              <div
+                key={i}
+                className="flex flex-col overflow-hidden rounded-none border border-[#0A1118]/10 bg-white"
+              >
+                <div className="aspect-[3/4] w-full animate-pulse bg-[#F4F1EA]" />
                 <div className="p-6 space-y-3">
-                  <div className="h-3.5 w-3/4 animate-pulse rounded-sm bg-[#F1EFE9]" />
-                  <div className="h-3 w-full animate-pulse rounded-sm bg-[#F1EFE9]" />
-                  <div className="h-3 w-2/3 animate-pulse rounded-sm bg-[#F1EFE9]" />
-                  <div className="h-10 w-full animate-pulse rounded-sm bg-[#F1EFE9] mt-4" />
+                  <div className="h-3 w-1/3 animate-pulse bg-[#F4F1EA]" />
+                  <div className="h-4 w-3/4 animate-pulse bg-[#F4F1EA]" />
+                  <div className="h-3 w-1/2 animate-pulse bg-[#F4F1EA]" />
+                  <div className="h-10 w-full animate-pulse bg-[#F4F1EA] mt-4" />
                 </div>
               </div>
             ))}
           </div>
         ) : (
+          /* Products Grid & View Action */
           <>
             <div className="recent-grid grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {products.map((product) => (
@@ -75,12 +120,12 @@ export default function NewArrivalsSection() {
               ))}
             </div>
 
-            <div className="mt-14 flex justify-center">
+            <div className="mt-16 flex justify-center">
               <Link
                 href="/shop"
-                className="group inline-flex items-center gap-2.5 font-body text-[11px] font-semibold uppercase tracking-[0.2em] text-[#1F4A38] transition-colors duration-300 hover:text-[#173829]"
+                className="group inline-flex items-center gap-3 border border-[#0A1118]/20 bg-white px-8 py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.25em] text-[#0A1118] shadow-sm transition-all duration-300 hover:border-[#0A1118] hover:bg-[#0A1118] hover:text-[#FAFAFA] hover:shadow-xl"
               >
-                View All Products
+                <span>Discover All New Arrivals</span>
                 <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
             </div>

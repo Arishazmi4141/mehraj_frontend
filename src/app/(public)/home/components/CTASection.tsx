@@ -9,73 +9,128 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function CTASection() {
   const scopeRef = useGsap<HTMLElement>(() => {
-    gsap.fromTo(".cta-inner", { y: 40, opacity: 0 }, {
-      y: 0, opacity: 1, duration: 0.7, ease: "expo.out",
-      scrollTrigger: { trigger: ".cta-inner", start: "top 84%" },
-    });
-    gsap.fromTo(".cta-content > *", { y: 20, opacity: 0 }, {
-      y: 0, opacity: 1, duration: 0.7, ease: "power3.out", stagger: 0.12,
-      scrollTrigger: { trigger: ".cta-inner", start: "top 80%" }, delay: 0.2,
-    });
+    gsap.fromTo(
+      ".cta-inner",
+      { y: 40, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.7,
+        ease: "expo.out",
+        scrollTrigger: { trigger: ".cta-inner", start: "top 84%" },
+      }
+    );
+    gsap.fromTo(
+      ".cta-content > *",
+      { y: 20, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.7,
+        ease: "power3.out",
+        stagger: 0.12,
+        scrollTrigger: { trigger: ".cta-inner", start: "top 80%" },
+        delay: 0.2,
+      }
+    );
 
     const orb = document.querySelector(".cta-orb");
     if (orb) {
-      gsap.to(orb, { scale: 1.2, opacity: 0.5, duration: 3.5, ease: "sine.inOut", repeat: -1, yoyo: true });
+      gsap.to(orb, {
+        scale: 1.25,
+        opacity: 0.6,
+        duration: 4,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+      });
     }
   }, []);
 
   return (
-    <section ref={scopeRef} className="bg-[#F7F7F4] py-20 md:py-28" id="cta">
-      <div className="mx-auto max-w-7xl px-6 md:px-12">
-        <div
-          className="cta-inner opacity-0 relative overflow-hidden rounded-sm px-8 py-20 text-center md:px-20 md:py-28 bg-[#14251D]"
-        >
-          {/* Ambient brass orb */}
+    <section ref={scopeRef} className="relative bg-[#FAFAFA] py-24 md:py-32" id="cta">
+      {/* Background Architectural Grid Lines */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 opacity-25"
+        style={{
+          backgroundImage: "linear-gradient(to right, rgba(10, 17, 24, 0.03) 1px, transparent 1px)",
+          backgroundSize: "100px 100%",
+        }}
+        aria-hidden="true"
+      />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-12">
+        <div className="cta-inner opacity-0 relative overflow-hidden rounded-none bg-[#0A1118] px-8 py-20 text-center shadow-2xl shadow-[#0A1118]/15 md:px-20 md:py-28 border border-[#B89752]/20">
+          {/* Ambient Florentine Gold Soft Orb Glow */}
           <div
-            aria-hidden
+            aria-hidden="true"
             className="cta-orb pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
             style={{
-              width: "500px", height: "300px", borderRadius: "50%",
-              background: "radial-gradient(ellipse, rgba(201,160,99,0.14) 0%, transparent 70%)",
-              filter: "blur(50px)", opacity: 0.4,
+              width: "550px",
+              height: "320px",
+              borderRadius: "50%",
+              background: "radial-gradient(ellipse, rgba(184,151,82,0.18) 0%, transparent 70%)",
+              filter: "blur(60px)",
+              opacity: 0.45,
             }}
           />
 
-          <div aria-hidden className="mx-auto mb-10 h-px w-16" style={{ background: "linear-gradient(to right, transparent, rgba(201,160,99,0.5), transparent)" }} />
+          {/* Top Divider Line */}
+          <div
+            aria-hidden="true"
+            className="mx-auto mb-10 h-px w-20"
+            style={{
+              background: "linear-gradient(to right, transparent, rgba(184,151,82,0.6), transparent)",
+            }}
+          />
 
           <div className="cta-content relative z-10 flex flex-col items-center">
-            <span className="font-body text-[10px] uppercase tracking-[0.3em] text-[#C9A063]">Schedule a Visit</span>
+            {/* Eyebrow */}
+            <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#B89752]">
+              Prenota una Consulenza
+            </span>
 
-            <h2 className="mx-auto mt-6 max-w-xl font-display text-3xl font-semibold leading-[1.1] tracking-[-0.02em] text-white md:text-5xl">
-              Your Vehicle Deserves<br />Nothing Less Than Perfect
+            {/* Headline */}
+            <h2 className="mx-auto mt-5 max-w-2xl font-serif text-3xl font-light leading-[1.12] tracking-[-0.01em] text-[#FAFAFA] md:text-5xl">
+              Experience the Precision of <br />
+              <span className="italic text-[#B89752]">Neapolitan Sartorial Craft</span>
             </h2>
 
-            <p className="mx-auto mt-7 max-w-sm font-body text-[13px] leading-[1.85] text-white/60">
-              Book an appointment today and experience a level of automotive care
-              that matches the vehicle you drive.
+            {/* Subtitle */}
+            <p className="mx-auto mt-6 max-w-md font-sans text-xs leading-[1.85] text-[#FAFAFA]/70">
+              Schedule a private session at our Milano atelier or request an in-person fitting with our master tailors at your private residence.
             </p>
 
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
+            {/* CTA Action Buttons */}
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-5">
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 rounded-sm bg-[#C9A063] px-7 py-3.5 font-body text-[11px] font-semibold uppercase tracking-[0.18em] text-[#171712] transition-colors duration-300 hover:bg-[#dab077]"
+                className="inline-flex items-center gap-2 rounded-none bg-[#B89752] px-8 py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0A1118] transition-all duration-300 hover:bg-[#cbb06d] hover:shadow-[0_0_25px_rgba(184,151,82,0.3)]"
               >
-                Book Appointment
+                Book Private Fitting
               </Link>
               <Link
-                href="/services"
-                className="inline-flex items-center gap-2 rounded-sm border border-white/25 px-7 py-3.5 font-body text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition-colors duration-300 hover:bg-white/10"
+                href="/bespoke"
+                className="inline-flex items-center gap-2 rounded-none border border-[#FAFAFA]/30 px-8 py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[#FAFAFA] transition-all duration-300 hover:border-[#B89752] hover:text-[#B89752] hover:bg-black/20"
               >
-                Explore Services
+                Discover Bespoke
               </Link>
             </div>
 
-            <p className="mt-10 font-body text-[9px] uppercase tracking-[0.35em] text-white/30">
-              Complimentary Consultation · No Obligation
+            {/* Footnote */}
+            <p className="mt-10 font-sans text-[9px] font-medium uppercase tracking-[0.35em] text-[#FAFAFA]/40">
+              Private Salon • Complimentary Consultation • Worldwide Travel
             </p>
           </div>
 
-          <div aria-hidden className="mx-auto mt-10 h-px w-16" style={{ background: "linear-gradient(to right, transparent, rgba(201,160,99,0.5), transparent)" }} />
+          {/* Bottom Divider Line */}
+          <div
+            aria-hidden="true"
+            className="mx-auto mt-10 h-px w-20"
+            style={{
+              background: "linear-gradient(to right, transparent, rgba(184,151,82,0.6), transparent)",
+            }}
+          />
         </div>
       </div>
     </section>

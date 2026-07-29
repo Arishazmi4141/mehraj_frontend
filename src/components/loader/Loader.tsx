@@ -11,29 +11,30 @@ const ARC_R = 38;
 const ARC_CIRCUMFERENCE = 2 * Math.PI * ARC_R;
 const ARC_CENTER = 48;
 
+// Floating ambient dust / gold speckles for bespoke craft feel
 const PARTICLES = [
-  { cx: "15%", cy: "25%", r: 1.5 },
-  { cx: "85%", cy: "20%", r: 1.0 },
-  { cx: "10%", cy: "75%", r: 1.2 },
-  { cx: "90%", cy: "80%", r: 1.6 },
-  { cx: "50%", cy: "5%",  r: 0.8 },
-  { cx: "50%", cy: "95%", r: 1.1 },
+  { cx: "12%", cy: "20%", r: 1.2 },
+  { cx: "88%", cy: "18%", r: 0.9 },
+  { cx: "8%", cy: "80%", r: 1.1 },
+  { cx: "92%", cy: "82%", r: 1.5 },
+  { cx: "50%", cy: "6%", r: 0.8 },
+  { cx: "50%", cy: "94%", r: 1.0 },
 ];
 
 export default function Loader({ onFinish }: LoaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const orbRef       = useRef<HTMLDivElement>(null);
-  const maskRef       = useRef<HTMLDivElement>(null);
-  const logoTextRef   = useRef<HTMLSpanElement>(null);
-  const shineRef      = useRef<HTMLDivElement>(null);
-  const counterElRef  = useRef<HTMLSpanElement>(null);
-  const arcCircleRef  = useRef<SVGCircleElement>(null);
-  const arcTrackRef   = useRef<SVGCircleElement>(null);
-  const taglineRefs   = useRef<HTMLSpanElement[]>([]);
-  const particleRefs  = useRef<SVGCircleElement[]>([]);
-  const cornerRefs    = useRef<HTMLDivElement[]>([]);
+  const orbRef = useRef<HTMLDivElement>(null);
+  const maskRef = useRef<HTMLDivElement>(null);
+  const logoTextRef = useRef<HTMLSpanElement>(null);
+  const shineRef = useRef<HTMLDivElement>(null);
+  const counterElRef = useRef<HTMLSpanElement>(null);
+  const arcCircleRef = useRef<SVGCircleElement>(null);
+  const arcTrackRef = useRef<SVGCircleElement>(null);
+  const taglineRefs = useRef<HTMLSpanElement[]>([]);
+  const particleRefs = useRef<SVGCircleElement[]>([]);
+  const cornerRefs = useRef<HTMLDivElement[]>([]);
 
-  const [count, setCount]   = useState(0);
+  const [count, setCount] = useState(0);
   const [isDone, setIsDone] = useState(false);
 
   // Ambient particle drift
@@ -42,10 +43,10 @@ export default function Loader({ onFinish }: LoaderProps) {
       particleRefs.current.forEach((el, i) => {
         if (!el) return;
         gsap.to(el, {
-          y: `${(i % 2 === 0 ? -1 : 1) * (12 + i * 4)}`,
-          x: `${(i % 3 === 0 ? 1 : -1) * (6 + i * 3)}`,
-          opacity: 0.25 + i * 0.06,
-          duration: 4 + i * 0.8,
+          y: `${(i % 2 === 0 ? -1 : 1) * (10 + i * 3)}`,
+          x: `${(i % 3 === 0 ? 1 : -1) * (5 + i * 2)}`,
+          opacity: 0.35 + i * 0.05,
+          duration: 4.5 + i * 0.8,
           ease: "sine.inOut",
           repeat: -1,
           yoyo: true,
@@ -56,27 +57,38 @@ export default function Loader({ onFinish }: LoaderProps) {
     return () => ctx.revert();
   }, []);
 
-  // Main timeline
+  // Main GSAP animation timeline
   useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         defaults: { ease: "power4.out" },
-        onComplete: () => { setIsDone(true); onFinish(); },
+        onComplete: () => {
+          setIsDone(true);
+          onFinish();
+        },
       });
 
       const counterProxy = { value: 0 };
 
-      tl.set(containerRef.current, { background: "#F7F7F4" })
+      // Base initialization (Milano Parchment background)
+      tl.set(containerRef.current, { background: "#F4F1EA" })
         .set(arcCircleRef.current, { strokeDashoffset: ARC_CIRCUMFERENCE })
-        .to(particleRefs.current, { opacity: 0.4, duration: 1.5, stagger: 0.1 }, 0)
-        .to(orbRef.current, { opacity: 1, scale: 1, duration: 2, ease: "power3.out" }, 0)
+        .to(particleRefs.current, { opacity: 0.5, duration: 1.5, stagger: 0.1 }, 0)
+        .to(orbRef.current, { opacity: 1, scale: 1, duration: 2.2, ease: "power3.out" }, 0)
         .to(cornerRefs.current, { opacity: 1, scale: 1, duration: 1.4, stagger: 0.05 }, 0.2);
 
+      // Revealing Brand Name & Taglines
       tl.to(maskRef.current, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.6, ease: "power4.inOut" }, 0.4)
-        .fromTo(logoTextRef.current, { scale: 1.15, filter: "blur(10px)" }, { scale: 1, filter: "blur(0px)", duration: 2, ease: "power3.out" }, 0.4)
+        .fromTo(
+          logoTextRef.current,
+          { scale: 1.1, filter: "blur(12px)" },
+          { scale: 1, filter: "blur(0px)", duration: 2, ease: "power3.out" },
+          0.4
+        )
         .to(taglineRefs.current, { opacity: 1, y: 0, duration: 1.2, stagger: 0.15, ease: "power3.out" }, 1.0)
         .to(counterElRef.current, { opacity: 1, y: 0, duration: 1 }, 1.2);
 
+      // Smooth progress count up
       tl.to(counterProxy, {
         value: 100,
         duration: 3.5,
@@ -91,18 +103,33 @@ export default function Loader({ onFinish }: LoaderProps) {
         },
       }, 0.6);
 
-      tl.fromTo(shineRef.current, { x: "-100%" }, { x: "100%", duration: 1.5, ease: "power2.inOut" }, 2.0);
+      // Gold shimmer effect across logo
+      tl.fromTo(shineRef.current, { x: "-100%" }, { x: "100%", duration: 1.6, ease: "power2.inOut" }, 2.0);
 
+      // Outro transition — Luxurious exit curtain
       tl.to(cornerRefs.current, { opacity: 0, scale: 0.95, duration: 0.6, ease: "power3.in", stagger: 0.02 }, "+=0.3")
-        .to([maskRef.current, taglineRefs.current, counterElRef.current, arcCircleRef.current, arcTrackRef.current], {
-          opacity: 0, y: -20, filter: "blur(8px)", duration: 0.8, stagger: 0.05, ease: "power4.in",
-        }, "-=0.4")
-        .to(orbRef.current, { opacity: 0, scale: 1.3, duration: 1, ease: "power3.inOut" }, "-=0.6")
-        .to(containerRef.current, {
-          clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
-          duration: 1.2,
-          ease: "power4.inOut",
-        }, "-=0.5");
+        .to(
+          [maskRef.current, taglineRefs.current, counterElRef.current, arcCircleRef.current, arcTrackRef.current],
+          {
+            opacity: 0,
+            y: -15,
+            filter: "blur(6px)",
+            duration: 0.8,
+            stagger: 0.04,
+            ease: "power4.in",
+          },
+          "-=0.4"
+        )
+        .to(orbRef.current, { opacity: 0, scale: 1.25, duration: 1, ease: "power3.inOut" }, "-=0.6")
+        .to(
+          containerRef.current,
+          {
+            clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
+            duration: 1.3,
+            ease: "power4.inOut",
+          },
+          "-=0.5"
+        );
     }, containerRef);
 
     return () => ctx.revert();
@@ -116,79 +143,91 @@ export default function Loader({ onFinish }: LoaderProps) {
       className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden touch-none select-none"
       role="status"
       aria-live="polite"
-      aria-label="Loading Premium Automotive Solutions Experience"
+      aria-label="Loading Italian Bespoke Menswear Experience"
     >
-      {/* Soft frame vignette — keeps it a paper-white stage, not a stark white flash */}
+      {/* Soft Vignette Overlay for Depth */}
       <div
         className="pointer-events-none absolute inset-0"
         aria-hidden="true"
-        style={{ background: "radial-gradient(circle at 50% 50%, transparent 30%, rgba(23,23,18,0.04) 100%)" }}
+        style={{
+          background: "radial-gradient(circle at 50% 50%, transparent 35%, rgba(20, 18, 16, 0.04) 100%)",
+        }}
       />
 
+      {/* Floating Gold Dust Particles */}
       <svg className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true">
         {PARTICLES.map((p, i) => (
           <circle
             key={i}
-            ref={(el) => { if (el) particleRefs.current[i] = el; }}
-            cx={p.cx} cy={p.cy} r={p.r}
-            fill="#A9773C"
+            ref={(el) => {
+              if (el) particleRefs.current[i] = el;
+            }}
+            cx={p.cx}
+            cy={p.cy}
+            r={p.r}
+            fill="#C5A059"
             opacity={0}
           />
         ))}
       </svg>
 
+      {/* Warm Venetian Gold Glow Behind Logo */}
       <div
         ref={orbRef}
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 scale-90"
         style={{
-          width: "650px",
-          height: "450px",
+          width: "600px",
+          height: "420px",
           borderRadius: "50%",
-          background: "radial-gradient(ellipse at center, rgba(31,74,56,0.07) 0%, rgba(31,74,56,0.02) 45%, transparent 70%)",
+          background: "radial-gradient(ellipse at center, rgba(197, 160, 89, 0.12) 0%, rgba(197, 160, 89, 0.03) 50%, transparent 70%)",
           filter: "blur(60px)",
         }}
       />
 
+      {/* Minimalist Italian Corner Brackets */}
       {(["tl", "tr", "bl", "br"] as const).map((pos, i) => (
         <div key={pos} ref={(el) => { if (el) cornerRefs.current[i] = el; }} className="opacity-0 scale-95">
           <CornerAccent pos={pos} />
         </div>
       ))}
 
+      {/* Main Center Content */}
       <div className="relative flex flex-col items-center">
+        {/* Brand Name / Logo Section */}
         <div ref={maskRef} className="relative overflow-hidden px-4" style={{ clipPath: "inset(0% 100% 0% 0%)" }}>
           <span
             ref={logoTextRef}
-            className="relative block font-display font-bold text-[#171712]"
+            className="relative block font-serif font-light text-[#141210]"
             style={{
-              fontSize: "clamp(3.5rem, 9vw, 5.5rem)",
-              letterSpacing: "0.5em",
-              marginRight: "-0.5em",
-              textShadow: "0 0 60px rgba(31,74,56,0.12)",
+              fontSize: "clamp(3rem, 8vw, 5rem)",
+              letterSpacing: "0.35em",
+              marginRight: "-0.35em",
+              textShadow: "0 0 40px rgba(197, 160, 89, 0.15)",
               display: "inline-block",
             }}
           >
-            PAS
+            SARTORIA
             <div
               ref={shineRef}
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 -translate-x-full"
               style={{
-                background: "linear-gradient(90deg, transparent 20%, rgba(23,23,18,0.12) 50%, transparent 80%)",
-                mixBlendMode: "multiply",
+                background: "linear-gradient(90deg, transparent 20%, rgba(197, 160, 89, 0.25) 50%, transparent 80%)",
+                mixBlendMode: "overlay",
               }}
             />
           </span>
         </div>
 
-        <div className="mt-4 flex gap-[0.75em]" aria-label="Premium Automotive Solutions">
-          {["Premium", "Automotive", "Solutions"].map((word, i) => (
+        {/* Subtitle / Location Tagline */}
+        <div className="mt-3 flex gap-[0.75em]" aria-label="Alta Sartoria Milano">
+          {["Alta", "Sartoria", "Milano"].map((word, i) => (
             <span
               key={word}
               ref={(el) => { if (el) taglineRefs.current[i] = el; }}
-              className="font-body text-[10px] font-semibold uppercase tracking-[0.4em] translate-y-2 opacity-0"
-              style={{ color: "#A9773C" }}
+              className="font-sans text-[10px] font-medium uppercase tracking-[0.45em] translate-y-2 opacity-0"
+              style={{ color: "#C5A059" }}
               aria-hidden={i > 0}
             >
               {word}
@@ -196,38 +235,42 @@ export default function Loader({ onFinish }: LoaderProps) {
           ))}
         </div>
 
+        {/* Counter and Precision Circular Gauge */}
         <div className="relative mt-16 flex flex-col items-center">
           <svg width="112" height="112" viewBox="0 0 96 96" className="absolute -top-[36px]" aria-hidden="true" style={{ transform: "rotate(-90deg)" }}>
-            <circle ref={arcTrackRef} cx={ARC_CENTER} cy={ARC_CENTER} r={ARC_R} fill="none" stroke="rgba(31,74,56,0.1)" strokeWidth="1" />
+            <circle ref={arcTrackRef} cx={ARC_CENTER} cy={ARC_CENTER} r={ARC_R} fill="none" stroke="rgba(20, 18, 16, 0.08)" strokeWidth="1" />
             <circle
               ref={arcCircleRef}
-              cx={ARC_CENTER} cy={ARC_CENTER} r={ARC_R}
+              cx={ARC_CENTER}
+              cy={ARC_CENTER}
+              r={ARC_R}
               fill="none"
-              stroke="url(#loaderArcGradient)"
+              stroke="url(#luxuryArcGradient)"
               strokeWidth="1"
               strokeLinecap="round"
               style={{ strokeDasharray: ARC_CIRCUMFERENCE, strokeDashoffset: ARC_CIRCUMFERENCE }}
             />
             <defs>
-              <linearGradient id="loaderArcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="rgba(31,74,56,0.4)" />
-                <stop offset="50%" stopColor="#1F4A38" />
-                <stop offset="100%" stopColor="#A9773C" />
+              <linearGradient id="luxuryArcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="rgba(197, 160, 89, 0.3)" />
+                <stop offset="50%" stopColor="#C5A059" />
+                <stop offset="100%" stopColor="#8C6D37" />
               </linearGradient>
             </defs>
           </svg>
 
+          {/* Progress Number */}
           <span
             ref={counterElRef}
-            className="font-display font-light tabular-nums opacity-0 translate-y-2"
-            style={{ fontSize: "clamp(3rem, 8vw, 4.2rem)", letterSpacing: "-0.03em", color: "#171712", lineHeight: 1 }}
+            className="font-serif font-light tabular-nums opacity-0 translate-y-2"
+            style={{ fontSize: "clamp(2.8rem, 7vw, 3.8rem)", letterSpacing: "-0.02em", color: "#141210", lineHeight: 1 }}
           >
             {String(count).padStart(3, "0")}
-            <span className="font-body text-xs font-medium tracking-normal text-[#A9773C] ml-0.5 relative -top-4">%</span>
+            <span className="font-sans text-xs font-normal tracking-normal text-[#C5A059] ml-1 relative -top-4">%</span>
           </span>
 
-          <p className="mt-5 font-body text-[9px] font-medium uppercase tracking-[0.5em] text-[#171712]/25">
-            Excellence In Every Detail
+          <p className="mt-5 font-sans text-[9px] font-medium uppercase tracking-[0.5em] text-[#141210]/35">
+            Fatto a Mano • Italia
           </p>
         </div>
       </div>
@@ -235,15 +278,34 @@ export default function Loader({ onFinish }: LoaderProps) {
   );
 }
 
+// Minimal Corner Framing Elements
 function CornerAccent({ pos }: { pos: "tl" | "tr" | "bl" | "br" }) {
-  const isTop  = pos.startsWith("t");
+  const isTop = pos.startsWith("t");
   const isLeft = pos.endsWith("l");
   const edgeClass = `absolute ${isTop ? "top-8" : "bottom-8"} ${isLeft ? "left-8" : "right-8"}`;
 
   return (
     <div className={`pointer-events-none ${edgeClass}`} aria-hidden="true">
-      <div className="absolute" style={{ [isTop ? "top" : "bottom"]: 0, [isLeft ? "left" : "right"]: 0, width: "28px", height: "1px", background: "rgba(31,74,56,0.25)" }} />
-      <div className="absolute" style={{ [isTop ? "top" : "bottom"]: 0, [isLeft ? "left" : "right"]: 0, width: "1px", height: "28px", background: "rgba(31,74,56,0.25)" }} />
+      <div
+        className="absolute"
+        style={{
+          [isTop ? "top" : "bottom"]: 0,
+          [isLeft ? "left" : "right"]: 0,
+          width: "24px",
+          height: "1px",
+          background: "rgba(197, 160, 89, 0.35)",
+        }}
+      />
+      <div
+        className="absolute"
+        style={{
+          [isTop ? "top" : "bottom"]: 0,
+          [isLeft ? "left" : "right"]: 0,
+          width: "1px",
+          height: "24px",
+          background: "rgba(197, 160, 89, 0.35)",
+        }}
+      />
     </div>
   );
 }

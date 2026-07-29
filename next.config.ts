@@ -1,23 +1,21 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "pub-b8708cc439d048e5a408add2b251c642.r2.dev",
-        pathname: "/**",
+        protocol: 'https',
+        hostname: 'encrypted-tbn0.gstatic.com',
       },
-      // Agar localhost:8081 (NEXT_PUBLIC_IMAGE_BASE_URL) se bhi kabhi
-      // images aati hain to wo bhi yahan add kar dena:
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "8081",
-        pathname: "/**",
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**', // (Optional) Allow all external image domains
       },
     ],
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig; // (or `export default nextConfig;` if using .mjs)

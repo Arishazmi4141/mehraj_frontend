@@ -8,83 +8,141 @@ gsap.registerPlugin(ScrollTrigger);
 
 const TESTIMONIALS = [
   {
-    quote:  "The level of care and technical knowledge at PAS is unlike anything I've experienced at other service centres. My 911 has never run better.",
+    quote:
+      "The fit of my bespoke double-breasted suit is absolute perfection. The shoulder line and canvas structure feel weightless yet sharp. Truly Neapolitan craftsmanship at its finest.",
     author: "Arjun Mehta",
-    role:   "Porsche 911 Owner",
+    role: "Managing Director • Private Equity",
     rating: 5,
   },
   {
-    quote:  "They sourced an OEM part in 48 hours that three other workshops couldn't find in two weeks. Unmatched network and expertise.",
+    quote:
+      "They sourced a rare Loro Piana Zenit cashmere fabric for my winter overcoat in under three days. The private fitting atelier experience in Milan was world-class.",
     author: "Priya Nair",
-    role:   "BMW M5 Owner",
+    role: "Creative Director • Luxury Retail",
     rating: 5,
   },
   {
-    quote:  "Complete transparency from inspection to invoice. No surprises, no upselling — just honest, premium service. My go-to for the Range Rover.",
+    quote:
+      "Uncompromising attention to detail. From hand-stitched buttonholes to custom silk linings, every garment feels like a heirloom piece tailored specifically for my posture.",
     author: "Rahul Sinha",
-    role:   "Range Rover Owner",
+    role: "Diplomat & Collector",
     rating: 5,
   },
 ] as const;
 
 export default function TestimonialsSection() {
   const scopeRef = useGsap<HTMLElement>(() => {
-    gsap.fromTo(".testimonials-heading", { y: 28, opacity: 0 }, {
-      y: 0, opacity: 1, duration: 0.65, ease: "expo.out",
-      scrollTrigger: { trigger: ".testimonials-heading", start: "top 86%" },
-    });
-    gsap.fromTo(".testimonial-card", { y: 44, opacity: 0 }, {
-      y: 0, opacity: 1, duration: 0.65, ease: "expo.out", stagger: 0.1,
-      scrollTrigger: { trigger: ".testimonials-grid", start: "top 82%" },
-    });
+    gsap.fromTo(
+      ".testimonials-heading",
+      { y: 28, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.65,
+        ease: "expo.out",
+        scrollTrigger: { trigger: ".testimonials-heading", start: "top 86%" },
+      }
+    );
+    gsap.fromTo(
+      ".testimonial-card",
+      { y: 44, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.65,
+        ease: "expo.out",
+        stagger: 0.1,
+        scrollTrigger: { trigger: ".testimonials-grid", start: "top 82%" },
+      }
+    );
   }, []);
 
   return (
-    <section ref={scopeRef} className="bg-[#F7F7F4] py-20 md:py-28" id="testimonials">
-      <div className="mx-auto max-w-7xl px-6 md:px-12">
-        <div className="testimonials-heading mb-14 opacity-0">
-          <span className="font-body text-[10px] uppercase tracking-[0.3em] text-[#A9773C]">Testimonials</span>
-          <h2 className="mt-5 max-w-lg font-display text-3xl font-semibold leading-[1.1] tracking-[-0.02em] text-[#171712] md:text-[2.6rem]">
-            Trusted by Drivers<br />Who Demand More
+    <section ref={scopeRef} className="relative bg-[#FAFAFA] py-24 md:py-32" id="testimonials">
+      {/* Background Architectural Grid Lines */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 opacity-25"
+        style={{
+          backgroundImage: "linear-gradient(to right, rgba(10, 17, 24, 0.03) 1px, transparent 1px)",
+          backgroundSize: "100px 100%",
+        }}
+        aria-hidden="true"
+      />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-12">
+        {/* Header Block */}
+        <div className="testimonials-heading mb-16 opacity-0">
+          <div className="flex items-center gap-3">
+            <span className="h-[1px] w-6 bg-[#B89752]" />
+            <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#B89752]">
+              Clientele Voice
+            </span>
+          </div>
+
+          <h2 className="mt-5 max-w-lg font-serif text-3xl font-light leading-[1.12] tracking-[-0.01em] text-[#0A1118] md:text-[2.8rem]">
+            Trusted by Gentlemen <br />
+            <span className="italic text-[#B89752]">Of Discerning Taste</span>
           </h2>
         </div>
 
-        <div className="testimonials-grid grid grid-cols-1 gap-5 md:grid-cols-3">
+        {/* Testimonials Cards Grid */}
+        <div className="testimonials-grid grid grid-cols-1 gap-6 md:grid-cols-3">
           {TESTIMONIALS.map(({ quote, author, role, rating }) => (
             <figure
               key={author}
-              className="testimonial-card group relative flex flex-col overflow-hidden opacity-0 bg-white border border-[#E7E3D8] transition-shadow duration-500 hover:shadow-[0_20px_48px_-24px_rgba(23,23,18,0.18)]"
+              className="testimonial-card group relative flex flex-col justify-between overflow-hidden opacity-0 bg-white border border-[#0A1118]/10 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#0A1118]/5"
             >
-              <div aria-hidden className="h-[2px] w-full bg-gradient-to-r from-[#1F4A38] via-[#C9A063] to-[#1F4A38] scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100" />
+              {/* Florentine Gold Hover Accent Line */}
+              <div
+                aria-hidden="true"
+                className="h-[2px] w-full bg-gradient-to-r from-[#B89752] via-[#0A1118] to-[#B89752] scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100"
+              />
 
               <div className="flex flex-col gap-6 p-9">
-                <div className="flex gap-[3px]" aria-label={`${rating} out of 5 stars`}>
+                {/* Gold Stars */}
+                <div className="flex gap-[4px]" aria-label={`${rating} out of 5 stars`}>
                   {Array.from({ length: rating }).map((_, i) => (
-                    <span key={i} className="text-[#C9A063]" style={{ fontSize: "11px" }} aria-hidden>★</span>
+                    <span key={i} className="text-[#B89752] text-xs" aria-hidden="true">
+                      ★
+                    </span>
                   ))}
                 </div>
 
-                <div aria-hidden className="font-display leading-none select-none text-[#F1EFE9]" style={{ fontSize: "3.5rem", lineHeight: 1, marginTop: "-0.5rem" }}>
-                  "
+                {/* Decorative Serif Quote Symbol */}
+                <div
+                  aria-hidden="true"
+                  className="font-serif leading-none select-none text-[#0A1118]/10"
+                  style={{ fontSize: "3.5rem", lineHeight: 1, marginTop: "-0.5rem" }}
+                >
+                  “
                 </div>
 
-                <blockquote className="font-body text-[13px] leading-[1.85] text-[#4A4740]">
+                {/* Quote Text */}
+                <blockquote className="font-sans text-xs leading-[1.85] text-[#4A5568]">
                   {quote}
                 </blockquote>
-
-                <figcaption className="mt-auto pt-7 border-t border-[#EFECE3]">
-                  <p className="font-display text-[10px] font-semibold uppercase tracking-[0.18em] text-[#171712]">{author}</p>
-                  <p className="mt-1.5 font-body text-[11px] tracking-wide text-[#8C8A80]">{role}</p>
-                </figcaption>
               </div>
+
+              {/* Author & Role Footer */}
+              <figcaption className="mx-9 mb-9 pt-6 border-t border-[#0A1118]/10">
+                <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0A1118]">
+                  {author}
+                </p>
+                <p className="mt-1 font-sans text-[11px] tracking-wide text-[#4A5568]/70">
+                  {role}
+                </p>
+              </figcaption>
             </figure>
           ))}
         </div>
 
+        {/* Bottom Ticker */}
         <div className="mt-16 flex items-center justify-center gap-4">
-          <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#1F4A38]/20" aria-hidden />
-          <p className="font-body text-[10px] uppercase tracking-[0.3em] text-[#B8B4A8]">Verified Reviews</p>
-          <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#1F4A38]/20" aria-hidden />
+          <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#B89752]/40" aria-hidden="true" />
+          <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#4A5568]/60">
+            Verified Bespoke Reviews • Milano Atelier
+          </p>
+          <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#B89752]/40" aria-hidden="true" />
         </div>
       </div>
     </section>

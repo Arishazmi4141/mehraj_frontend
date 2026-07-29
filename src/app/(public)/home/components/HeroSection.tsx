@@ -2,208 +2,244 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import gsap from "gsap";
 
 interface HeroSectionProps {
-  videoSrc?:    string;
-  posterSrc?:   string;
-  heading?:     string;
-  subheading?:  string;
-  ctaLabel?:    string;
-  ctaHref?:     string;
-  ctaSecLabel?: string;
-  ctaSecHref?:  string;
+  heading?: string;
+  subheading?: string;
+  ctaPrimaryText?: string;
+  ctaPrimaryHref?: string;
+  ctaSecondaryText?: string;
+  ctaSecondaryHref?: string;
+  heroImageMain?: string;
+  heroImageSecondary?: string;
 }
 
 export default function HeroSection({
-  videoSrc    = "/videos/hero.mp4",
-  posterSrc   = "/hero-poster.jpg",
-  heading     = "Experience Premium Car Care & Genuine Parts",
-  subheading  = "Expert maintenance, diagnostics, and a curation of elite automotive components for discerning drivers.",
-  ctaLabel    = "Explore Services",
-  ctaHref     = "/services",
-  ctaSecLabel = "View Collection",
-  ctaSecHref  = "/shop",
+  heading = "L'Arte della Sartoria Italiana",
+  subheading = "Handcrafted in Naples & Milan. Engineered for gentlemen who understand that true luxury lies in unyielding precision, structured shoulders, and rare Italian cashmere.",
+  ctaPrimaryText = "Discover Collezione '26",
+  ctaPrimaryHref = "/collection",
+  ctaSecondaryText = "Book Bespoke Fitting",
+  ctaSecondaryHref = "/bespoke",
+  heroImageMain = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwa1q4X6XSc1JLqUM-1nh1kEbnfWH4ipwMsbfJUYyA2Q&s=10", 
+  heroImageSecondary = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_RH1vbxzMXW6UhBIy2AOhb4fXR-HqaPDvbqEuPkjwWg&s=10", 
 }: HeroSectionProps) {
-  const videoRef     = useRef<HTMLVideoElement>(null);
-  const eyebrowRef   = useRef<HTMLDivElement>(null);
-  const headingRef   = useRef<HTMLHeadingElement>(null);
-  const subRef       = useRef<HTMLParagraphElement>(null);
-  const ctaWrapRef   = useRef<HTMLDivElement>(null);
-  const statsRef     = useRef<HTMLDivElement>(null);
-  const scrollRef    = useRef<HTMLDivElement>(null);
-  const ruleLeftRef  = useRef<HTMLDivElement>(null);
-  const ruleRightRef = useRef<HTMLDivElement>(null);
-  const ambientRef   = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLElement>(null);
+  const mainImageRef = useRef<HTMLDivElement>(null);
+  const secondaryImageRef = useRef<HTMLDivElement>(null);
+  const textContentRef = useRef<HTMLDivElement>(null);
+  const badgeRef = useRef<HTMLDivElement>(null);
+  const footerBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
 
-    if (videoRef.current) {
-      gsap.fromTo(videoRef.current, { opacity: 0 }, { opacity: 1, duration: 2.4, ease: "power2.out", delay: 0.1 });
-    }
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
 
-    const els = [
-      eyebrowRef.current, headingRef.current, subRef.current,
-      ctaWrapRef.current, statsRef.current, scrollRef.current,
-      ruleLeftRef.current, ruleRightRef.current,
-    ];
+      // 1. Reveal Main Image Canvas with smooth clip-path transition
+      tl.fromTo(
+        mainImageRef.current,
+        { clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)", scale: 1.12 },
+        { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)", scale: 1, duration: 1.8 }
+      );
 
-    if (prefersReduced) {
-      gsap.set(els, { opacity: 1, y: 0, scaleX: 1 });
-      return;
-    }
+      // 2. Reveal Secondary Floating Frame
+      tl.fromTo(
+        secondaryImageRef.current,
+        { opacity: 0, y: 40, scale: 0.92 },
+        { opacity: 1, y: 0, scale: 1, duration: 1.4, ease: "back.out(1.2)" },
+        "-=1.2"
+      );
 
-    if (ambientRef.current) {
-      gsap.to(ambientRef.current, {
-        scale: 1.15, opacity: 0.6, duration: 4,
-        ease: "sine.inOut", repeat: -1, yoyo: true,
-      });
-    }
+      // 3. Staggered Text Animations
+      const textElements = textContentRef.current?.children;
+      if (textElements) {
+        tl.fromTo(
+          Array.from(textElements),
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1, stagger: 0.14 },
+          "-=1.0"
+        );
+      }
 
-    const tl = gsap.timeline({ delay: 0.5 });
+      // 4. Badge Bounce Effect
+      tl.fromTo(
+        badgeRef.current,
+        { opacity: 0, scale: 0.8, rotate: -12 },
+        { opacity: 1, scale: 1, rotate: 0, duration: 1, ease: "elastic.out(1, 0.75)" },
+        "-=0.8"
+      );
 
-    tl.fromTo(ruleLeftRef.current, { scaleX: 0, transformOrigin: "right center" }, { scaleX: 1, duration: 0.9, ease: "expo.out" })
-      .fromTo(ruleRightRef.current, { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.9, ease: "expo.out" }, "<")
-      .fromTo(eyebrowRef.current, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, "-=0.5");
+      // 5. Footer Specifications Bar
+      tl.fromTo(
+        footerBarRef.current,
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 0.8 },
+        "-=0.6"
+      );
+    }, containerRef);
 
-    const lines = headingRef.current?.querySelectorAll(".hero-line");
-    if (lines?.length) {
-      tl.fromTo(Array.from(lines), { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, ease: "expo.out", stagger: 0.14 }, "-=0.3");
-    }
-
-    tl.fromTo(subRef.current, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.75, ease: "power2.out" }, "-=0.4")
-      .fromTo(ctaWrapRef.current, { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.65, ease: "power2.out" }, "-=0.35");
-
-    if (statsRef.current) {
-      tl.fromTo(Array.from(statsRef.current.children), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out", stagger: 0.12 }, "-=0.3");
-    }
-
-    tl.fromTo(scrollRef.current, { opacity: 0 }, { opacity: 1, duration: 0.6 }, "-=0.15");
-
-    const dot = scrollRef.current?.querySelector(".scroll-dot");
-    if (dot) {
-      gsap.to(dot, { y: 14, duration: 1.4, ease: "power1.inOut", repeat: -1, yoyo: true, delay: 2 });
-    }
+    return () => ctx.revert();
   }, []);
 
-  const STATS = [
-    { value: "12+",    label: "Years of Excellence" },
-    { value: "4,800+", label: "Vehicles Serviced" },
-    { value: "98%",    label: "Client Satisfaction" },
-  ];
-
-  const [headPart1, headPart2] = heading.includes("&")
-    ? heading.split("&").map((s) => s.trim())
-    : [heading, ""];
-
   return (
-    <section className="relative flex min-h-screen flex-col overflow-hidden bg-[#111611]" aria-label="Hero">
-      {/* Video layer */}
-      <div className="absolute inset-0 z-0">
-        {/* <video
-          ref={videoRef}
-          className="h-full w-full object-cover"
-          style={{ opacity: 0, filter: "brightness(0.75) saturate(1.05)" }}
-          src={videoSrc}
-          poster={posterSrc}
-          autoPlay muted loop playsInline preload="metadata" aria-hidden
-        /> */}
-      </div>
-
-      {/* Scrim for text legibility — fades into the light body at the bottom */}
-      <div className="absolute inset-0 z-[1] pointer-events-none" aria-hidden>
-        <div className="absolute inset-0 bg-black/45" />
-        <div className="absolute inset-x-0 top-0 h-[60%] bg-gradient-to-b from-black/50 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-[#F7F7F4] to-transparent" />
-      </div>
-
-      {/* Ambient brass glow */}
-      <div
-        ref={ambientRef}
-        aria-hidden
-        className="pointer-events-none absolute z-[2] left-1/2 top-[28%] -translate-x-1/2 -translate-y-1/2"
+    <section
+      ref={containerRef}
+      className="relative min-h-screen w-full overflow-hidden bg-[#FAFAFA] text-[#0A1118] selection:bg-[#0A1118] selection:text-white"
+    >
+      {/* Background Architectural Subtle Lines (Pinstripe Craft Effect) */}
+      <div 
+        className="pointer-events-none absolute inset-0 z-[1] opacity-35"
         style={{
-          width: "600px", height: "400px", borderRadius: "50%",
-          background: "radial-gradient(ellipse, rgba(201,160,99,0.16) 0%, transparent 70%)",
-          filter: "blur(60px)", opacity: 0.5,
+          backgroundImage: "linear-gradient(to right, rgba(10, 17, 24, 0.04) 1px, transparent 1px)",
+          backgroundSize: "80px 100%"
         }}
+        aria-hidden="true"
       />
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 pb-36 pt-32 text-center md:px-12">
-        <div className="mb-8 flex items-center gap-6">
-          <div ref={ruleLeftRef} aria-hidden className="h-px w-16 md:w-20" style={{ background: "linear-gradient(to left, #C9A063, transparent)", opacity: 0 }} />
-          <div ref={eyebrowRef} className="font-body text-[10px] uppercase tracking-[0.36em] text-[#C9A063]" style={{ opacity: 0 }}>
-            Premium Automotive
-          </div>
-          <div ref={ruleRightRef} aria-hidden className="h-px w-16 md:w-20" style={{ background: "linear-gradient(to right, #C9A063, transparent)", opacity: 0 }} />
-        </div>
-
-        <h1
-          ref={headingRef}
-          className="mx-auto max-w-[900px] font-display font-semibold leading-[1.06] tracking-[-0.02em] text-white"
-          style={{ fontSize: "clamp(2.3rem, 5.6vw, 4.5rem)" }}
-        >
-          <span className="hero-line block" style={{ opacity: 0 }}>{headPart1}</span>
-          {headPart2 && (
-            <span className="hero-line block mt-2" style={{ opacity: 0, color: "#C9A063" }}>
-              &amp; {headPart2}
+      {/* Main Grid Layout (Asymmetric 12-Column Fashion Layout) */}
+      <div className="relative z-10 mx-auto grid min-h-screen max-w-[1500px] grid-cols-1 lg:grid-cols-12 items-center px-6 pt-28 pb-16 md:px-12 lg:gap-12 lg:pt-20">
+        
+        {/* LEFT COLUMN: Editorial Typography & CTAs (Cols 1 to 7) */}
+        <div ref={textContentRef} className="lg:col-span-7 flex flex-col justify-center space-y-8 z-20 pt-8 lg:pt-0">
+          
+          {/* Eyebrow Tag */}
+          <div className="flex items-center gap-3">
+            <span className="h-[2px] w-8 bg-[#B89752]" />
+            <span className="font-sans text-[11px] font-semibold uppercase tracking-[0.35em] text-[#B89752]">
+              NAPOLI • MILANO • EST. 1968
             </span>
-          )}
-        </h1>
+          </div>
 
-        <div aria-hidden className="mx-auto mt-8 h-px w-12" style={{ background: "linear-gradient(to right, transparent, rgba(201,160,99,0.6), transparent)" }} />
+          {/* Headline with Midnight Navy & Serif Gold Accent */}
+          <h1 className="font-serif text-[2.8rem] font-light leading-[1.05] tracking-[-0.02em] text-[#0A1118] sm:text-[4rem] lg:text-[5.2rem]">
+            {heading.split(" ").slice(0, 2).join(" ")}{" "}
+            <span className="italic font-normal text-[#B89752]">
+              {heading.split(" ").slice(2, 4).join(" ")}
+            </span>{" "}
+            <span className="block text-[#0A1118]">
+              {heading.split(" ").slice(4).join(" ")}
+            </span>
+          </h1>
 
-        <p
-          ref={subRef}
-          className="mx-auto mt-7 max-w-[480px] font-body leading-[1.85] text-white/75"
-          style={{ opacity: 0, fontSize: "clamp(0.85rem, 1.5vw, 0.9375rem)" }}
-        >
-          {subheading}
-        </p>
+          {/* Subheading */}
+          <p className="max-w-[540px] font-sans text-sm font-normal leading-[1.85] text-[#4A5568] md:text-base">
+            {subheading}
+          </p>
 
-        <div ref={ctaWrapRef} className="mt-11 flex flex-wrap items-center justify-center gap-4" style={{ opacity: 0 }}>
-          <Link
-            href={ctaHref}
-            className="inline-flex items-center gap-2 rounded-sm bg-[#C9A063] px-7 py-3.5 font-body text-[11px] font-semibold uppercase tracking-[0.18em] text-[#171712] transition-colors duration-300 hover:bg-[#dab077]"
-          >
-            {ctaLabel}
-          </Link>
-          <Link
-            href={ctaSecHref}
-            className="inline-flex items-center gap-2 rounded-sm border border-white/30 px-7 py-3.5 font-body text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition-colors duration-300 hover:bg-white/10"
-          >
-            {ctaSecLabel}
-          </Link>
-        </div>
-
-        <div ref={statsRef} className="mt-20 flex flex-wrap items-center justify-center gap-12 md:gap-24" aria-label="Key statistics">
-          {STATS.map((s, i) => (
-            <div key={s.label} className="relative flex flex-col items-center gap-2">
-              {i > 0 && (
-                <div aria-hidden className="absolute -left-6 top-1/2 hidden h-10 w-px -translate-y-1/2 md:block bg-white/15" />
-              )}
-              <span
-                className="font-mono font-semibold leading-none text-[#C9A063]"
-                style={{ fontSize: "clamp(1.5rem, 3vw, 2.1rem)" }}
+          {/* Action Buttons */}
+          <div className="flex flex-wrap items-center gap-5 pt-2">
+            <Link
+              href={ctaPrimaryHref}
+              className="group relative inline-flex items-center gap-3 overflow-hidden bg-[#0A1118] px-8 py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.25em] text-[#FAFAFA] shadow-lg shadow-[#0A1118]/10 transition-all duration-500 hover:bg-[#1a2533] hover:shadow-xl"
+            >
+              <span>{ctaPrimaryText}</span>
+              <svg
+                className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                {s.value}
-              </span>
-              <span className="font-body text-[9px] uppercase tracking-[0.24em] text-white/55">{s.label}</span>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </Link>
+
+            <Link
+              href={ctaSecondaryHref}
+              className="group inline-flex items-center gap-3 border border-[#0A1118]/25 px-8 py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.25em] text-[#0A1118] transition-all duration-300 hover:border-[#0A1118] hover:bg-[#0A1118]/5"
+            >
+              <span>{ctaSecondaryText}</span>
+            </Link>
+          </div>
+
+          {/* Quality Guarantee Note */}
+          <div className="flex items-center gap-8 pt-6 border-t border-[#0A1118]/10 max-w-[500px]">
+            <div>
+              <p className="font-serif text-lg font-normal text-[#0A1118]">100% Super 180s Wool</p>
+              <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#4A5568]">Loro Piana Fabrics</p>
             </div>
-          ))}
+            <div className="h-8 w-px bg-[#0A1118]/15" />
+            <div>
+              <p className="font-serif text-lg font-normal text-[#0A1118]">Full Canvas</p>
+              <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#4A5568]">Hand-Stitched Horsehair</p>
+            </div>
+          </div>
+
         </div>
+
+        {/* RIGHT COLUMN: Asymmetric Fashion Imagery Frame (Cols 8 to 12) */}
+        <div className="relative lg:col-span-5 flex items-center justify-center mt-12 lg:mt-0">
+          
+          {/* Main Hero Image Canvas */}
+          <div
+            ref={mainImageRef}
+            className="relative h-[520px] w-full max-w-[440px] overflow-hidden rounded-none shadow-[0_25px_60px_-15px_rgba(0,0,0,0.15)] lg:h-[640px]"
+          >
+            <Image
+              src={heroImageMain}
+              alt="Italian Tailored Suit"
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover object-top filter brightness-[0.98] contrast-[1.02]"
+            />
+          </div>
+
+          {/* Secondary Floating Detail Frame (Overlapping Offset Image) */}
+          <div
+            ref={secondaryImageRef}
+            className="absolute -bottom-6 -left-4 z-20 hidden h-[220px] w-[170px] overflow-hidden border-4 border-[#FAFAFA] bg-[#FAFAFA] shadow-2xl sm:block lg:-left-12 lg:h-[260px] lg:w-[200px]"
+          >
+            <Image
+              src={heroImageSecondary}
+              alt="Sartorial Suit Detail"
+              fill
+              sizes="200px"
+              className="object-cover object-center"
+            />
+          </div>
+
+          {/* Circular Stamp / Seal Badge */}
+          <div
+            ref={badgeRef}
+            className="absolute -top-6 -right-2 z-30 flex h-24 w-24 items-center justify-center rounded-full border border-[#B89752]/30 bg-[#FAFAFA]/90 p-2 shadow-xl backdrop-blur-md sm:h-28 sm:w-28"
+          >
+            <div className="text-center">
+              <span className="block font-serif text-xs italic text-[#B89752]">Fatto a</span>
+              <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.25em] text-[#0A1118]">Mano</span>
+              <span className="block font-sans text-[8px] text-[#4A5568]">Italia</span>
+            </div>
+          </div>
+
+        </div>
+
       </div>
 
-      <div ref={scrollRef} className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2" style={{ opacity: 0 }} aria-hidden>
-        <div className="flex flex-col items-center gap-2">
-          <span className="font-body text-[8px] uppercase tracking-[0.4em] text-white/40">Scroll</span>
-          <div className="relative h-10 w-px overflow-hidden bg-white/15">
-            <div className="scroll-dot absolute top-0 h-5 w-px" style={{ background: "linear-gradient(to bottom, transparent, #C9A063, transparent)" }} />
+      {/* Bottom Ticker / Brand Attributes Bar */}
+      <div 
+        ref={footerBarRef}
+        className="relative z-20 w-full border-t border-[#0A1118]/10 bg-[#FAFAFA]/80 py-4.5 backdrop-blur-md"
+      >
+        <div className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-6 px-6 md:px-12 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#0A1118]/70">
+          <div className="flex items-center gap-2.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#B89752]" />
+            <span>Handmade Canvas Construction</span>
+          </div>
+          <div className="hidden md:flex items-center gap-2.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#0A1118]" />
+            <span>Worldwide Express Shipping</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#B89752]" />
+            <span>Private Fitting Ateliers</span>
           </div>
         </div>
       </div>
+
     </section>
   );
 }
