@@ -7,6 +7,12 @@ import { Wrench, Clock, ShieldCheck, BadgeCheck, Phone, RefreshCcw } from "lucid
 
 gsap.registerPlugin(ScrollTrigger);
 
+const INK = "#0A1118";
+const INK_MUTED = "rgba(10,17,24,0.65)";
+const GOLD = "#B89752";
+const BORDER = "rgba(10,17,24,0.1)";
+const SURFACE = "#FFFFFF";
+
 const FEATURES = [
   {
     icon: Wrench,
@@ -40,28 +46,70 @@ const FEATURES = [
   },
 ];
 
-export default function WhyChoosePAS() {
+export default function WhyChooseMehRaj() {
   const sectionRef = useRef<HTMLElement>(null);
+  const labelRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement[]>([]);
+  const numberRefs = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
     const mm = gsap.matchMedia();
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       const ctx = gsap.context(() => {
+        gsap.fromTo(
+          labelRef.current,
+          { opacity: 0, x: -30 },
+          { opacity: 1, x: 0, duration: 0.8, scrollTrigger: { trigger: labelRef.current, start: "top 85%" } }
+        );
+
         cardsRef.current.forEach((card, i) => {
           gsap.fromTo(
             card,
-            { opacity: 0, y: 50, filter: "blur(4px)" },
+            { opacity: 0, y: 50, scale: 0.95, filter: "blur(6px)" },
             {
               opacity: 1,
               y: 0,
+              scale: 1,
               filter: "blur(0px)",
-              duration: 0.7,
-              delay: (i % 3) * 0.1,
+              duration: 0.8,
+              delay: (i % 3) * 0.12,
               ease: "power3.out",
               scrollTrigger: { trigger: card, start: "top 88%" },
             }
           );
+
+          const num = numberRefs.current[i];
+          if (num) {
+            gsap.fromTo(
+              num,
+              { opacity: 0, y: -8 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.5,
+                delay: (i % 3) * 0.12 + 0.25,
+                ease: "power2.out",
+                scrollTrigger: { trigger: card, start: "top 88%" },
+              }
+            );
+          }
+
+          const icon = card.querySelector(".feature-icon-wrap");
+          if (icon) {
+            gsap.fromTo(
+              icon,
+              { scale: 0.4, opacity: 0, rotate: -20 },
+              {
+                scale: 1,
+                opacity: 1,
+                rotate: 0,
+                duration: 0.6,
+                delay: (i % 3) * 0.12 + 0.15,
+                ease: "back.out(2)",
+                scrollTrigger: { trigger: card, start: "top 88%" },
+              }
+            );
+          }
         });
       }, sectionRef);
 
@@ -76,7 +124,16 @@ export default function WhyChoosePAS() {
     const rect = el.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    gsap.to(el, { rotateY: x * 10, rotateX: -y * 10, z: 20, transformPerspective: 700, duration: 0.3, ease: "power2.out" });
+    gsap.to(el, {
+      rotateY: x * 10,
+      rotateX: -y * 10,
+      z: 20,
+      transformPerspective: 700,
+      borderColor: "rgba(184,151,82,0.45)",
+      boxShadow: `0 25px 55px rgba(10,17,24,0.09), ${-x * 12}px ${16 - y * 12}px 35px rgba(184,151,82,0.12)`,
+      duration: 0.3,
+      ease: "power2.out",
+    });
 
     const icon = el.querySelector(".feature-icon-wrap");
     gsap.to(icon, { scale: 1.15, duration: 0.3, ease: "power2.out" });
@@ -84,28 +141,40 @@ export default function WhyChoosePAS() {
 
   const handleMouseLeave = (el: HTMLDivElement | null) => {
     if (!el) return;
-    gsap.to(el, { rotateY: 0, rotateX: 0, z: 0, duration: 0.5, ease: "expo.out" });
+    gsap.to(el, {
+      rotateY: 0,
+      rotateX: 0,
+      z: 0,
+      borderColor: BORDER,
+      boxShadow: "0 15px 35px rgba(10,17,24,0.05)",
+      duration: 0.5,
+      ease: "expo.out",
+    });
     const icon = el.querySelector(".feature-icon-wrap");
     gsap.to(icon, { scale: 1, duration: 0.4, ease: "expo.out" });
   };
 
   return (
-    <section ref={sectionRef} className="relative py-32 px-6" style={{ background: "var(--color-bg)" }}>
-      {/* Faint structural grid — brass, barely there */}
+    <section ref={sectionRef} className="relative py-32 px-6 bg-[#FAFAFA]">
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        className="absolute inset-0 pointer-events-none opacity-[0.035]"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(169,119,60,1) 1px, transparent 1px), linear-gradient(90deg, rgba(169,119,60,1) 1px, transparent 1px)",
+            "linear-gradient(rgba(184,151,82,1) 1px, transparent 1px), linear-gradient(90deg, rgba(184,151,82,1) 1px, transparent 1px)",
           backgroundSize: "80px 80px",
         }}
       />
 
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse 55% 45% at 80% 20%, rgba(184,151,82,0.1) 0%, transparent 70%)" }}
+      />
+
       <div className="max-w-7xl mx-auto">
-        <div className="mb-20">
+        <div ref={labelRef} className="mb-20">
           <div className="flex items-center gap-4 mb-6">
-            <div className="h-px w-12" style={{ background: "var(--color-green)" }} />
-            <span className="text-xs tracking-[0.4em] uppercase" style={{ color: "var(--color-brass)" }}>
+            <div className="h-px w-12" style={{ background: GOLD }} />
+            <span className="text-xs tracking-[0.4em] uppercase" style={{ color: GOLD }}>
               Why Choose Us
             </span>
           </div>
@@ -113,18 +182,19 @@ export default function WhyChoosePAS() {
             <h2
               className="font-bold leading-tight"
               style={{
+                fontFamily: "var(--font-display)",
                 fontSize: "clamp(2rem, 4vw, 3.5rem)",
-                color: "var(--color-ink)",
+                color: INK,
                 letterSpacing: "-0.02em",
                 maxWidth: "560px",
               }}
             >
               Jack of All Trades,
               <br />
-              <span style={{ color: "var(--color-green)" }}>Master of Every One.</span>
+              <span style={{ color: GOLD }}>Master of Every One.</span>
             </h2>
-            <p className="max-w-sm" style={{ color: "var(--color-ink-muted)", lineHeight: "1.75", fontSize: "0.95rem" }}>
-              Whatever dilemma is blocking your safe ride, our professionals prioritise your satisfaction and resolve it without delay.
+            <p className="max-w-sm" style={{ color: INK_MUTED, lineHeight: "1.75", fontSize: "0.95rem" }}>
+              Whatever dilemma is blocking your safe ride, MehRaj&apos;s professionals prioritise your satisfaction and resolve it without delay.
             </p>
           </div>
         </div>
@@ -142,42 +212,44 @@ export default function WhyChoosePAS() {
                 onMouseLeave={() => handleMouseLeave(cardsRef.current[i])}
                 className="relative p-7 rounded-sm group"
                 style={{
-                  background: "var(--color-surface)",
-                  border: "1px solid var(--color-border)",
+                  background: SURFACE,
+                  border: `1px solid ${BORDER}`,
                   transformStyle: "preserve-3d",
                   cursor: "default",
-                  transition: "border-color 0.4s ease, box-shadow 0.4s ease",
-                  boxShadow: "0 15px 35px rgba(28,28,26,0.05)",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(31,74,56,0.3)";
-                  (e.currentTarget as HTMLDivElement).style.boxShadow = "0 25px 55px rgba(28,28,26,0.08)";
-                }}
-                onMouseOut={(e) => {
-                  (e.currentTarget as HTMLDivElement).style.borderColor = "var(--color-border)";
-                  (e.currentTarget as HTMLDivElement).style.boxShadow = "0 15px 35px rgba(28,28,26,0.05)";
+                  boxShadow: "0 15px 35px rgba(10,17,24,0.05)",
+                  willChange: "transform",
                 }}
               >
                 <div
+                  ref={(el) => {
+                    if (el) numberRefs.current[i] = el;
+                  }}
                   className="absolute top-6 right-6 text-xs font-bold"
-                  style={{ color: "rgba(169,119,60,0.35)", letterSpacing: "0.1em" }}
+                  style={{ color: "rgba(184,151,82,0.5)", letterSpacing: "0.1em" }}
                 >
                   0{i + 1}
                 </div>
 
                 <div
                   className="feature-icon-wrap w-12 h-12 flex items-center justify-center rounded-sm mb-5"
-                  style={{ background: "var(--color-green-soft-2)", border: "1px solid rgba(31,74,56,0.18)" }}
+                  style={{ background: "rgba(184,151,82,0.1)", border: "1px solid rgba(184,151,82,0.3)" }}
                 >
-                  <Icon size={20} style={{ color: "var(--color-green)" }} />
+                  <Icon size={20} style={{ color: GOLD }} />
                 </div>
 
-                <h3 className="font-semibold mb-3" style={{ color: "var(--color-ink)", fontSize: "1.05rem" }}>
+                <h3 className="font-semibold mb-3" style={{ fontFamily: "var(--font-display)", color: INK, fontSize: "1.05rem" }}>
                   {feat.title}
                 </h3>
-                <p style={{ color: "var(--color-ink-muted)", fontSize: "0.9rem", lineHeight: "1.7" }}>
-                  {feat.desc}
-                </p>
+                <p style={{ color: INK_MUTED, fontSize: "0.9rem", lineHeight: "1.7" }}>{feat.desc}</p>
+
+                <div
+                  className="absolute bottom-0 left-7 right-7 h-px scale-x-0 group-hover:scale-x-100"
+                  style={{
+                    background: `linear-gradient(to right, transparent, ${GOLD}, transparent)`,
+                    transition: "transform 0.4s ease",
+                    transformOrigin: "center",
+                  }}
+                />
               </div>
             );
           })}

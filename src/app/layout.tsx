@@ -17,9 +17,9 @@ const cinzel = Cinzel({
 });
 
 export const metadata: Metadata = {
-  title: "PAS — Premium Automotive Solutions",
+  title: "MehRaj",
   description:
-    "Expert maintenance, diagnostics, and elite automotive components for discerning drivers.",
+    "Premium Collection of Men's Wear.",
 };
 
 export default function RootLayout({

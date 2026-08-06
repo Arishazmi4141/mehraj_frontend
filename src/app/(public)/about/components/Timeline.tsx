@@ -7,11 +7,19 @@ import { useGsap } from "@/src/hooks/useGsap";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const INK = "#0A1118";
+const INK_MUTED = "rgba(10,17,24,0.65)";
+const GOLD = "#B89752";
+const GOLD_LIGHT = "#D4BC85";
+const BORDER = "rgba(10,17,24,0.1)";
+const SURFACE = "#FFFFFF";
+const SURFACE_ALT = "#F3F1EC";
+
 const TIMELINE = [
   {
     year: "2018",
     title: "The Beginning",
-    desc: "London Motor Sports opened its doors in W12, with a small team and a big commitment to honest, expert automotive care.",
+    desc: "MehRaj opened its doors in W12, with a small team and a big commitment to honest, expert automotive care.",
   },
   {
     year: "2019",
@@ -37,6 +45,7 @@ const TIMELINE = [
 
 export default function Timeline() {
   const lineRef = useRef<HTMLDivElement>(null);
+  const travelDotRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLDivElement[]>([]);
   const cardRefs = useRef<HTMLDivElement[]>([]);
   const dotRefs = useRef<HTMLDivElement[]>([]);
@@ -47,13 +56,16 @@ export default function Timeline() {
       gsap.fromTo(
         lineRef.current,
         { scaleY: 0 },
-        {
-          scaleY: 1,
-          transformOrigin: "top",
-          ease: "none",
-          scrollTrigger: { trigger: sectionRef.current, start: "top 70%", end: "bottom 80%", scrub: 1 },
-        }
+        { scaleY: 1, transformOrigin: "top", ease: "none", scrollTrigger: { trigger: sectionRef.current, start: "top 70%", end: "bottom 80%", scrub: 1 } }
       );
+
+      gsap.fromTo(
+        travelDotRef.current,
+        { top: "0%" },
+        { top: "100%", ease: "none", scrollTrigger: { trigger: sectionRef.current, start: "top 70%", end: "bottom 80%", scrub: 1 } }
+      );
+
+      gsap.to(lineRef.current, { backgroundPosition: "0% 200%", duration: 3, repeat: -1, ease: "sine.inOut" });
 
       itemsRef.current.forEach((item, i) => {
         gsap.fromTo(
@@ -70,8 +82,8 @@ export default function Timeline() {
               if (!dot) return;
               gsap.fromTo(
                 dot,
-                { scale: 0.3, boxShadow: "0 0 0 rgba(31,74,56,0)" },
-                { scale: 1, boxShadow: "0 0 16px rgba(31,74,56,0.35)", duration: 0.6, ease: "back.out(2)" }
+                { scale: 0.3, boxShadow: "0 0 0 rgba(184,151,82,0)" },
+                { scale: 1, boxShadow: "0 0 16px rgba(184,151,82,0.4)", duration: 0.6, ease: "back.out(2)" }
               );
             },
           }
@@ -92,8 +104,8 @@ export default function Timeline() {
       rotateY: x * 6,
       rotateX: -y * 6,
       transformPerspective: 900,
-      borderColor: "rgba(31,74,56,0.3)",
-      boxShadow: "0 30px 60px rgba(28,28,26,0.09)",
+      borderColor: "rgba(184,151,82,0.45)",
+      boxShadow: "0 30px 60px rgba(184,151,82,0.12)",
       duration: 0.35,
       ease: "power2.out",
     });
@@ -105,46 +117,45 @@ export default function Timeline() {
     gsap.to(el, {
       rotateY: 0,
       rotateX: 0,
-      borderColor: "var(--color-border)",
-      boxShadow: "0 15px 35px rgba(28,28,26,0.05)",
+      borderColor: BORDER,
+      boxShadow: "0 15px 35px rgba(10,17,24,0.05)",
       duration: 0.6,
       ease: "expo.out",
     });
   };
 
   return (
-    <section ref={sectionRef} className="relative py-32 px-6" style={{ background: "var(--color-surface-alt)" }}>
+    <section ref={sectionRef} className="relative py-32 px-6" style={{ background: SURFACE_ALT }}>
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: "radial-gradient(ellipse 50% 60% at 80% 50%, var(--color-brass-soft) 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(ellipse 50% 60% at 80% 50%, rgba(184,151,82,0.08) 0%, transparent 70%)" }}
       />
 
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-24">
           <div className="eyebrow justify-center mb-6">
-            <span>Our Journey</span>
-            <span aria-hidden className="block h-px w-8" style={{ background: "var(--color-green)" }} />
+            <span style={{ color: GOLD }}>Our Journey</span>
+            <span aria-hidden className="block h-px w-8" style={{ background: GOLD }} />
           </div>
           <h2
             className="font-bold"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "clamp(2rem, 4vw, 3.5rem)",
-              color: "var(--color-ink)",
-              letterSpacing: "-0.02em",
-            }}
+            style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 4vw, 3.5rem)", color: INK, letterSpacing: "-0.02em" }}
           >
             Six Years of Excellence
           </h2>
         </div>
 
         <div className="relative">
-          {/* Pinstripe vertical line — green core, brass hairline beside it */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2" style={{ background: "var(--color-border-strong)" }}>
+          <div className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2" style={{ background: BORDER }}>
             <div
               ref={lineRef}
               className="absolute inset-0"
-              style={{ background: "linear-gradient(to bottom, var(--color-green), var(--color-brass))" }}
+              style={{ background: `linear-gradient(to bottom, ${GOLD}, ${GOLD_LIGHT}, ${GOLD})`, backgroundSize: "100% 200%" }}
+            />
+            <div
+              ref={travelDotRef}
+              className="absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full"
+              style={{ background: GOLD_LIGHT, boxShadow: "0 0 14px rgba(184,151,82,0.55)", top: "0%" }}
             />
           </div>
 
@@ -167,25 +178,20 @@ export default function Timeline() {
                     onMouseLeave={() => handleMouseLeave(i)}
                     className="flex-1 p-7 rounded-sm cursor-default"
                     style={{
-                      background: "var(--color-surface)",
-                      border: "1px solid var(--color-border)",
-                      boxShadow: "0 15px 35px rgba(28,28,26,0.05)",
+                      background: SURFACE,
+                      border: `1px solid ${BORDER}`,
+                      boxShadow: "0 15px 35px rgba(10,17,24,0.05)",
                       transformStyle: "preserve-3d",
                       willChange: "transform",
                     }}
                   >
-                    <div className="text-xs tracking-[0.3em] uppercase mb-2" style={{ color: "var(--color-brass)" }}>
+                    <div className="text-xs tracking-[0.3em] uppercase mb-2" style={{ color: GOLD }}>
                       {item.year}
                     </div>
-                    <h3
-                      className="font-semibold mb-3"
-                      style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)", fontSize: "1.1rem" }}
-                    >
+                    <h3 className="font-semibold mb-3" style={{ fontFamily: "var(--font-display)", color: INK, fontSize: "1.1rem" }}>
                       {item.title}
                     </h3>
-                    <p style={{ color: "var(--color-ink-muted)", fontSize: "0.9rem", lineHeight: "1.7" }}>
-                      {item.desc}
-                    </p>
+                    <p style={{ color: INK_MUTED, fontSize: "0.9rem", lineHeight: "1.7" }}>{item.desc}</p>
                   </div>
 
                   <div className="relative z-10 flex-shrink-0">
@@ -194,7 +200,7 @@ export default function Timeline() {
                         if (el) dotRefs.current[i] = el;
                       }}
                       className="w-4 h-4 rounded-full"
-                      style={{ background: "var(--color-green)", boxShadow: "0 0 12px rgba(31,74,56,0.3)" }}
+                      style={{ background: GOLD, boxShadow: "0 0 12px rgba(184,151,82,0.35)" }}
                     />
                   </div>
 

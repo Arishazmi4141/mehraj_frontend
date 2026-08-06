@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { ShoppingBag, ChevronDown } from "lucide-react";
@@ -131,30 +132,24 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Centered Brand Wordmark */}
-          <div className="absolute left-1/2 top-1/2 z-[100] -translate-x-1/2 -translate-y-1/2 text-center">
-            <Link
-              href="/"
-              onClick={closeMenu}
-              className="group flex flex-col items-center focus-visible:outline-none"
-              aria-label="Sartoria Milano Home"
-            >
-              <span
-                className={`font-serif text-2xl font-light tracking-[0.28em] transition-all duration-500 group-hover:tracking-[0.34em] ${
-                  useLightText ? "text-[#B89752]" : "text-[#0A1118]"
-                }`}
-              >
-                SARTORIA
-              </span>
-              <span
-                className={`font-sans text-[7px] font-semibold uppercase tracking-[0.45em] transition-colors duration-300 ${
-                  useLightText ? "text-[#FAFAFA]/50 group-hover:text-[#FAFAFA]" : "text-[#4A5568] group-hover:text-[#0A1118]"
-                }`}
-              >
-                Alta Sartoria Milano
-              </span>
-            </Link>
-          </div>
+          {/* Centered Brand Logo */}
+        <div className="absolute left-1/2 top-1/2 z-[100] -translate-x-1/2 -translate-y-1/2 text-center">
+  <Link
+    href="/"
+    onClick={closeMenu}
+    className="group flex flex-col items-center focus-visible:outline-none"
+    aria-label="MehRaj Home"
+  >
+    <Image
+      src="/logo.jpg"
+      alt="MehRaj"
+      width={80}
+      height={80}
+      priority
+      className="h-16 w-16 object-contain transition-all duration-500 md:h-20 md:w-20"
+    />
+  </Link>
+</div>
 
           {/* Shopping Bag Button */}
           <div className="z-[100] flex flex-1 items-center justify-end">

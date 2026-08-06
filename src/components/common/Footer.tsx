@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 const LINKS = [
   { label: "Collection", href: "/shop" },
@@ -42,15 +43,18 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-16 sm:grid-cols-3 lg:grid-cols-5">
           {/* Brand & Editorial Bio */}
           <div className="sm:col-span-1 lg:col-span-2">
-            <Link href="/" className="inline-block">
-              <span className="font-serif text-2xl font-light tracking-[0.25em] text-[#0A1118]">
-                SARTORIA
-              </span>
-              <span className="block font-sans text-[8px] font-semibold uppercase tracking-[0.45em] text-[#B89752] mt-0.5">
-                Alta Sartoria Milano
-              </span>
-            </Link>
-            
+          <div className="sm:col-span-1 lg:col-span-2">
+  <Link href="/" className="inline-block">
+    <Image
+      src="/logo.jpg"
+      alt="MehRaj"
+      width={160}
+      height={160}
+      className="h-32 w-32 object-contain"
+    />
+  </Link>
+</div>
+
             <p className="mt-6 max-w-sm font-sans text-xs font-normal leading-[1.85] text-[#4A5568]">
               Handcrafting bespoke Neapolitan suits, rare cashmere overcoats, and refined menswear for international gentlemen who demand unyielding craftsmanship.
             </p>
@@ -78,46 +82,30 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact & Ateliers */}
+          {/* Contact */}
           <div>
             <h4 className="font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#B89752]">
-              Ateliers
+              Contact
             </h4>
             <ul className="mt-6 space-y-3.5" role="list">
               <li>
-                <p className="font-sans text-[11px] font-semibold uppercase tracking-wider text-[#0A1118]">Milano Salon</p>
-                <p className="font-sans text-xs text-[#4A5568]">Via Monte Napoleone, 12</p>
-              </li>
-              <li className="pt-2">
                 <a
-                  href="mailto:concierge@sartoria-milano.it"
+                  href="mailto:contact@mehraj.com"
                   className="group block font-sans text-xs text-[#4A5568] transition-colors duration-300 hover:text-[#0A1118]"
                 >
                   <span className="block transition-transform duration-300 group-hover:translate-x-1">
-                    concierge@sartoria-milano.it
+                    contact@mehraj.com
                   </span>
                 </a>
               </li>
             </ul>
-          </div>
-
-          {/* Brand Emblem Stamp */}
-          <div className="flex items-start justify-start lg:justify-end">
-            <div className="border border-[#B89752]/30 bg-white px-6 py-5 text-center shadow-sm">
-              <span className="block font-serif text-sm italic text-[#B89752]">
-                Fatto a Mano
-              </span>
-              <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.3em] text-[#0A1118] mt-1">
-                Italia • Est. 1968
-              </span>
-            </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="mt-20 flex flex-col items-start gap-6 border-t border-[#0A1118]/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-sans text-[11px] font-normal tracking-wide text-[#4A5568]/70">
-            &copy; {new Date().getFullYear()} Sartoria Milano. All rights reserved. Made in Italy.
+            &copy; {new Date().getFullYear()} MehRaj. All rights reserved.
           </p>
           <div className="flex gap-6">
             {LEGAL.map((l) => (

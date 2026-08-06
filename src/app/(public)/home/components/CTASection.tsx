@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -9,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function CTASection() {
   const scopeRef = useGsap<HTMLElement>(() => {
-    gsap.fromTo(
+    const tween1 = gsap.fromTo(
       ".cta-inner",
       { y: 40, opacity: 0 },
       {
@@ -17,10 +18,14 @@ export default function CTASection() {
         opacity: 1,
         duration: 0.7,
         ease: "expo.out",
-        scrollTrigger: { trigger: ".cta-inner", start: "top 84%" },
+        scrollTrigger: {
+          trigger: ".cta-inner",
+          start: "top 84%",
+          invalidateOnRefresh: true,
+        },
       }
     );
-    gsap.fromTo(
+    const tween2 = gsap.fromTo(
       ".cta-content > *",
       { y: 20, opacity: 0 },
       {
@@ -29,7 +34,11 @@ export default function CTASection() {
         duration: 0.7,
         ease: "power3.out",
         stagger: 0.12,
-        scrollTrigger: { trigger: ".cta-inner", start: "top 80%" },
+        scrollTrigger: {
+          trigger: ".cta-inner",
+          start: "top 80%",
+          invalidateOnRefresh: true,
+        },
         delay: 0.2,
       }
     );
@@ -45,6 +54,22 @@ export default function CTASection() {
         yoyo: true,
       });
     }
+
+    // Fix: on refresh, browsers can restore scroll position after ScrollTrigger has
+    // already computed trigger offsets against a not-yet-settled layout (fonts,
+    // images, or the page-reveal transform still resolving). That produces a stale
+    // trigger point, so the section only reveals late or needs an extra scroll.
+    // Forcing a refresh once everything has actually finished loading fixes it.
+    const refresh = () => ScrollTrigger.refresh();
+    const rafId = requestAnimationFrame(() => setTimeout(refresh, 50));
+    window.addEventListener("load", refresh);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("load", refresh);
+      tween1.scrollTrigger?.kill();
+      tween2.scrollTrigger?.kill();
+    };
   }, []);
 
   return (
@@ -61,7 +86,7 @@ export default function CTASection() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-12">
         <div className="cta-inner opacity-0 relative overflow-hidden rounded-none bg-[#0A1118] px-8 py-20 text-center shadow-2xl shadow-[#0A1118]/15 md:px-20 md:py-28 border border-[#B89752]/20">
-          {/* Ambient Florentine Gold Soft Orb Glow */}
+          {/* Ambient Gold Soft Orb Glow */}
           <div
             aria-hidden="true"
             className="cta-orb pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
@@ -87,18 +112,18 @@ export default function CTASection() {
           <div className="cta-content relative z-10 flex flex-col items-center">
             {/* Eyebrow */}
             <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#B89752]">
-              Prenota una Consulenza
+              Book a Consultation
             </span>
 
             {/* Headline */}
             <h2 className="mx-auto mt-5 max-w-2xl font-serif text-3xl font-light leading-[1.12] tracking-[-0.01em] text-[#FAFAFA] md:text-5xl">
-              Experience the Precision of <br />
-              <span className="italic text-[#B89752]">Neapolitan Sartorial Craft</span>
+              Experience Craftsmanship <br />
+              <span className="italic text-[#B89752]">Tailored Around You</span>
             </h2>
 
             {/* Subtitle */}
             <p className="mx-auto mt-6 max-w-md font-sans text-xs leading-[1.85] text-[#FAFAFA]/70">
-              Schedule a private session at our Milano atelier or request an in-person fitting with our master tailors at your private residence.
+              Schedule a private session with our team or request a personal fitting at your convenience — crafted with precision, made for you.
             </p>
 
             {/* CTA Action Buttons */}
@@ -107,19 +132,19 @@ export default function CTASection() {
                 href="/contact"
                 className="inline-flex items-center gap-2 rounded-none bg-[#B89752] px-8 py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0A1118] transition-all duration-300 hover:bg-[#cbb06d] hover:shadow-[0_0_25px_rgba(184,151,82,0.3)]"
               >
-                Book Private Fitting
+                Book a Fitting
               </Link>
               <Link
-                href="/bespoke"
+                href="/shop"
                 className="inline-flex items-center gap-2 rounded-none border border-[#FAFAFA]/30 px-8 py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[#FAFAFA] transition-all duration-300 hover:border-[#B89752] hover:text-[#B89752] hover:bg-black/20"
               >
-                Discover Bespoke
+                Explore Collection
               </Link>
             </div>
 
             {/* Footnote */}
             <p className="mt-10 font-sans text-[9px] font-medium uppercase tracking-[0.35em] text-[#FAFAFA]/40">
-              Private Salon • Complimentary Consultation • Worldwide Travel
+              Private Consultation • Personal Fitting • Made For You
             </p>
           </div>
 

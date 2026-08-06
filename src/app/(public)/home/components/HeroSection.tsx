@@ -16,6 +16,37 @@ interface HeroSectionProps {
   heroImageSecondary?: string;
 }
 
+/**
+ * Waits until `el` and every one of its ancestors is actually visible
+ * (computed opacity !== "0") before firing `cb`.
+ *
+ * Why this is needed: PageRevealProvider mounts page content immediately
+ * but keeps it at `opacity: 0` (via inline style) until the Loader
+ * finishes. If this component's entrance animation runs on plain mount,
+ * it plays — and finishes — while still hidden behind that opacity:0
+ * wrapper, so by the time the page is actually revealed there's nothing
+ * left to animate. Polling ancestor opacity lets us start the timeline
+ * exactly when the content becomes visible, regardless of whether this
+ * section is wrapped by a loader or rendered directly.
+ */
+function waitUntilVisible(el: HTMLElement, cb: () => void): () => void {
+  let rafId = 0;
+  const check = () => {
+    let node: HTMLElement | null = el;
+    while (node) {
+      const style = window.getComputedStyle(node);
+      if (style.opacity === "0" || style.visibility === "hidden") {
+        rafId = requestAnimationFrame(check);
+        return;
+      }
+      node = node.parentElement;
+    }
+    cb();
+  };
+  check();
+  return () => cancelAnimationFrame(rafId);
+}
+
 export default function HeroSection({
   heading = "L'Arte della Sartoria Italiana",
   subheading = "Handcrafted in Naples & Milan. Engineered for gentlemen who understand that true luxury lies in unyielding precision, structured shoulders, and rare Italian cashmere.",
@@ -23,8 +54,8 @@ export default function HeroSection({
   ctaPrimaryHref = "/collection",
   ctaSecondaryText = "Book Bespoke Fitting",
   ctaSecondaryHref = "/bespoke",
-  heroImageMain = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwa1q4X6XSc1JLqUM-1nh1kEbnfWH4ipwMsbfJUYyA2Q&s=10", 
-  heroImageSecondary = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_RH1vbxzMXW6UhBIy2AOhb4fXR-HqaPDvbqEuPkjwWg&s=10", 
+  heroImageMain = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwa1q4X6XSc1JLqUM-1nh1kEbnfWH4ipwMsbfJUYyA2Q&s=10",
+  heroImageSecondary = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_RH1vbxzMXW6UhBIy2AOhb4fXR-HqaPDvbqEuPkjwWg&s=10",
 }: HeroSectionProps) {
   const containerRef = useRef<HTMLElement>(null);
   const mainImageRef = useRef<HTMLDivElement>(null);
@@ -35,55 +66,64 @@ export default function HeroSection({
 
   useEffect(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!containerRef.current) return;
+
     if (prefersReduced) return;
 
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+    let ctx: gsap.Context | undefined;
 
-      // 1. Reveal Main Image Canvas with smooth clip-path transition
-      tl.fromTo(
-        mainImageRef.current,
-        { clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)", scale: 1.12 },
-        { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)", scale: 1, duration: 1.8 }
-      );
+    const cancelWait = waitUntilVisible(containerRef.current, () => {
+      ctx = gsap.context(() => {
+        const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
 
-      // 2. Reveal Secondary Floating Frame
-      tl.fromTo(
-        secondaryImageRef.current,
-        { opacity: 0, y: 40, scale: 0.92 },
-        { opacity: 1, y: 0, scale: 1, duration: 1.4, ease: "back.out(1.2)" },
-        "-=1.2"
-      );
-
-      // 3. Staggered Text Animations
-      const textElements = textContentRef.current?.children;
-      if (textElements) {
+        // 1. Reveal Main Image Canvas with smooth clip-path transition
         tl.fromTo(
-          Array.from(textElements),
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1, stagger: 0.14 },
-          "-=1.0"
+          mainImageRef.current,
+          { clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)", scale: 1.12 },
+          { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)", scale: 1, duration: 1.8 }
         );
-      }
 
-      // 4. Badge Bounce Effect
-      tl.fromTo(
-        badgeRef.current,
-        { opacity: 0, scale: 0.8, rotate: -12 },
-        { opacity: 1, scale: 1, rotate: 0, duration: 1, ease: "elastic.out(1, 0.75)" },
-        "-=0.8"
-      );
+        // 2. Reveal Secondary Floating Frame
+        tl.fromTo(
+          secondaryImageRef.current,
+          { opacity: 0, y: 40, scale: 0.92 },
+          { opacity: 1, y: 0, scale: 1, duration: 1.4, ease: "back.out(1.2)" },
+          "-=1.2"
+        );
 
-      // 5. Footer Specifications Bar
-      tl.fromTo(
-        footerBarRef.current,
-        { opacity: 0, y: 15 },
-        { opacity: 1, y: 0, duration: 0.8 },
-        "-=0.6"
-      );
-    }, containerRef);
+        // 3. Staggered Text Animations
+        const textElements = textContentRef.current?.children;
+        if (textElements) {
+          tl.fromTo(
+            Array.from(textElements),
+            { y: 30, opacity: 0 },
+            { y: 0, opacity: 1, duration: 1, stagger: 0.14 },
+            "-=1.0"
+          );
+        }
 
-    return () => ctx.revert();
+        // 4. Badge Bounce Effect
+        tl.fromTo(
+          badgeRef.current,
+          { opacity: 0, scale: 0.8, rotate: -12 },
+          { opacity: 1, scale: 1, rotate: 0, duration: 1, ease: "elastic.out(1, 0.75)" },
+          "-=0.8"
+        );
+
+        // 5. Footer Specifications Bar
+        tl.fromTo(
+          footerBarRef.current,
+          { opacity: 0, y: 15 },
+          { opacity: 1, y: 0, duration: 0.8 },
+          "-=0.6"
+        );
+      }, containerRef);
+    });
+
+    return () => {
+      cancelWait();
+      ctx?.revert();
+    };
   }, []);
 
   return (

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGsap } from "@/src/hooks/useGsap";
@@ -32,7 +33,7 @@ const TESTIMONIALS = [
 
 export default function TestimonialsSection() {
   const scopeRef = useGsap<HTMLElement>(() => {
-    gsap.fromTo(
+    const headingTween = gsap.fromTo(
       ".testimonials-heading",
       { y: 28, opacity: 0 },
       {
@@ -40,10 +41,14 @@ export default function TestimonialsSection() {
         opacity: 1,
         duration: 0.65,
         ease: "expo.out",
-        scrollTrigger: { trigger: ".testimonials-heading", start: "top 86%" },
+        scrollTrigger: {
+          trigger: ".testimonials-heading",
+          start: "top 86%",
+          invalidateOnRefresh: true,
+        },
       }
     );
-    gsap.fromTo(
+    const cardsTween = gsap.fromTo(
       ".testimonial-card",
       { y: 44, opacity: 0 },
       {
@@ -52,9 +57,29 @@ export default function TestimonialsSection() {
         duration: 0.65,
         ease: "expo.out",
         stagger: 0.1,
-        scrollTrigger: { trigger: ".testimonials-grid", start: "top 82%" },
+        scrollTrigger: {
+          trigger: ".testimonials-grid",
+          start: "top 82%",
+          invalidateOnRefresh: true,
+        },
       }
     );
+
+    // Force a recalculation once layout has actually settled (fonts, images,
+    // and the page-reveal transform/blur wrapper resolving). Without this,
+    // ScrollTrigger can lock in stale trigger positions computed too early,
+    // and these elements stay stuck at their opacity:0 starting state
+    // because the "start" point is never actually crossed.
+    const refresh = () => ScrollTrigger.refresh();
+    const rafId = requestAnimationFrame(() => setTimeout(refresh, 50));
+    window.addEventListener("load", refresh);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("load", refresh);
+      headingTween.scrollTrigger?.kill();
+      cardsTween.scrollTrigger?.kill();
+    };
   }, []);
 
   return (
@@ -114,7 +139,7 @@ export default function TestimonialsSection() {
                   className="font-serif leading-none select-none text-[#0A1118]/10"
                   style={{ fontSize: "3.5rem", lineHeight: 1, marginTop: "-0.5rem" }}
                 >
-                  “
+                  "
                 </div>
 
                 {/* Quote Text */}
@@ -140,7 +165,7 @@ export default function TestimonialsSection() {
         <div className="mt-16 flex items-center justify-center gap-4">
           <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#B89752]/40" aria-hidden="true" />
           <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#4A5568]/60">
-            Verified Bespoke Reviews • Milano Atelier
+            Verified Bespoke Reviews
           </p>
           <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#B89752]/40" aria-hidden="true" />
         </div>
