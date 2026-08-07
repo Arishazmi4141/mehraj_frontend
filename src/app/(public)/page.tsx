@@ -1,26 +1,23 @@
 import HeroSection from "@/src/app/(public)/home/components/HeroSection";
-import ServicesSection from "@/src/app/(public)/home/components/ServicesSection";
-import CategoriesSection from "@/src/app/(public)/home/components/CategoriesSection"; // ✅ new
-import ProductsSection from "@/src/app/(public)/home/components/ProductsSection"; // Trending
-import NewArrivalsSection from "@/src/app/(public)/home/components/NewArrivalsSection"; // Latest
-import WhyChooseUsSection from "@/src/app/(public)/home/components/WhyChooseUsSection";
-import TestimonialsSection from "@/src/app/(public)/home/components/TestimonialsSection";
-import CTASection from "@/src/app/(public)/home/components/CTASection";
+import TheHouseSection from "@/src/app/(public)/home/components/TheHouseSection";
+import CollectionsSection from "@/src/app/(public)/home/components/CollectionsSection";
+import AtelierSection from "@/src/app/(public)/home/components/AtelierSection";
+import SalonSection from "@/src/app/(public)/home/components/SalonSection";
+import CraftSection from "@/src/app/(public)/home/components/CraftSection";
+import JournalSection from "@/src/app/(public)/home/components/JournalSection";
+import ClientServicesSection from "@/src/app/(public)/home/components/ClientServicesSection";
 
 export default function HomePage() {
   return (
-    <main className="bg-[#F7F7F4] min-h-screen">
-      <HeroSection/>
-      <ServicesSection />
-      <CategoriesSection />
-
-      {/* Dynamic Product Data Segments */}
-      <ProductsSection />
-      <NewArrivalsSection />
-
-      <WhyChooseUsSection />
-      <TestimonialsSection />
-      <CTASection />
+    <main className="bg-[#F6F2E9] min-h-screen">
+      <HeroSection />
+      <TheHouseSection />
+      <CollectionsSection />
+      <AtelierSection />
+      <SalonSection />
+      <CraftSection />
+      <JournalSection />
+      <ClientServicesSection />
     </main>
   );
 }

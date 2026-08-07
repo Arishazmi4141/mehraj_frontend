@@ -48,93 +48,80 @@ export default function CartDrawer() {
     <div className={`fixed inset-0 z-[110] ${isDrawerOpen ? "pointer-events-auto" : "pointer-events-none"}`}>
       <div
         ref={overlayRef}
-        className="absolute inset-0 opacity-0"
-        style={{ background: "rgba(28,28,26,0.5)", backdropFilter: "blur(2px)" }}
+        className="absolute inset-0 bg-[#1B1B18]/50 opacity-0 backdrop-blur-[2px]"
         onClick={closeDrawer}
       />
 
       <div
         ref={panelRef}
-        className="absolute right-0 top-0 h-full w-full max-w-sm flex flex-col"
-        style={{ background: "var(--color-bg)", borderLeft: "1px solid var(--color-border)", transform: "translateX(100%)", boxShadow: "-30px 0 60px rgba(28,28,26,0.15)" }}
+        className="absolute right-0 top-0 flex h-full w-full max-w-sm translate-x-full flex-col bg-[#F6F2E9] shadow-[-30px_0_60px_rgba(27,27,24,0.15)]"
+        style={{ borderLeft: "1px solid rgba(27,27,24,0.1)" }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-7 py-6" style={{ borderBottom: "1px solid var(--color-border)" }}>
+        <div className="flex items-center justify-between border-b border-[#1B1B18]/10 px-7 py-6">
           <div>
-            <div className="text-[10px] tracking-[0.3em] uppercase mb-1" style={{ color: "var(--color-brass)" }}>Your Selection</div>
-            <h2 className="font-display text-xl" style={{ color: "var(--color-ink)" }}>
-              Cart <span style={{ color: "var(--color-green)" }}>({items.length})</span>
+            <div className="mb-1 font-sans text-[10px] uppercase tracking-[0.3em] text-[#A6906F]">
+              Your Selection
+            </div>
+            <h2 className="font-serif text-xl text-[#1B1B18]">
+              Cart <span className="text-[#2E4B3F]">({items.length})</span>
             </h2>
           </div>
           <button
             onClick={closeDrawer}
             aria-label="Close cart"
-            className="w-9 h-9 flex items-center justify-center rounded-full transition-colors duration-300"
-            style={{ border: "1px solid var(--color-border)" }}
-            onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--color-green)")}
-            onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--color-border)")}
+            className="flex h-9 w-9 items-center justify-center border border-[#1B1B18]/10 transition-colors duration-300 hover:border-[#2E4B3F]"
           >
-            <X className="w-4 h-4" style={{ color: "var(--color-ink)" }} />
+            <X className="h-4 w-4 text-[#1B1B18]" />
           </button>
         </div>
 
         {/* Items */}
         {items.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center gap-4 px-8 text-center">
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center"
-              style={{ background: "var(--color-green-soft-2)", border: "1px solid rgba(31,74,56,0.18)" }}
-            >
-              <ShoppingBag className="w-6 h-6" style={{ color: "var(--color-green)" }} />
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 px-8 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[#2E4B3F]/20 bg-[#2E4B3F]/10">
+              <ShoppingBag className="h-6 w-6 text-[#2E4B3F]" />
             </div>
-            <p style={{ color: "var(--color-ink-muted)", fontSize: "0.9rem" }}>Your cart is empty for now.</p>
+            <p className="font-sans text-sm text-[#1B1B18]/55">Your cart is empty for now.</p>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto px-7 py-6 space-y-5">
+          <div className="flex-1 space-y-5 overflow-y-auto px-7 py-6">
             {items.map((item) => (
               <div key={item.cartItemId} className="drawer-item-row flex gap-4">
-                <div
-                  className="w-20 h-20 flex-shrink-0 rounded-sm overflow-hidden"
-                  style={{ background: "var(--color-surface-alt)", border: "1px solid var(--color-border)" }}
-                >
-                  <img src={resolveImageUrl(item.imageUrl)} alt={item.productName} className="w-full h-full object-cover" />
+                <div className="h-20 w-20 shrink-0 overflow-hidden border border-[#1B1B18]/10 bg-[#EDE6D8]">
+                  <img src={resolveImageUrl(item.imageUrl)} alt={item.productName} className="h-full w-full object-cover" />
                 </div>
 
-                <div className="flex-1 flex flex-col justify-between min-w-0">
+                <div className="flex min-w-0 flex-1 flex-col justify-between">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm font-medium truncate" style={{ color: "var(--color-ink)" }}>{item.productName}</p>
+                    <p className="truncate font-sans text-sm font-medium text-[#1B1B18]">{item.productName}</p>
                     <button
                       onClick={() => cartService.removeItem(item.cartItemId)}
                       aria-label="Remove item"
-                      className="flex-shrink-0 transition-colors duration-300"
-                      style={{ color: "var(--color-ink-faint)" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-brass)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-ink-faint)")}
+                      className="shrink-0 text-[#1B1B18]/35 transition-colors duration-300 hover:text-[#5C2A32]"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center rounded-sm" style={{ border: "1px solid var(--color-border)" }}>
+                  <div className="mt-2 flex items-center justify-between">
+                    <div className="flex items-center border border-[#1B1B18]/10">
                       <button
                         onClick={() => cartService.decrement(item.variantId)}
-                        className="w-7 h-7 flex items-center justify-center transition-colors duration-200"
-                        style={{ color: "var(--color-ink-muted)" }}
+                        className="flex h-7 w-7 items-center justify-center text-[#1B1B18]/60 transition-colors duration-200 hover:text-[#1B1B18]"
                       >
-                        <Minus className="w-3 h-3" />
+                        <Minus className="h-3 w-3" />
                       </button>
-                      <span className="text-xs w-6 text-center" style={{ color: "var(--color-ink)" }}>{item.quantity}</span>
+                      <span className="w-6 text-center font-sans text-xs text-[#1B1B18]">{item.quantity}</span>
                       <button
                         onClick={() => cartService.increment(item.variantId)}
-                        className="w-7 h-7 flex items-center justify-center transition-colors duration-200"
-                        style={{ color: "var(--color-ink-muted)" }}
+                        className="flex h-7 w-7 items-center justify-center text-[#1B1B18]/60 transition-colors duration-200 hover:text-[#1B1B18]"
                       >
-                        <Plus className="w-3 h-3" />
+                        <Plus className="h-3 w-3" />
                       </button>
                     </div>
-                    <span className="text-sm font-semibold" style={{ color: "var(--color-green)" }}>
-                      £{(item.currentPrice * item.quantity).toFixed(2)}
+                    <span className="font-sans text-sm font-semibold text-[#2E4B3F]">
+                      ₹{(item.currentPrice * item.quantity).toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -145,16 +132,15 @@ export default function CartDrawer() {
 
         {/* Footer */}
         {items.length > 0 && (
-          <div className="px-7 py-6" style={{ borderTop: "1px solid var(--color-border)", background: "var(--color-surface-alt)" }}>
-            <div className="flex justify-between items-baseline mb-5">
-              <span className="text-xs tracking-[0.2em] uppercase" style={{ color: "var(--color-ink-faint)" }}>Subtotal</span>
-              <span className="font-display text-2xl" style={{ color: "var(--color-ink)" }}>£{totalPrice.toFixed(2)}</span>
+          <div className="border-t border-[#1B1B18]/10 bg-[#EDE6D8] px-7 py-6">
+            <div className="mb-5 flex items-baseline justify-between">
+              <span className="font-sans text-xs uppercase tracking-[0.2em] text-[#1B1B18]/45">Subtotal</span>
+              <span className="font-serif text-2xl text-[#1B1B18]">₹{totalPrice.toLocaleString()}</span>
             </div>
             <Link
               href="/cart"
               onClick={closeDrawer}
-              className="block text-center rounded-sm py-4 text-xs font-semibold tracking-[0.2em] uppercase transition-transform duration-300 hover:-translate-y-0.5"
-              style={{ background: "var(--color-green)", color: "#F7F7F4" }}
+              className="block bg-[#1B1B18] py-4 text-center font-sans text-xs font-semibold uppercase tracking-[0.2em] text-[#F6F2E9] transition-colors duration-300 hover:bg-[#2E4B3F]"
             >
               View Cart
             </Link>

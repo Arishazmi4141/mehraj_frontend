@@ -18,7 +18,6 @@ export default function FloatingCartButton() {
     setMounted(true);
   }, []);
 
-  // Entrance animation when the button first appears
   useEffect(() => {
     if (mounted && totalCount > 0 && buttonRef.current) {
       gsap.fromTo(
@@ -29,7 +28,6 @@ export default function FloatingCartButton() {
     }
   }, [mounted, totalCount > 0]);
 
-  // Bump the badge whenever the count changes
   useEffect(() => {
     if (mounted && badgeRef.current && totalCount !== prevCount.current) {
       gsap.fromTo(badgeRef.current, { scale: 1.5 }, { scale: 1, duration: 0.4, ease: "back.out(3)" });
@@ -44,20 +42,18 @@ export default function FloatingCartButton() {
       ref={buttonRef}
       href="/cart"
       aria-label={`View cart, ${totalCount} items`}
-      className="fixed bottom-6 right-6 z-[9999] flex items-center gap-2.5 rounded-full px-5 py-3.5 transition-transform duration-300 hover:-translate-y-0.5"
-      style={{ background: "var(--color-green)", boxShadow: "0 15px 40px rgba(31,74,56,0.35)" }}
+      className="fixed bottom-6 right-6 z-[9999] flex items-center gap-2.5 rounded-full bg-[#1B1B18] px-5 py-3.5 shadow-[0_15px_40px_rgba(27,27,24,0.3)] transition-transform duration-300 hover:-translate-y-0.5 hover:bg-[#2E4B3F]"
     >
       <span className="relative flex items-center justify-center">
-        <ShoppingBag className="h-5 w-5" style={{ color: "#F7F7F4" }} />
+        <ShoppingBag className="h-5 w-5 text-[#F6F2E9]" />
         <span
           ref={badgeRef}
-          className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full font-mono text-[9px] font-bold"
-          style={{ background: "var(--color-brass)", color: "#1C1C1A" }}
+          className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#A6906F] font-sans text-[9px] font-bold text-[#1B1B18]"
         >
           {totalCount}
         </span>
       </span>
-      <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#F7F7F4" }}>
+      <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-[#F6F2E9]">
         View Cart
       </span>
     </Link>,

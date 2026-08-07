@@ -5,16 +5,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
-import { ShoppingBag, ChevronDown } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/src/context/CartContext";
-import { TIER_SUMMARIES } from "@/src/app/(public)/services/data/tiers";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Services", href: "/services" },
-  { label: "Shop", href: "/shop" },
-  { label: "Contact", href: "/contact" },
+  { label: "The House", href: "/#the-house" },
+  { label: "Collections", href: "/collections" },
+  { label: "The Atelier", href: "/atelier" },
+  { label: "The Salon", href: "/salon" },
+  { label: "The Craft", href: "/#the-craft" },
+  { label: "The Journal", href: "/journal" },
+  { label: "Client Services", href: "/client-services" },
 ];
 
 export default function Navbar() {
@@ -22,7 +24,6 @@ export default function Navbar() {
   const { totalCount, openDrawer } = useCart();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [servicesOpen, setServicesOpen] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const curtainRef = useRef<HTMLDivElement>(null);
@@ -32,7 +33,6 @@ export default function Navbar() {
   const orbRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
-  // Use light text over dark surfaces or when full-screen curtain is open
   const useLightText = isOpen;
 
   useEffect(() => {
@@ -43,7 +43,6 @@ export default function Navbar() {
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
-    if (!isOpen) setServicesOpen(false);
     return () => {
       document.body.style.overflow = "";
     };
@@ -77,7 +76,7 @@ export default function Navbar() {
       tl.fromTo(
         validItems,
         { y: 40, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, stagger: 0.08, ease: "power3.out" },
+        { y: 0, opacity: 1, duration: 0.6, stagger: 0.06, ease: "power3.out" },
         0.35
       );
 
@@ -100,12 +99,11 @@ export default function Navbar() {
       <header
         className={`fixed inset-x-0 top-0 z-[95] transition-all duration-500 ${
           isScrolled && !isOpen
-            ? "bg-[#FAFAFA]/90 border-b border-[#0A1118]/10 backdrop-blur-md py-4 shadow-sm"
+            ? "bg-[#F6F2E9]/90 border-b border-[#1B1B18]/10 backdrop-blur-md py-4 shadow-sm"
             : "bg-transparent py-6"
         }`}
       >
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 md:px-12">
-          {/* Hamburger Menu Toggle */}
           <div className="z-[100] flex flex-1 items-center justify-start">
             <button
               onClick={toggleMenu}
@@ -116,15 +114,15 @@ export default function Navbar() {
               <div className="flex flex-col gap-1.5 items-start justify-center h-full w-full">
                 <span
                   ref={lineTopRef}
-                  className={`h-[1.5px] w-6 rounded-none transition-colors duration-300 will-change-transform group-hover:bg-[#B89752] ${
-                    useLightText ? "bg-[#FAFAFA]" : "bg-[#0A1118]"
+                  className={`h-[1.5px] w-6 transition-colors duration-300 will-change-transform group-hover:bg-[#A6906F] ${
+                    useLightText ? "bg-[#F6F2E9]" : "bg-[#1B1B18]"
                   }`}
                   style={{ transformOrigin: "center center" }}
                 />
                 <span
                   ref={lineBotRef}
-                  className={`h-[1.5px] w-4 rounded-none transition-all duration-300 will-change-transform group-hover:bg-[#B89752] group-hover:w-6 ${
-                    useLightText ? "bg-[#FAFAFA]" : "bg-[#0A1118]"
+                  className={`h-[1.5px] w-4 transition-all duration-300 will-change-transform group-hover:bg-[#A6906F] group-hover:w-6 ${
+                    useLightText ? "bg-[#F6F2E9]" : "bg-[#1B1B18]"
                   }`}
                   style={{ transformOrigin: "center center" }}
                 />
@@ -132,26 +130,24 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Centered Brand Logo */}
-        <div className="absolute left-1/2 top-1/2 z-[100] -translate-x-1/2 -translate-y-1/2 text-center">
-  <Link
-    href="/"
-    onClick={closeMenu}
-    className="group flex flex-col items-center focus-visible:outline-none"
-    aria-label="MehRaj Home"
-  >
-    <Image
-      src="/logo.jpg"
-      alt="MehRaj"
-      width={80}
-      height={80}
-      priority
-      className="h-16 w-16 object-contain transition-all duration-500 md:h-20 md:w-20"
-    />
-  </Link>
-</div>
+          <div className="absolute left-1/2 top-1/2 z-[100] -translate-x-1/2 -translate-y-1/2 text-center">
+            <Link
+              href="/"
+              onClick={closeMenu}
+              className="group flex flex-col items-center focus-visible:outline-none"
+              aria-label="MehRāj Home"
+            >
+              <Image
+                src="/logo.jpg"
+                alt="MehRāj"
+                width={80}
+                height={80}
+                priority
+                className="h-16 w-16 object-contain transition-all duration-500 md:h-20 md:w-20"
+              />
+            </Link>
+          </div>
 
-          {/* Shopping Bag Button */}
           <div className="z-[100] flex flex-1 items-center justify-end">
             <button
               onClick={openDrawer}
@@ -159,12 +155,12 @@ export default function Navbar() {
               className="group relative flex h-10 w-10 items-center justify-center focus-visible:outline-none"
             >
               <ShoppingBag
-                className={`h-5 w-5 transition-colors duration-300 group-hover:text-[#B89752] ${
-                  useLightText ? "text-[#FAFAFA]" : "text-[#0A1118]"
+                className={`h-5 w-5 transition-colors duration-300 group-hover:text-[#A6906F] ${
+                  useLightText ? "text-[#F6F2E9]" : "text-[#1B1B18]"
                 }`}
               />
               {totalCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center bg-[#B89752] font-sans text-[8px] font-bold text-[#0A1118]">
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center bg-[#5C2A32] font-sans text-[8px] font-bold text-[#F6F2E9]">
                   {totalCount}
                 </span>
               )}
@@ -173,20 +169,19 @@ export default function Navbar() {
         </nav>
       </header>
 
-      {/* Full-screen Atelier Menu Curtain */}
+      {/* Full-screen menu curtain */}
       <div
         ref={curtainRef}
-        className="fixed inset-0 z-[90] flex items-center justify-center bg-[#0A1118] touch-none select-none"
+        className="fixed inset-0 z-[90] flex items-center justify-center bg-[#1B1B18] touch-none select-none"
         style={{ clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)" }}
       >
-        {/* Ambient Florentine Gold Radial Glow */}
         <div
           ref={orbRef}
           aria-hidden="true"
           className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2 opacity-0 scale-90"
           style={{
             background:
-              "radial-gradient(ellipse at center, rgba(184,151,82,0.18) 0%, rgba(184,151,82,0.02) 50%, transparent 75%)",
+              "radial-gradient(ellipse at center, rgba(166,144,111,0.18) 0%, rgba(166,144,111,0.02) 50%, transparent 75%)",
             filter: "blur(65px)",
           }}
         />
@@ -196,89 +191,23 @@ export default function Navbar() {
           className="relative z-[99] flex flex-col items-center justify-center text-center opacity-0"
           style={{ visibility: "hidden" }}
         >
-          <nav className="flex flex-col gap-y-5 md:gap-y-7" role="list">
+          <nav className="flex flex-col gap-y-5 md:gap-y-6" role="list">
             {NAV_LINKS.map((link) => {
               const isActive = pathname === link.href;
-
-              if (link.label === "Services") {
-                const tiersVisible = servicesOpen;
-                return (
-                  <div key={link.href} className="nav-link-item overflow-hidden py-1 group/services">
-                    <div className="flex items-center justify-center gap-2">
-                      <Link
-                        href={link.href}
-                        onClick={closeMenu}
-                        className={`group relative block font-serif text-2xl font-light uppercase tracking-[0.25em] md:text-4xl transition-colors duration-400 focus-visible:outline-none ${
-                          isActive || pathname?.startsWith("/services/")
-                            ? "text-[#B89752]"
-                            : "text-[#FAFAFA]/70 hover:text-[#FAFAFA]"
-                        }`}
-                      >
-                        <span className="relative inline-block transform duration-500 will-change-transform group-hover:translate-x-1">
-                          {link.label}
-                        </span>
-                        <span
-                          className={`absolute bottom-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#B89752] to-transparent transition-all duration-500 origin-center ${
-                            isActive || pathname?.startsWith("/services/")
-                              ? "w-full scale-x-100"
-                              : "w-full scale-x-0 group-hover:scale-x-100"
-                          }`}
-                        />
-                      </Link>
-
-                      <button
-                        type="button"
-                        onClick={() => setServicesOpen((prev) => !prev)}
-                        aria-label={tiersVisible ? "Hide service tiers" : "Show service tiers"}
-                        aria-expanded={tiersVisible}
-                        className="mt-1.5 text-[#FAFAFA]/50 transition-colors duration-300 hover:text-[#B89752] focus-visible:outline-none"
-                      >
-                        <ChevronDown
-                          size={16}
-                          className={`transition-transform duration-400 ${
-                            tiersVisible ? "rotate-180" : ""
-                          } md:group-hover/services:rotate-180`}
-                        />
-                      </button>
-                    </div>
-
-                    {/* Tier Submenu */}
-                    <div
-                      className={`overflow-hidden transition-all duration-500 ease-out md:group-hover/services:max-h-60 md:group-hover/services:opacity-100 md:group-hover/services:mt-4 ${
-                        tiersVisible ? "max-h-60 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0"
-                      }`}
-                    >
-                      <div className="flex flex-col items-center gap-3 pb-1">
-                        {TIER_SUMMARIES.map((tier) => (
-                          <Link
-                            key={tier.slug}
-                            href={`/services/${tier.slug}`}
-                            onClick={closeMenu}
-                            className="group/tier flex items-baseline gap-2.5 font-sans text-xs uppercase tracking-[0.2em] text-[#FAFAFA]/50 transition-colors duration-300 hover:text-[#FAFAFA] md:text-sm"
-                          >
-                            <span>{tier.label}</span>
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                );
-              }
-
               return (
                 <div key={link.href} className="nav-link-item overflow-hidden py-1">
                   <Link
                     href={link.href}
                     onClick={closeMenu}
-                    className={`group relative block font-serif text-2xl font-light uppercase tracking-[0.25em] md:text-4xl transition-colors duration-400 focus-visible:outline-none ${
-                      isActive ? "text-[#B89752]" : "text-[#FAFAFA]/70 hover:text-[#FAFAFA]"
+                    className={`group relative block font-serif text-2xl font-light uppercase tracking-[0.2em] md:text-3xl transition-colors duration-400 focus-visible:outline-none ${
+                      isActive ? "text-[#A6906F]" : "text-[#F6F2E9]/70 hover:text-[#F6F2E9]"
                     }`}
                   >
                     <span className="relative inline-block transform duration-500 will-change-transform group-hover:translate-x-1">
                       {link.label}
                     </span>
                     <span
-                      className={`absolute bottom-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#B89752] to-transparent transition-all duration-500 origin-center ${
+                      className={`absolute bottom-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#A6906F] to-transparent transition-all duration-500 origin-center ${
                         isActive ? "w-full scale-x-100" : "w-full scale-x-0 group-hover:scale-x-100"
                       }`}
                     />
