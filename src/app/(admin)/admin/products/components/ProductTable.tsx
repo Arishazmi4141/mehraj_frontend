@@ -28,7 +28,7 @@ export default function ProductTable({
     <div className="overflow-x-auto">
       <table className="w-full border-collapse text-left text-[13px] font-body">
         <thead>
-          <tr className="border-b text-[#8C8A80] uppercase tracking-wider text-[10px]" style={{ borderColor: "#E7E3D8" }}>
+          <tr className="border-b text-[var(--color-ink-faint)] uppercase tracking-wider text-[10px]" style={{ borderColor: "var(--color-border)" }}>
             <th className="pb-4 font-semibold">Product</th>
             <th className="pb-4 font-semibold">Category</th>
             <th className="pb-4 font-semibold">Variants</th>
@@ -36,7 +36,7 @@ export default function ProductTable({
             <th className="pb-4 text-right font-semibold">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y" style={{ borderColor: "#EFECE3" }}>
+        <tbody className="divide-y" style={{ borderColor: "var(--color-border)" }}>
           {products.map((p) => {
             const totalStock = p.variants?.reduce((sum, v) => sum + v.stock, 0) || 0;
             const isExpanded = expandedProductId === p.id;
@@ -50,11 +50,11 @@ export default function ProductTable({
             return (
               <React.Fragment key={p.id}>
                 <tr
-                  className="hover:bg-[#F7F7F4] transition-colors group cursor-pointer"
+                  className="hover:bg-[var(--color-surface-alt)] transition-colors group cursor-pointer"
                   onClick={() => setExpandedProductId(isExpanded ? null : p.id)}
                 >
                   <td className="py-5 flex items-center gap-4">
-                    <div className="h-10 w-14 bg-[#F1EFE9] border overflow-hidden rounded-sm" style={{ borderColor: "#E7E3D8" }}>
+                    <div className="h-10 w-14 bg-[var(--color-surface-alt)] border overflow-hidden rounded-sm" style={{ borderColor: "var(--color-border)" }}>
                       <img
                         src={primaryImg}
                         alt={p.name}
@@ -65,40 +65,40 @@ export default function ProductTable({
                       />
                     </div>
                     <div>
-                      <p className="text-[#171712] font-semibold tracking-wide">{p.name}</p>
-                      <p className="text-[11px] text-[#A9773C] font-mono mt-0.5">
+                      <p className="text-[var(--color-ink)] font-semibold tracking-wide">{p.name}</p>
+                      <p className="text-[11px] text-[var(--color-brass)] font-mono mt-0.5">
                         {minPrice === maxPrice ? `£${minPrice.toLocaleString()}` : `£${minPrice.toLocaleString()} – £${maxPrice.toLocaleString()}`}
                       </p>
                     </div>
                   </td>
-                  <td className="py-5 text-[#6B685F]">{p.category?.name}</td>
-                  <td className="py-5 font-mono text-[#8C8A80] inline-flex items-center gap-1 mt-4">
+                  <td className="py-5 text-[var(--color-ink-muted)]">{p.category?.name}</td>
+                  <td className="py-5 font-mono text-[var(--color-ink-faint)] inline-flex items-center gap-1 mt-4">
                     <span>{p.variants?.length || 0} Variants</span>
                     {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                   </td>
                   <td className="py-5">
                     <span className={`font-mono text-[10px] uppercase tracking-wider font-semibold ${
-                      totalStock === 0 ? "text-red-600" : totalStock <= 10 ? "text-amber-600" : "text-[#6B685F]"
+                      totalStock === 0 ? "text-red-600" : totalStock <= 10 ? "text-amber-600" : "text-[var(--color-ink-muted)]"
                     }`}>
                       {totalStock === 0 ? "Out of Stock" : `${totalStock} Units`}
                     </span>
                   </td>
                   <td className="py-5 text-right space-x-3" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => onViewDetails(p)} className="text-[#B8B4A8] hover:text-[#171712] transition-colors p-1"><Eye className="h-4 w-4" /></button>
-                    <button onClick={() => onEdit(p)} className="text-[#B8B4A8] hover:text-[#1F4A38] transition-colors p-1"><Edit3 className="h-4 w-4" /></button>
-                    <button onClick={() => onDelete(p.id, p.name)} className="text-[#B8B4A8] hover:text-red-600 transition-colors p-1"><Trash2 className="h-4 w-4" /></button>
+                    <button onClick={() => onViewDetails(p)} className="text-[var(--color-ink-faint)] hover:text-[var(--color-ink)] transition-colors p-1"><Eye className="h-4 w-4" /></button>
+                    <button onClick={() => onEdit(p)} className="text-[var(--color-ink-faint)] hover:text-[var(--color-green)] transition-colors p-1"><Edit3 className="h-4 w-4" /></button>
+                    <button onClick={() => onDelete(p.id, p.name)} className="text-[var(--color-ink-faint)] hover:text-red-600 transition-colors p-1"><Trash2 className="h-4 w-4" /></button>
                   </td>
                 </tr>
 
                 {isExpanded && p.variants && (
                   <tr>
-                    <td colSpan={5} className="bg-[#F7F7F4] px-8 py-4 border-l border-r" style={{ borderColor: "#EFECE3" }}>
+                    <td colSpan={5} className="bg-[var(--color-surface-alt)] px-8 py-4 border-l border-r" style={{ borderColor: "var(--color-border)" }}>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                         {p.variants.map((v, idx) => (
-                          <div key={idx} className="border bg-white p-3 font-mono text-[11px] rounded-sm" style={{ borderColor: "#E7E3D8" }}>
-                            <p className="text-[#8C8A80] uppercase text-[9px] tracking-wider mb-1">Spec: <strong className="text-[#171712]">{v.size}</strong></p>
-                            <p className="text-[#8C8A80]">Price: <span className="text-[#A9773C]">£{v.price}</span></p>
-                            <p className="text-[#8C8A80]">Stock: <span className="text-[#4A4740]">{v.stock} Pcs</span></p>
+                          <div key={idx} className="border bg-[var(--color-surface)] p-3 font-mono text-[11px] rounded-sm" style={{ borderColor: "var(--color-border)" }}>
+                            <p className="text-[var(--color-ink-faint)] uppercase text-[9px] tracking-wider mb-1">Spec: <strong className="text-[var(--color-ink)]">{v.size}</strong></p>
+                            <p className="text-[var(--color-ink-faint)]">Price: <span className="text-[var(--color-brass)]">£{v.price}</span></p>
+                            <p className="text-[var(--color-ink-faint)]">Stock: <span className="text-[var(--color-ink-muted)]">{v.stock} Pcs</span></p>
                           </div>
                         ))}
                       </div>

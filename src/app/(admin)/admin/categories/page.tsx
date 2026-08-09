@@ -55,27 +55,36 @@ export default function AdminCategoriesPage() {
     setTimeout(() => setToastMsg(null), 3000);
   };
 
-  const handleCategorySubmit = async (name: string) => {
+  // ── Submit (Add / Edit) — backend expects multipart: "category" JSON part + optional "image" file part
+  const handleCategorySubmit = async (payload: { name: string; description: string; imageFile: File | null }) => {
     try {
       setSaving(true);
       const token = localStorage.getItem("admin_token") || "";
       const isEdit = !!editData;
 
+      const formData = new FormData();
+      formData.append(
+        "category",
+        new Blob([JSON.stringify({ name: payload.name, description: payload.description })], { type: "application/json" })
+      );
+      if (payload.imageFile) {
+        formData.append("image", payload.imageFile);
+      }
+
+      const url = isEdit ? `/admin/updateCategory/${editData.id}` : "/admin/addCategory";
+      const method = isEdit ? "PUT" : "POST";
+
+      const savedCat = await requestAPI<Category>(url, {
+        method,
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
       if (isEdit) {
-        const updatedCat = await requestAPI<Category>(`/admin/updateCategory/${editData.id}`, {
-          method: "PUT",
-          headers: { Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ name }),
-        });
-        setCategories((prev) => prev.map((c) => (c.id === updatedCat.id ? updatedCat : c)));
+        setCategories((prev) => prev.map((c) => (c.id === savedCat.id ? savedCat : c)));
         showToast("Category updated successfully.");
       } else {
-        const createdCat = await requestAPI<Category>("/admin/addCategory", {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ name }),
-        });
-        setCategories((prev) => [...prev, createdCat]);
+        setCategories((prev) => [...prev, savedCat]);
         showToast("Category added successfully.");
       }
 
@@ -109,33 +118,33 @@ export default function AdminCategoriesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F7F4] flex items-center justify-center text-[#1F4A38]">
+      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center text-[var(--color-green)]">
         <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-[#F7F7F4] text-[#171712] p-6 md:p-12">
+    <div ref={containerRef} className="min-h-screen bg-[var(--color-bg)] text-[var(--color-ink)] p-6 md:p-12">
       {/* Toast */}
       {toastMsg && (
-        <div className="fixed bottom-6 right-6 z-50 bg-white border border-[#1F4A38]/20 text-[#1F4A38] text-[11px] uppercase tracking-widest font-semibold px-5 py-3 shadow-xl rounded-sm flex items-center gap-2">
+        <div className="fixed bottom-6 right-6 z-50 bg-[var(--color-surface)] border border-[var(--color-green)]/20 text-[var(--color-green-deep)] text-[11px] uppercase tracking-widest font-semibold px-5 py-3 shadow-xl rounded-sm flex items-center gap-2">
           <CheckCircle2 className="h-4 w-4" />
           <span>{toastMsg}</span>
         </div>
       )}
 
-      <div className="animate-cat-node flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-6 mb-10 gap-4" style={{ borderColor: "#E7E3D8" }}>
+      <div className="animate-cat-node flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-6 mb-10 gap-4" style={{ borderColor: "var(--color-border)" }}>
         <div>
-          <span className="font-body text-[10px] uppercase tracking-[0.3em] text-[#A9773C]">Inventory</span>
-          <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-[#171712]">
+          <span className="font-body text-[10px] uppercase tracking-[0.3em] text-[var(--color-brass)]">Inventory</span>
+          <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-[var(--color-ink)]">
             Categories
           </h1>
         </div>
         <button
           type="button"
           onClick={() => { setEditData(null); setShowFormModal(true); }}
-          className="bg-[#1F4A38] hover:bg-[#173829] text-white px-4 py-2.5 text-[11px] font-semibold uppercase tracking-widest transition-colors flex items-center gap-2 rounded-sm"
+          className="bg-[var(--color-green)] hover:bg-[var(--color-green-deep)] text-[var(--color-bg)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-widest transition-colors flex items-center gap-2 rounded-sm"
         >
           <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
           <span>Add Category</span>

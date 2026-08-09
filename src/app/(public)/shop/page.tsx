@@ -1,183 +1,163 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { productService } from "@/src/services/product.service";
-import { categoryService } from "@/src/services/category.service";
+import { categoryService, Category } from "@/src/services/category.service";
 import { Product } from "@/src/types/product";
+import CollectionProductCard from "@/src/app/(public)/collections/components/CollectionProductCard";
 
-import ProductToolbar from "./components/ProductToolbar";
-import ProductFilterSidebar from "./components/ProductFilterSidebar";
-import ProductCard from "./components/ProductCard";
-import ProductPagination from "./components/ProductPagination";
+const PAGE_SIZE = 12;
 
-function ShopContent() {
-  const searchParams = useSearchParams();
-  const initialCategory = searchParams.get("category") || "";
-
+export default function ShopAllPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [cardsVisible, setCardsVisible] = useState(false);
 
-  const [currentPage, setCurrentPage] = useState(0);
+  const [keyword, setKeyword] = useState("");
+  const [keywordInput, setKeywordInput] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
-  const pageSize = 12;
-
-  const [filters, setFilters] = useState({
-    keyword: "",
-    category: initialCategory,
-    minPrice: null as number | null,
-    maxPrice: null as number | null,
-  });
-
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [categories, setCategories] = useState<string[]>([]);
-
-  const loadProducts = useCallback(async () => {
-    setLoading(true);
-    setCardsVisible(false);
-    try {
-      const res = await productService.filterProducts({
-        keyword: filters.keyword || null,
-        category: filters.category || null,
-        minPrice: filters.minPrice,
-        maxPrice: filters.maxPrice,
-        page: currentPage,
-        size: pageSize,
-      });
-      setProducts(res.content || []);
-      setTotalElements(res.totalElements || 0);
-      setTotalPages(res.totalPages || 0);
-      setTimeout(() => setCardsVisible(true), 60);
-    } catch (err) {
-      console.error("Failed to load products", err);
-      setProducts([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [filters.keyword, filters.category, filters.minPrice, filters.maxPrice, currentPage]);
 
   useEffect(() => {
-    loadProducts();
-  }, [loadProducts]);
-
-  useEffect(() => {
-    categoryService.getCategories().then((cats) => setCategories(cats.map((c) => c.name)));
+    categoryService.getCategories().then(setCategories);
   }, []);
 
-  const hasActiveFilters = !!(
-    filters.keyword || filters.category || filters.minPrice != null || filters.maxPrice != null
-  );
-  const activeFilterCount = [
-    filters.keyword, filters.category, filters.minPrice != null, filters.maxPrice != null,
-  ].filter(Boolean).length;
+  useEffect(() => {
+    setLoading(true);
+    productService
+      .filterProducts({
+        keyword: keyword || null,
+        category: selectedCategory || null,
+        page,
+        size: PAGE_SIZE,
+      })
+      .then((data) => {
+        setProducts(data.content);
+        setTotalPages(data.totalPages);
+        setTotalElements(data.totalElements);
+      })
+      .catch((err) => console.error("Shop fetch failed", err))
+      .finally(() => setLoading(false));
+  }, [keyword, selectedCategory, page]);
 
-  const handleSearchInput = (keyword: string) => {
-    setFilters((f) => ({ ...f, keyword }));
-    setCurrentPage(0);
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPage(0);
+    setKeyword(keywordInput.trim());
   };
-  const handleCategoryChange = (category: string) => {
-    setFilters((f) => ({ ...f, category }));
-    setCurrentPage(0);
-    setFilterOpen(false);
-  };
-  const handlePriceChange = (min: number | null, max: number | null) => {
-    setFilters((f) => ({ ...f, minPrice: min, maxPrice: max }));
-    setCurrentPage(0);
-  };
-  const handleClearAll = () => {
-    setFilters({ keyword: "", category: "", minPrice: null, maxPrice: null });
-    setCurrentPage(0);
-  };
-  const handlePageChange = (page: number) => {
-    if (page < 0 || page >= totalPages) return;
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+  const handleCategoryChange = (name: string) => {
+    setPage(0);
+    setSelectedCategory(name);
   };
 
   return (
-    <main className="min-h-screen bg-[#F7F7F4]">
-      <div className="mx-auto max-w-7xl px-6 py-16 md:px-12 md:py-24">
-        {/* Page heading */}
-        <div className="mb-12 text-center">
-          <span className="font-body text-[10px] uppercase tracking-[0.3em] text-[#A9773C]">Full Catalogue</span>
-          <h1 className="mt-4 font-display text-3xl font-bold leading-[1.1] tracking-[-0.02em] text-[#171712] md:text-[2.6rem]">
-            All Components
+    <main className="min-h-screen bg-[#F6F2E9] pb-24 pt-32">
+      <div className="mx-auto max-w-7xl px-6 md:px-12">
+        <div className="mb-14 text-center">
+          <div className="mb-4 flex items-center justify-center gap-3">
+            <span className="h-px w-6 bg-[#2E4B3F]" />
+            <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#2E4B3F]">
+              Shop All
+            </span>
+            <span className="h-px w-6 bg-[#2E4B3F]" />
+          </div>
+          <h1 className="font-serif text-3xl font-light leading-[1.12] text-[#1B1B18] md:text-[2.6rem]">
+            The Full <span className="italic text-[#5C2A32]">MehRāj Wardrobe</span>
           </h1>
         </div>
 
-        <div className="flex flex-col gap-8 lg:flex-row">
-          <ProductFilterSidebar
-            isOpen={filterOpen}
-            categories={categories}
-            selectedCategory={filters.category}
-            keyword={filters.keyword}
-            minPrice={filters.minPrice}
-            maxPrice={filters.maxPrice}
-            hasActiveFilters={hasActiveFilters}
-            onClose={() => setFilterOpen(false)}
-            onSearchInput={handleSearchInput}
-            onCategoryChange={handleCategoryChange}
-            onPriceChange={handlePriceChange}
-            onClearAll={handleClearAll}
-          />
-
-          <div className="flex-1">
-            <ProductToolbar
-              loading={loading}
-              totalElements={totalElements}
-              viewMode={viewMode}
-              setViewMode={setViewMode}
-              onFilterToggle={() => setFilterOpen(true)}
-              hasActiveFilters={hasActiveFilters}
-              activeFilterCount={activeFilterCount}
-              keyword={filters.keyword}
-              category={filters.category}
-              minPrice={filters.minPrice}
-              maxPrice={filters.maxPrice}
-              onClearSearch={() => handleSearchInput("")}
-              onClearCategory={() => handleCategoryChange("")}
-              onClearPrice={() => handlePriceChange(null, null)}
+        {/* Toolbar: search + category filter */}
+        <div className="mb-10 flex flex-col gap-4 border border-[#1B1B18]/10 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
+          <form onSubmit={handleSearch} className="flex w-full max-w-sm items-center gap-2 border border-[#1B1B18]/15 px-3">
+            <Search className="h-4 w-4 shrink-0 text-[#1B1B18]/40" />
+            <input
+              type="text"
+              value={keywordInput}
+              onChange={(e) => setKeywordInput(e.target.value)}
+              placeholder="Search products..."
+              className="h-11 w-full bg-transparent font-sans text-sm text-[#1B1B18] outline-none placeholder:text-[#1B1B18]/35"
             />
+          </form>
 
-            {loading ? (
-              <div className="flex items-center justify-center py-32">
-                <Loader2 className="h-6 w-6 animate-spin text-[#1F4A38]" />
-              </div>
-            ) : products.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-32 text-center">
-                <p className="font-display text-[15px] font-semibold text-[#171712]">No products found</p>
-                <p className="mt-2 font-body text-[12px] text-[#8C8A80]">Try adjusting your filters or search terms.</p>
-              </div>
-            ) : (
-              <div
-                className={`transition-opacity duration-500 ${cardsVisible ? "opacity-100" : "opacity-0"} ${
-                  viewMode === "grid"
-                    ? "grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3"
-                    : "flex flex-col gap-5"
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => handleCategoryChange("")}
+              className={`border px-4 py-2 font-sans text-[10px] font-semibold uppercase tracking-[0.15em] transition-colors ${
+                selectedCategory === ""
+                  ? "border-[#1B1B18] bg-[#1B1B18] text-[#F6F2E9]"
+                  : "border-[#1B1B18]/20 text-[#1B1B18]/60 hover:border-[#1B1B18]"
+              }`}
+            >
+              All
+            </button>
+            {categories.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => handleCategoryChange(c.name)}
+                className={`border px-4 py-2 font-sans text-[10px] font-semibold uppercase tracking-[0.15em] transition-colors ${
+                  selectedCategory === c.name
+                    ? "border-[#1B1B18] bg-[#1B1B18] text-[#F6F2E9]"
+                    : "border-[#1B1B18]/20 text-[#1B1B18]/60 hover:border-[#1B1B18]"
                 }`}
               >
-                {products.map((product) => (
-                  <ProductCard key={product.id} product={product} viewMode={viewMode} />
-                ))}
-              </div>
-            )}
-
-            <ProductPagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+                {c.name}
+              </button>
+            ))}
           </div>
         </div>
+
+        {!loading && (
+          <p className="mb-6 font-sans text-xs text-[#1B1B18]/45">
+            {totalElements} {totalElements === 1 ? "product" : "products"} found
+          </p>
+        )}
+
+        {/* Product grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="aspect-[3/4] animate-pulse border border-[#1B1B18]/10 bg-[#EDE6D8]" />
+            ))}
+          </div>
+        ) : products.length === 0 ? (
+          <p className="py-20 text-center font-sans text-sm text-[#1B1B18]/50">
+            No products match your search — try a different keyword or category.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {products.map((product) => (
+              <CollectionProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {!loading && totalPages > 1 && (
+          <div className="mt-14 flex items-center justify-center gap-4">
+            <button
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              disabled={page === 0}
+              className="flex h-10 w-10 items-center justify-center border border-[#1B1B18]/15 text-[#1B1B18] transition-colors disabled:cursor-not-allowed disabled:opacity-30 hover:border-[#2E4B3F]"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="font-sans text-xs uppercase tracking-[0.15em] text-[#1B1B18]/60">
+              Page {page + 1} of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+              disabled={page >= totalPages - 1}
+              className="flex h-10 w-10 items-center justify-center border border-[#1B1B18]/15 text-[#1B1B18] transition-colors disabled:cursor-not-allowed disabled:opacity-30 hover:border-[#2E4B3F]"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        )}
       </div>
     </main>
-  );
-}
-
-export default function ShopPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F7F7F4]" />}>
-      <ShopContent />
-    </Suspense>
   );
 }

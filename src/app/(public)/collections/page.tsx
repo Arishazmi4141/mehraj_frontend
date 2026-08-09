@@ -36,6 +36,12 @@ export default function CollectionsPage() {
           <p className="mx-auto mt-4 max-w-md font-sans text-xs leading-[1.85] text-[#1B1B18]/60">
             Each collection is a complete story, styled and released as a moment.
           </p>
+          <Link
+            href="/shop"
+            className="mt-5 inline-block font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[#2E4B3F] underline underline-offset-4"
+          >
+            Or browse the full catalogue →
+          </Link>
         </div>
 
         {loading ? (

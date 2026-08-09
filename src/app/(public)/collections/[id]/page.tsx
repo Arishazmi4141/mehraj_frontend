@@ -18,15 +18,32 @@ export default function CollectionDetailPage() {
   useEffect(() => {
     if (!categoryId) return;
 
-    Promise.all([
-      productService.getProductsByCategory(categoryId),
-      categoryService.getCategories(),
-    ])
-      .then(([productData, categories]) => {
-        setProducts(productData);
-        setCategory(categories.find((c) => c.id === categoryId) || null);
+    setLoading(true);
+
+    // Step 1: categories fetch karo taaki id -> name mil jaaye
+    categoryService
+      .getCategories()
+      .then((categories) => {
+        const matchedCategory = categories.find((c) => c.id === categoryId) || null;
+        setCategory(matchedCategory);
+
+        if (!matchedCategory) {
+          setProducts([]);
+          setLoading(false);
+          return;
+        }
+
+        // Step 2: naam se filterProducts call karo (yehi shop page pe working hai)
+        return productService
+          .filterProducts({ category: matchedCategory.name, size: 100 })
+          .then((page) => {
+            setProducts(page.content || []);
+          });
       })
-      .catch((err) => console.error("Collection fetch failed", err))
+      .catch((err) => {
+        console.error("Collection fetch failed", err);
+        setProducts([]);
+      })
       .finally(() => setLoading(false));
   }, [categoryId]);
 

@@ -87,8 +87,12 @@ export default function AdminProductsPage() {
   const handleProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (formVariants.length === 0) return alert("Please add at least one variant.");
-    if (formVariants.some((v) => !v.size || v.price <= 0)) return alert("Please enter a valid size and price for every variant.");
+ 
+  if (!formData.categoryId || formData.categoryId === 0) {
+    return alert("Please select a category before saving.");
+  }
+  if (formVariants.length === 0) return alert("Please add at least one variant.");
+  if (formVariants.some((v) => !v.size || v.price <= 0)) return alert("Please enter a valid size and price for every variant.");
 
     try {
       setActionLoading(true);
@@ -150,18 +154,18 @@ export default function AdminProductsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F7F4] flex items-center justify-center text-[#1F4A38]">
+      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center text-[var(--color-green)]">
         <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-[#F7F7F4] text-[#171712] p-6 md:p-12">
-      <div className="animate-prod-node flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-6 mb-10 gap-4" style={{ borderColor: "#E7E3D8" }}>
+    <div ref={containerRef} className="min-h-screen bg-[var(--color-bg)] text-[var(--color-ink)] p-6 md:p-12">
+      <div className="animate-prod-node flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-6 mb-10 gap-4" style={{ borderColor: "var(--color-border)" }}>
         <div>
-          <span className="font-body text-[10px] uppercase tracking-[0.3em] text-[#A9773C]">Inventory</span>
-          <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-[#171712]">Products</h1>
+          <span className="font-body text-[10px] uppercase tracking-[0.3em] text-[var(--color-brass)]">Inventory</span>
+          <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-[var(--color-ink)]">Products</h1>
         </div>
         <button
           onClick={() => {
@@ -174,7 +178,7 @@ export default function AdminProductsPage() {
             setLocalImages([]);
             setShowFormModal(true);
           }}
-          className="bg-[#1F4A38] hover:bg-[#173829] transition-colors text-white px-5 py-3 text-[11px] font-semibold uppercase tracking-widest flex items-center gap-2 rounded-sm"
+          className="bg-[var(--color-green)] hover:bg-[var(--color-green-deep)] transition-colors text-[var(--color-bg)] px-5 py-3 text-[11px] font-semibold uppercase tracking-widest flex items-center gap-2 rounded-sm"
         >
           <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
           <span>Add Product</span>
@@ -183,7 +187,7 @@ export default function AdminProductsPage() {
 
       <ProductFilters filters={filters} setFilters={setFilters} categories={categories} />
 
-      <div className="animate-prod-node bg-white border p-8 rounded-sm" style={{ borderColor: "#E7E3D8" }}>
+      <div className="animate-prod-node bg-[var(--color-surface)] border p-8 rounded-sm" style={{ borderColor: "var(--color-border)" }}>
         <ProductTable
           products={products}
           expandedProductId={expandedProductId}
@@ -203,27 +207,27 @@ export default function AdminProductsPage() {
         />
 
         {/* Pagination */}
-        <div className="flex justify-between items-center mt-6 pt-6 border-t font-body" style={{ borderColor: "#E7E3D8" }}>
-          <span className="text-[11px] text-[#8C8A80] uppercase tracking-wider">
+        <div className="flex justify-between items-center mt-6 pt-6 border-t font-body" style={{ borderColor: "var(--color-border)" }}>
+          <span className="text-[11px] text-[var(--color-ink-faint)] uppercase tracking-wider">
             Showing {products.length} of {totalElements} products
           </span>
           <div className="flex items-center gap-2">
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage((p) => p - 1)}
-              className="p-2 border text-[#6B685F] hover:text-[#171712] disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded-sm"
-              style={{ borderColor: "#E7E3D8" }}
+              className="p-2 border text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded-sm"
+              style={{ borderColor: "var(--color-border)" }}
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
-            <span className="text-[12px] text-[#A9773C] px-4 font-mono">
+            <span className="text-[12px] text-[var(--color-brass)] px-4 font-mono">
               {currentPage} / {totalPages}
             </span>
             <button
               disabled={currentPage === totalPages || totalPages === 0}
               onClick={() => setCurrentPage((p) => p + 1)}
-              className="p-2 border text-[#6B685F] hover:text-[#171712] disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded-sm"
-              style={{ borderColor: "#E7E3D8" }}
+              className="p-2 border text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded-sm"
+              style={{ borderColor: "var(--color-border)" }}
             >
               <ChevronRight className="h-4 w-4" />
             </button>

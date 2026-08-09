@@ -203,28 +203,29 @@ body {
    ============================================================ */
 
 :root {
-  /* Surfaces */
-  --color-bg: #F7F7F4;           /* page background — warm off-white */
-  --color-surface: #FFFFFF;       /* card surface */
-  --color-surface-alt: #FBFAF7;   /* subtle alt surface / hover fill */
+  /* Surfaces — Ivory Silk family */
+  --color-bg: #FAF6EE;            /* page background — Ivory Silk */
+  --color-surface: #FEFDFA;       /* card surface — near-white ivory */
+  --color-surface-alt: #F3EADC;   /* alt surface / hover fill — Warm Beige */
 
   /* Text */
-  --color-ink: #1C1C1A;           /* headings, primary text */
-  --color-ink-muted: #55564C;     /* body copy */
-  --color-ink-faint: #8B8C80;     /* captions, meta */
+  --color-ink: #211D18;           /* headings — Royal Charcoal */
+  --color-ink-muted: #55503F;     /* body copy — Warm Graphite */
+  --color-ink-faint: #8B8578;     /* captions, meta */
 
   /* Structure */
-  --color-border: #E7E3D8;        /* hairline borders */
-  --color-border-strong: #D8D2C0;
+  --color-border: #E6DCC8;        /* hairline borders — Warm Stone tint */
+  --color-border-strong: #D8CAA9;
 
-  /* Accents */
-  --color-green: #1F4A38;         /* primary accent — racing green */
-  --color-green-deep: #123326;    /* hover/pressed state */
-  --color-green-soft: rgba(31, 74, 56, 0.07);
-  --color-green-soft-2: rgba(31, 74, 56, 0.14);
+  /* Primary accent — Imperial Gold (CTAs, active states, hovers) */
+  --color-green: #C6A15B;
+  --color-green-deep: #A9853F;
+  --color-green-soft: rgba(198, 161, 91, 0.08);
+  --color-green-soft-2: rgba(198, 161, 91, 0.22);
 
-  --color-brass: #A9773C;         /* secondary accent — used sparingly */
-  --color-brass-soft: rgba(169, 119, 60, 0.12);
+  /* Secondary accent — Antique Bronze (subheadings, meta accents) */
+  --color-brass: #A67C4E;
+  --color-brass-soft: rgba(166, 124, 78, 0.12);
 }
 
 /* ------------------------------------------------------------

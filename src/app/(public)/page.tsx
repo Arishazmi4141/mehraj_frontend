@@ -1,6 +1,7 @@
 import HeroSection from "@/src/app/(public)/home/components/HeroSection";
 import TheHouseSection from "@/src/app/(public)/home/components/TheHouseSection";
 import CollectionsSection from "@/src/app/(public)/home/components/CollectionsSection";
+import TrendingSection from "@/src/app/(public)/home/components/TrendingSection";
 import AtelierSection from "@/src/app/(public)/home/components/AtelierSection";
 import SalonSection from "@/src/app/(public)/home/components/SalonSection";
 import CraftSection from "@/src/app/(public)/home/components/CraftSection";
@@ -15,6 +16,7 @@ export default function HomePage() {
       <HeroSection />
       <TheHouseSection />
       <CollectionsSection />
+      <TrendingSection />
       <AtelierSection />
       <SalonSection />
       <CraftSection />
