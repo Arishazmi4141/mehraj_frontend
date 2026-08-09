@@ -7,9 +7,9 @@ interface LoaderProps {
   onFinish: () => void;
 }
 
-const BRAND_LETTERS = ["M", "e", "h", "R", "a", "j"];
+const BRAND_LETTERS = ["M", "e", "h", "R", "ā", "j"];
 
-// Floating ambient dust / gold speckles for premium craft feel
+// Floating ambient dust / taupe speckles for premium craft feel
 const PARTICLES = [
   { cx: "12%", cy: "20%", r: 1.2 },
   { cx: "88%", cy: "18%", r: 0.9 },
@@ -67,7 +67,7 @@ export default function Loader({ onFinish }: LoaderProps) {
       const barProxy = { value: 0 };
 
       // Base initialization
-      tl.set(containerRef.current, { background: "#F4F1EA" })
+      tl.set(containerRef.current, { background: "#F6F2E9" })
         .set(barFillRef.current, { scaleX: 0 })
         .set(letterRefs.current, { opacity: 0, filter: "blur(14px)" })
         .to(ambientParticleRefs.current, { opacity: 0.5, duration: 1.5, stagger: 0.1 }, 0)
@@ -119,7 +119,7 @@ export default function Loader({ onFinish }: LoaderProps) {
         lastLetterEnd + 0.3
       );
 
-      // Gold shimmer sweep across the completed wordmark
+      // Taupe shimmer sweep across the completed wordmark
       tl.fromTo(
         shineRef.current,
         { x: "-100%" },
@@ -164,18 +164,18 @@ export default function Loader({ onFinish }: LoaderProps) {
       className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden touch-none select-none"
       role="status"
       aria-live="polite"
-      aria-label="Loading MehRaj"
+      aria-label="Loading MehRāj"
     >
       {/* Soft Vignette Overlay for Depth */}
       <div
         className="pointer-events-none absolute inset-0"
         aria-hidden="true"
         style={{
-          background: "radial-gradient(circle at 50% 50%, transparent 35%, rgba(20, 18, 16, 0.04) 100%)",
+          background: "radial-gradient(circle at 50% 50%, transparent 35%, rgba(27, 27, 24, 0.04) 100%)",
         }}
       />
 
-      {/* Floating Gold Dust Particles (ambient background) */}
+      {/* Floating Taupe Dust Particles (ambient background) */}
       <svg className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true">
         {PARTICLES.map((p, i) => (
           <circle
@@ -186,13 +186,13 @@ export default function Loader({ onFinish }: LoaderProps) {
             cx={p.cx}
             cy={p.cy}
             r={p.r}
-            fill="#C5A059"
+            fill="#A6906F"
             opacity={0}
           />
         ))}
       </svg>
 
-      {/* Warm Gold Glow Behind Logo */}
+      {/* Warm Taupe Glow Behind Logo */}
       <div
         ref={orbRef}
         aria-hidden="true"
@@ -201,7 +201,7 @@ export default function Loader({ onFinish }: LoaderProps) {
           width: "600px",
           height: "420px",
           borderRadius: "50%",
-          background: "radial-gradient(ellipse at center, rgba(197, 160, 89, 0.12) 0%, rgba(197, 160, 89, 0.03) 50%, transparent 70%)",
+          background: "radial-gradient(ellipse at center, rgba(166, 144, 111, 0.14) 0%, rgba(166, 144, 111, 0.03) 50%, transparent 70%)",
           filter: "blur(60px)",
         }}
       />
@@ -223,12 +223,12 @@ export default function Loader({ onFinish }: LoaderProps) {
               ref={(el) => {
                 if (el) letterRefs.current[i] = el;
               }}
-              className="relative inline-block font-serif font-light text-[#141210]"
+              className="relative inline-block font-serif font-light text-[#1B1B18]"
               style={{
                 fontSize: "clamp(3rem, 8vw, 5rem)",
                 lineHeight: 1,
                 letterSpacing: "0.02em",
-                textShadow: "0 0 40px rgba(197, 160, 89, 0.15)",
+                textShadow: "0 0 40px rgba(166, 144, 111, 0.18)",
               }}
             >
               {letter}
@@ -240,7 +240,7 @@ export default function Loader({ onFinish }: LoaderProps) {
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 -translate-x-full"
             style={{
-              background: "linear-gradient(90deg, transparent 20%, rgba(197, 160, 89, 0.3) 50%, transparent 80%)",
+              background: "linear-gradient(90deg, transparent 20%, rgba(166, 144, 111, 0.35) 50%, transparent 80%)",
               mixBlendMode: "overlay",
             }}
           />
@@ -250,7 +250,7 @@ export default function Loader({ onFinish }: LoaderProps) {
         <span
           ref={loadingLabelRef}
           className="mt-5 font-sans text-[9px] font-medium uppercase tracking-[0.5em] opacity-0 translate-y-2"
-          style={{ color: "#141210", opacity: 0.4 } as React.CSSProperties}
+          style={{ color: "#1B1B18", opacity: 0.4 } as React.CSSProperties}
         >
           Loading
         </span>
@@ -259,13 +259,13 @@ export default function Loader({ onFinish }: LoaderProps) {
         <div
           ref={barTrackRef}
           className="relative mt-6 h-[2px] w-[180px] overflow-visible opacity-0"
-          style={{ background: "rgba(20, 18, 16, 0.08)" }}
+          style={{ background: "rgba(27, 27, 24, 0.08)" }}
         >
           <div
             ref={barFillRef}
             className="absolute inset-y-0 left-0 h-full w-full origin-left"
             style={{
-              background: "linear-gradient(90deg, #8C6D37 0%, #C5A059 60%, #E8CE94 100%)",
+              background: "linear-gradient(90deg, #6B5A3E 0%, #A6906F 60%, #D8C9AC 100%)",
               transform: "scaleX(0)",
             }}
           />
@@ -273,8 +273,8 @@ export default function Loader({ onFinish }: LoaderProps) {
             ref={barDotRef}
             className="absolute top-1/2 h-2 w-2 -translate-y-1/2 -translate-x-1/2 rounded-full"
             style={{
-              background: "#C5A059",
-              boxShadow: "0 0 10px 2px rgba(197, 160, 89, 0.6)",
+              background: "#A6906F",
+              boxShadow: "0 0 10px 2px rgba(166, 144, 111, 0.55)",
             }}
           />
         </div>
@@ -298,7 +298,7 @@ function CornerAccent({ pos }: { pos: "tl" | "tr" | "bl" | "br" }) {
           [isLeft ? "left" : "right"]: 0,
           width: "24px",
           height: "1px",
-          background: "rgba(197, 160, 89, 0.35)",
+          background: "rgba(166, 144, 111, 0.4)",
         }}
       />
       <div
@@ -308,7 +308,7 @@ function CornerAccent({ pos }: { pos: "tl" | "tr" | "bl" | "br" }) {
           [isLeft ? "left" : "right"]: 0,
           width: "1px",
           height: "24px",
-          background: "rgba(197, 160, 89, 0.35)",
+          background: "rgba(166, 144, 111, 0.4)",
         }}
       />
     </div>

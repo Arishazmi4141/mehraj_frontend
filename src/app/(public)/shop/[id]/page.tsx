@@ -1,184 +1,276 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import gsap from "gsap";
-import { ShoppingCart, Check, Star, Loader2, Info } from "lucide-react";
+import Link from "next/link";
+import { ShoppingBag, Check, Loader2, Star, ChevronRight } from "lucide-react";
 import { productService } from "@/src/services/product.service";
 import { cartService } from "@/src/services/cart.service";
-import { Product } from "@/src/types/product";
+import { Product, ProductVariant } from "@/src/types/product";
 import { IMAGE_BASE_URL } from "@/src/lib/api-client";
 
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&q=80&w=900";
+
 export default function ProductDetailPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const productId = Number(params.id);
+
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
-  
-  const [activeImage, setActiveImage] = useState("");
-  const [selectedSize, setSelectedSize] = useState("");
-  const [qty, setQty] = useState(1);
-  const [addingToCart, setAddingToCart] = useState(false);
-  const [added, setAdded] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
 
-  const imageRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
 
-  useEffect(() => {
-    productService.getProductById(Number(id)).then((data) => {
-      setProduct(data);
-      if (data.productImages?.length) {
-        setActiveImage(data.productImages[0].imageUrl);
-      }
-      const firstAvail = data.variants?.find((v) => v.stock > 0);
-      if (firstAvail) setSelectedSize(firstAvail.size);
-      setLoading(false);
-    });
-  }, [id]);
+  // Review form
+  const [reviewerName, setReviewerName] = useState("");
+  const [reviewMsg, setReviewMsg] = useState("");
+  const [rating, setRating] = useState(5);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   useEffect(() => {
-    if (!loading && imageRef.current && contentRef.current) {
-      gsap.fromTo(imageRef.current, { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 1, ease: "power3.out" });
-      gsap.fromTo(contentRef.current.children, 
-        { opacity: 0, y: 20 }, 
-        { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: "power2.out", delay: 0.2 }
-      );
-    }
-  }, [loading]);
+    if (!productId) return;
+    productService
+      .getProductById(productId)
+      .then((data) => {
+        setProduct(data);
+        const firstAvailable = data.variants?.find((v) => v.stock > 0) || data.variants?.[0];
+        setSelectedVariant(firstAvailable || null);
+      })
+      .catch((err) => console.error("Product fetch failed", err))
+      .finally(() => setLoading(false));
+  }, [productId]);
 
-  if (loading) {
-    return <div className="min-h-screen bg-[#060606] flex items-center justify-center"><Loader2 className="animate-spin text-[#D4AF37]" /></div>;
-  }
-
-  if (!product) return <div className="min-h-screen bg-[#060606] text-white flex items-center justify-center">Asset Not Found</div>;
-
-  const resolveImageUrl = (url: string) => {
-    if (url.startsWith("http")) return url;
+  const resolveImageUrl = (url: string | undefined | null) => {
+    if (!url) return FALLBACK_IMAGE;
+    if (url.startsWith("http://") || url.startsWith("https://")) return url;
     return `${IMAGE_BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
   };
 
-  const selectedVariant = product.variants?.find((v) => v.size === selectedSize);
-  const isOutOfStock = !product.variants?.some((v) => v.stock > 0);
-  const currentStock = selectedVariant?.stock || 0;
-
   const handleAddToCart = async () => {
-    if (!selectedVariant || addingToCart || currentStock === 0) return;
-    setAddingToCart(true);
+    if (!selectedVariant || selectedVariant.stock <= 0 || isAdding) return;
+    setIsAdding(true);
     try {
-      for(let i=0; i<qty; i++) {
-        await cartService.addItem(selectedVariant.id, 1);
-      }
-      setAdded(true);
-      setTimeout(() => setAdded(false), 2500);
-    } catch (err) {
-      alert("Error securing allocation.");
+      await cartService.addItem(selectedVariant.id, 1);
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 2500);
+    } catch {
+      alert("Couldn't add this item to your bag — please try again.");
     } finally {
-      setAddingToCart(false);
+      setIsAdding(false);
     }
   };
 
-  // 3D Hover Effect for Main Image
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!imageRef.current) return;
-    const { left, top, width, height } = imageRef.current.getBoundingClientRect();
-    const x = (e.clientX - left) / width - 0.5;
-    const y = (e.clientY - top) / height - 0.5;
-    gsap.to(imageRef.current, { rotateY: x * 8, rotateX: -y * 8, transformPerspective: 1000, ease: "power1.out" });
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewerName.trim() || !reviewMsg.trim() || !product) return;
+    setSubmittingReview(true);
+    try {
+      await productService.submitReview({
+        productId: product.id,
+        reviewerName: reviewerName.trim(),
+        reviewMsg: reviewMsg.trim(),
+        rating,
+      });
+      setReviewSubmitted(true);
+      setReviewerName("");
+      setReviewMsg("");
+      setRating(5);
+    } catch {
+      alert("Couldn't submit your review — please try again.");
+    } finally {
+      setSubmittingReview(false);
+    }
   };
-  const handleMouseLeave = () => {
-    if (imageRef.current) gsap.to(imageRef.current, { rotateY: 0, rotateX: 0, duration: 0.5 });
-  };
+
+  if (loading) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#F6F2E9]">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#1B1B18]/20 border-t-[#2E4B3F]" />
+      </main>
+    );
+  }
+
+  if (!product) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#F6F2E9] px-6 text-center">
+        <p className="font-serif text-xl text-[#1B1B18]">Product not found.</p>
+        <Link href="/collections" className="font-sans text-sm text-[#2E4B3F] underline">
+          Browse Collections
+        </Link>
+      </main>
+    );
+  }
+
+  const images = product.productImages?.length
+    ? product.productImages.map((img) => img.imageUrl)
+    : [""];
+  const isOutOfStock = !product.variants?.some((v) => v.stock > 0);
 
   return (
-    <div className="min-h-screen bg-[#060606] pt-32 pb-24 text-[#F8F6F2]">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-16">
-        
-        {/* Left: Image Gallery */}
-        <div className="relative">
-          <div 
-            ref={imageRef} 
-            onMouseMove={handleMouseMove} 
-            onMouseLeave={handleMouseLeave}
-            className="aspect-square bg-[#0D0D0D] border border-white/[0.04] p-4 relative shadow-[0_0_50px_rgba(212,175,55,0.05)]"
-          >
-            <img src={resolveImageUrl(activeImage)} alt={product.name} className="w-full h-full object-cover filter brightness-90 contrast-125" />
-          </div>
-          
-          <div className="flex gap-4 mt-6 overflow-x-auto custom-scrollbar pb-2">
-            {product.productImages?.map((img) => (
-              <button 
-                key={img.id} 
-                onClick={() => setActiveImage(img.imageUrl)}
-                className={`w-20 h-20 border flex-shrink-0 transition-colors ${activeImage === img.imageUrl ? "border-[#D4AF37] opacity-100" : "border-white/[0.04] opacity-50 hover:opacity-100"}`}
-              >
-                <img src={resolveImageUrl(img.imageUrl)} alt="Thumbnail" className="w-full h-full object-cover" />
-              </button>
-            ))}
-          </div>
+    <main className="min-h-screen bg-[#F6F2E9] pb-24 pt-32">
+      <div className="mx-auto max-w-7xl px-6 md:px-12">
+        {/* Breadcrumb */}
+        <div className="mb-10 flex items-center gap-2 font-sans text-[9px] font-medium uppercase tracking-[0.35em] text-[#1B1B18]/40">
+          <Link href="/" className="hover:text-[#1B1B18]/60">Home</Link>
+          <ChevronRight size={9} className="text-[#A6906F]" />
+          <Link href="/collections" className="hover:text-[#1B1B18]/60">Collections</Link>
+          <ChevronRight size={9} className="text-[#A6906F]" />
+          <span className="text-[#2E4B3F]">{product.name}</span>
         </div>
 
-        {/* Right: Product Info */}
-        <div ref={contentRef} className="flex flex-col">
-          <span className="font-body text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]">{product.category?.name}</span>
-          <h1 className="mt-4 font-display text-4xl md:text-5xl font-bold tracking-tight">{product.name}</h1>
-          
-          <div className="mt-6 font-mono text-2xl text-[#D4AF37]">
-            {selectedVariant ? `£${selectedVariant.price}` : "Select Variant"}
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* Gallery */}
+          <div>
+            <div className="aspect-[3/4] w-full overflow-hidden border border-[#1B1B18]/10 bg-[#EDE6D8]">
+              <img
+                src={resolveImageUrl(images[activeImage])}
+                alt={product.name}
+                className="h-full w-full object-cover"
+              />
+            </div>
+            {images.length > 1 && (
+              <div className="mt-4 grid grid-cols-5 gap-3">
+                {images.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveImage(i)}
+                    className={`aspect-square overflow-hidden border bg-[#EDE6D8] transition-colors ${
+                      activeImage === i ? "border-[#2E4B3F]" : "border-[#1B1B18]/10"
+                    }`}
+                  >
+                    <img src={resolveImageUrl(img)} alt="" className="h-full w-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          <p className="mt-8 font-body text-[13px] leading-[1.8] text-[#888888]">
-            {product.description}
-          </p>
+          {/* Details */}
+          <div>
+            {product.category?.name && (
+              <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-[#2E4B3F]">
+                {product.category.name}
+              </span>
+            )}
+            <h1 className="mt-3 font-serif text-3xl font-light leading-[1.15] text-[#1B1B18] md:text-4xl">
+              {product.name}
+            </h1>
 
-          <div className="border-t border-white/[0.04] mt-10 pt-8">
-            <div className="flex justify-between items-center mb-4">
-              <span className="font-body text-[11px] uppercase tracking-widest text-[#666]">Configuration Spec</span>
-              {currentStock > 0 && currentStock <= 5 && (
-                <span className="text-[10px] text-amber-500 uppercase tracking-widest flex items-center gap-1"><Info className="w-3 h-3"/> Low Allocation</span>
-              )}
-            </div>
-            
-            <div className="flex flex-wrap gap-3">
-              {product.variants?.map((v) => (
-                <button
-                  key={v.id}
-                  disabled={v.stock === 0}
-                  onClick={() => { setSelectedSize(v.size); setQty(1); }}
-                  className={`px-5 py-2 border font-mono text-xs transition-all ${
-                    selectedSize === v.size ? "border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10" 
-                    : v.stock === 0 ? "border-white/[0.02] text-[#444] cursor-not-allowed" 
-                    : "border-white/[0.06] hover:border-white/[0.2] text-[#A0A0A0]"
-                  }`}
-                >
-                  {v.size}
-                </button>
-              ))}
-            </div>
-          </div>
+            {selectedVariant && (
+              <p className="mt-5 font-serif text-2xl font-normal text-[#1B1B18]">
+                ₹{selectedVariant.price.toLocaleString()}
+              </p>
+            )}
 
-          <div className="mt-10 flex gap-4">
-            <div className="flex items-center border border-white/[0.06] bg-[#0A0A0A]">
-              <button onClick={() => setQty(q => Math.max(1, q - 1))} className="px-4 text-[#888] hover:text-white transition">-</button>
-              <span className="font-mono text-sm w-8 text-center">{qty}</span>
-              <button onClick={() => setQty(q => Math.min(currentStock, q + 1))} className="px-4 text-[#888] hover:text-white transition">+</button>
-            </div>
-            
+            <p className="mt-6 max-w-md font-sans text-sm leading-[1.9] text-[#1B1B18]/65">
+              {product.description}
+            </p>
+
+            {/* Size / variant selector */}
+            {product.variants?.length > 0 && (
+              <div className="mt-8">
+                <p className="mb-3 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1B1B18]/55">
+                  Select Size
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {product.variants.map((v) => (
+                    <button
+                      key={v.id}
+                      onClick={() => setSelectedVariant(v)}
+                      disabled={v.stock <= 0}
+                      className={`border px-5 py-2.5 font-sans text-xs font-semibold uppercase tracking-[0.1em] transition-colors ${
+                        v.stock <= 0
+                          ? "cursor-not-allowed border-[#1B1B18]/10 text-[#1B1B18]/30 line-through"
+                          : selectedVariant?.id === v.id
+                          ? "border-[#1B1B18] bg-[#1B1B18] text-[#F6F2E9]"
+                          : "border-[#1B1B18]/25 text-[#1B1B18] hover:border-[#1B1B18]"
+                      }`}
+                    >
+                      {v.size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <button
               onClick={handleAddToCart}
-              disabled={isOutOfStock || addingToCart || added}
-              className={`flex-1 py-4 flex items-center justify-center gap-2 font-body text-[10px] uppercase tracking-widest font-bold transition-all ${
-                added ? "bg-green-900/30 text-green-400 border border-green-500/50" 
-                : isOutOfStock ? "bg-[#111] text-[#555] cursor-not-allowed" 
-                : "bg-[#D4AF37] text-[#0B0B0B] hover:bg-[#EAD07B]"
+              disabled={isOutOfStock || !selectedVariant || isAdding || isAdded}
+              className={`mt-9 flex w-full max-w-sm items-center justify-center gap-2 py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-300 sm:w-auto sm:px-12 ${
+                isAdded
+                  ? "bg-[#EBF3ED] text-[#1E4D2B]"
+                  : isOutOfStock
+                  ? "cursor-not-allowed bg-[#EDE6D8] text-[#1B1B18]/40"
+                  : "bg-[#1B1B18] text-[#F6F2E9] hover:bg-[#2E4B3F]"
               }`}
             >
-              {added ? <><Check className="w-4 h-4"/> Allocation Secured</> 
-               : addingToCart ? <Loader2 className="w-4 h-4 animate-spin"/> 
-               : isOutOfStock ? "Depleted" 
-               : <><ShoppingCart className="w-4 h-4"/> Acquire Asset</>}
+              {isAdded ? (
+                <>
+                  <Check className="h-4 w-4" /> Added To Bag
+                </>
+              ) : isAdding ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : isOutOfStock ? (
+                "Out of Stock"
+              ) : (
+                <>
+                  <ShoppingBag className="h-4 w-4" /> Add To Bag
+                </>
+              )}
             </button>
           </div>
         </div>
+
+        {/* Review form */}
+        <div className="mx-auto mt-24 max-w-xl border-t border-[#1B1B18]/10 pt-14">
+          <h2 className="font-serif text-xl font-light text-[#1B1B18]">Share Your Experience</h2>
+
+          {reviewSubmitted ? (
+            <p className="mt-6 font-sans text-sm text-[#2E4B3F]">
+              Thank you — your review has been submitted.
+            </p>
+          ) : (
+            <form onSubmit={handleSubmitReview} className="mt-6 flex flex-col gap-5">
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button key={n} type="button" onClick={() => setRating(n)} aria-label={`${n} stars`}>
+                    <Star
+                      className={`h-5 w-5 ${n <= rating ? "fill-[#A6906F] text-[#A6906F]" : "text-[#1B1B18]/20"}`}
+                    />
+                  </button>
+                ))}
+              </div>
+              <input
+                type="text"
+                value={reviewerName}
+                onChange={(e) => setReviewerName(e.target.value)}
+                placeholder="Your name"
+                required
+                className="h-11 border border-[#1B1B18]/15 bg-white px-3.5 font-sans text-sm text-[#1B1B18] outline-none focus:border-[#2E4B3F]"
+              />
+              <textarea
+                value={reviewMsg}
+                onChange={(e) => setReviewMsg(e.target.value)}
+                placeholder="Tell us what you thought"
+                rows={4}
+                required
+                className="border border-[#1B1B18]/15 bg-white px-3.5 py-3 font-sans text-sm text-[#1B1B18] outline-none focus:border-[#2E4B3F]"
+              />
+              <button
+                type="submit"
+                disabled={submittingReview}
+                className="h-12 bg-[#1B1B18] font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[#F6F2E9] transition-colors disabled:opacity-60 hover:bg-[#2E4B3F]"
+              >
+                {submittingReview ? "Submitting..." : "Submit Review"}
+              </button>
+            </form>
+          )}
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

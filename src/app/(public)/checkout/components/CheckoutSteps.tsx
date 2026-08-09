@@ -7,16 +7,11 @@ interface CheckoutStepsProps {
 
 export default function CheckoutSteps({ currentStep }: CheckoutStepsProps) {
   return (
-    <div className="flex items-center justify-center gap-0 mb-10 select-none">
-      <Step
-        label="Shipping Details"
-        number={1}
-        active={currentStep === 1}
-        done={currentStep === 2}
-      />
+    <div className="mb-10 flex select-none items-center justify-center gap-0">
+      <Step label="Shipping Details" number={1} active={currentStep === 1} done={currentStep === 2} />
       <div
-        className="w-14 sm:w-20 h-[2px] mx-3 transition-colors duration-300"
-        style={{ background: currentStep === 2 ? "#00ADB5" : "#d8d8d8" }}
+        className="mx-3 h-[2px] w-14 transition-colors duration-300 sm:w-20"
+        style={{ background: currentStep === 2 ? "#2E4B3F" : "#1B1B18" + "1A" }}
       />
       <Step label="Payment" number={2} active={currentStep === 2} done={false} />
     </div>
@@ -34,14 +29,11 @@ function Step({
   active: boolean;
   done: boolean;
 }) {
-  const bg = done ? "#00ADB5" : active ? "#222831" : "#393E46";
+  const bg = done ? "#2E4B3F" : active ? "#1B1B18" : "#A6906F";
   return (
-    <div
-      className="flex items-center gap-2.5 transition-opacity duration-300"
-      style={{ opacity: active || done ? 1 : 0.4 }}
-    >
+    <div className="flex items-center gap-2.5 transition-opacity duration-300" style={{ opacity: active || done ? 1 : 0.4 }}>
       <span
-        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0 transition-colors duration-300"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-sans text-sm font-semibold text-[#F6F2E9] transition-colors duration-300"
         style={{ background: bg }}
       >
         {done ? (
@@ -52,9 +44,7 @@ function Step({
           number
         )}
       </span>
-      <span className="text-sm font-medium hidden sm:inline" style={{ color: "#222831" }}>
-        {label}
-      </span>
+      <span className="hidden font-sans text-sm font-medium text-[#1B1B18] sm:inline">{label}</span>
     </div>
   );
 }

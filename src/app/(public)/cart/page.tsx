@@ -62,12 +62,9 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center gap-3" style={{ background: "var(--color-bg)" }}>
-        <div
-          className="w-4 h-4 rounded-full animate-spin"
-          style={{ border: "2px solid var(--color-border-strong)", borderTopColor: "var(--color-green)" }}
-        />
-        <span className="text-xs tracking-[0.25em] uppercase" style={{ color: "var(--color-ink-faint)" }}>
+      <div className="flex min-h-screen items-center justify-center gap-3 bg-[#F6F2E9]">
+        <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#1B1B18]/20 border-t-[#2E4B3F]" />
+        <span className="font-sans text-xs uppercase tracking-[0.25em] text-[#1B1B18]/50">
           Loading Cart
         </span>
       </div>
@@ -76,50 +73,41 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-center px-6" style={{ background: "var(--color-bg)" }}>
-        <div
-          className="w-20 h-20 rounded-full flex items-center justify-center mb-8"
-          style={{ background: "var(--color-green-soft-2)", border: "1px solid rgba(31,74,56,0.18)" }}
-        >
-          <ShoppingBag className="w-7 h-7" style={{ color: "var(--color-green)" }} />
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#F6F2E9] px-6 text-center">
+        <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full border border-[#2E4B3F]/25 bg-[#2E4B3F]/10">
+          <ShoppingBag className="h-7 w-7 text-[#2E4B3F]" />
         </div>
-        <h2 className="font-display text-3xl mb-4" style={{ color: "var(--color-ink)" }}>
-          Your Cart is Empty
-        </h2>
-        <p className="max-w-sm mb-9" style={{ color: "var(--color-ink-muted)", fontSize: "0.95rem", lineHeight: "1.7" }}>
-          Nothing in here yet. Browse the shop to find your next upgrade.
+        <h2 className="mb-4 font-serif text-3xl font-light text-[#1B1B18]">Your Cart is Empty</h2>
+        <p className="mb-9 max-w-sm font-sans text-sm leading-[1.85] text-[#1B1B18]/60">
+          Nothing in here yet. Browse the collections to find your next piece.
         </p>
         <Link
-          href="/shop"
-          className="inline-flex items-center gap-2 px-8 py-4 rounded-sm text-xs font-semibold tracking-[0.2em] uppercase transition-transform duration-300 hover:-translate-y-0.5"
-          style={{ background: "var(--color-green)", color: "#F7F7F4" }}
+          href="/collections"
+          className="inline-flex items-center gap-2 bg-[#1B1B18] px-8 py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[#F6F2E9] transition-colors duration-300 hover:bg-[#2E4B3F]"
         >
-          Browse Shop <ArrowRight className="w-3.5 h-3.5" />
+          Browse Collections <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
     );
   }
 
   return (
-    <div ref={containerRef} className="min-h-screen pt-36 pb-28 px-6" style={{ background: "var(--color-bg)" }}>
-      <div className="max-w-7xl mx-auto">
+    <div ref={containerRef} className="min-h-screen bg-[#F6F2E9] px-6 pb-28 pt-36">
+      <div className="mx-auto max-w-7xl">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-[9px] font-medium uppercase tracking-[0.4em] mb-8" style={{ color: "var(--color-ink-faint)" }}>
-          <Link href="/" style={{ color: "var(--color-ink-faint)" }}>Home</Link>
-          <ChevronRight size={9} style={{ color: "var(--color-brass)" }} />
-          <span style={{ color: "var(--color-green)" }}>Cart</span>
+        <div className="mb-8 flex items-center gap-2 font-sans text-[9px] font-medium uppercase tracking-[0.4em] text-[#1B1B18]/40">
+          <Link href="/" className="hover:text-[#1B1B18]/60">Home</Link>
+          <ChevronRight size={9} className="text-[#A6906F]" />
+          <span className="text-[#2E4B3F]">Cart</span>
         </div>
 
-        <h1
-          className="font-display font-light mb-14"
-          style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: "var(--color-ink)", letterSpacing: "-0.01em" }}
-        >
-          Your Cart <span style={{ color: "var(--color-green)" }}>({items.length})</span>
+        <h1 className="mb-14 font-serif text-3xl font-light tracking-[-0.01em] text-[#1B1B18] md:text-4xl">
+          Your Cart <span className="text-[#2E4B3F]">({items.length})</span>
         </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
           {/* Item list */}
-          <div className="lg:col-span-2 space-y-5">
+          <div className="space-y-5 lg:col-span-2">
             {items.map((item) => (
               <div
                 key={item.cartItemId}
@@ -127,50 +115,44 @@ export default function CartPage() {
                   if (el) rowRefs.current.set(item.cartItemId, el);
                   else rowRefs.current.delete(item.cartItemId);
                 }}
-                className="cart-item-row flex flex-col sm:flex-row gap-6 p-6 rounded-sm overflow-hidden"
-                style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "0 15px 35px rgba(28,28,26,0.05)" }}
+                className="cart-item-row flex flex-col gap-6 border border-[#1B1B18]/10 bg-white p-6 shadow-[0_15px_35px_rgba(27,27,24,0.04)] sm:flex-row"
               >
-                <div className="w-24 h-24 rounded-sm overflow-hidden shrink-0" style={{ background: "var(--color-surface-alt)", border: "1px solid var(--color-border)" }}>
-                  <img src={resolveImageUrl(item.imageUrl)} alt={item.productName} className="w-full h-full object-cover" />
+                <div className="h-24 w-24 shrink-0 overflow-hidden border border-[#1B1B18]/10 bg-[#EDE6D8]">
+                  <img src={resolveImageUrl(item.imageUrl)} alt={item.productName} className="h-full w-full object-cover" />
                 </div>
 
-                <div className="flex-1 flex flex-col justify-between">
+                <div className="flex flex-1 flex-col justify-between">
                   <div>
-                    <h3 className="font-display text-lg font-medium" style={{ color: "var(--color-ink)" }}>{item.productName}</h3>
-                    <p className="text-xs mt-1" style={{ color: "var(--color-ink-faint)" }}>Spec: {item.size}</p>
+                    <h3 className="font-serif text-lg font-normal text-[#1B1B18]">{item.productName}</h3>
+                    <p className="mt-1 font-sans text-xs text-[#1B1B18]/45">Spec: {item.size}</p>
                   </div>
-                  <div className="text-sm font-semibold mt-4 sm:mt-0" style={{ color: "var(--color-green)" }}>
-                    £{item.currentPrice}
+                  <div className="mt-4 font-sans text-sm font-semibold text-[#2E4B3F] sm:mt-0">
+                    ₹{item.currentPrice.toLocaleString()}
                   </div>
                 </div>
 
-                <div className="flex items-center sm:flex-col justify-between sm:justify-center gap-4">
-                  <div className="flex items-center rounded-sm" style={{ border: "1px solid var(--color-border)" }}>
+                <div className="flex items-center justify-between gap-4 sm:flex-col sm:justify-center">
+                  <div className="flex items-center border border-[#1B1B18]/10">
                     <button
                       onClick={() => cartService.decrement(item.variantId)}
-                      className="w-8 h-8 flex items-center justify-center transition-colors duration-200"
-                      style={{ color: "var(--color-ink-muted)" }}
+                      className="flex h-8 w-8 items-center justify-center text-[#1B1B18]/60 transition-colors duration-200 hover:text-[#1B1B18]"
                     >
-                      <Minus className="w-3.5 h-3.5" />
+                      <Minus className="h-3.5 w-3.5" />
                     </button>
-                    <span className="text-xs w-7 text-center" style={{ color: "var(--color-ink)" }}>{item.quantity}</span>
+                    <span className="w-7 text-center font-sans text-xs text-[#1B1B18]">{item.quantity}</span>
                     <button
                       onClick={() => cartService.increment(item.variantId)}
-                      className="w-8 h-8 flex items-center justify-center transition-colors duration-200"
-                      style={{ color: "var(--color-ink-muted)" }}
+                      className="flex h-8 w-8 items-center justify-center text-[#1B1B18]/60 transition-colors duration-200 hover:text-[#1B1B18]"
                     >
-                      <Plus className="w-3.5 h-3.5" />
+                      <Plus className="h-3.5 w-3.5" />
                     </button>
                   </div>
                   <button
                     onClick={() => handleRemove(item.cartItemId)}
                     aria-label="Remove item"
-                    className="transition-colors duration-300"
-                    style={{ color: "var(--color-ink-faint)" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-brass)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-ink-faint)")}
+                    className="text-[#1B1B18]/35 transition-colors duration-300 hover:text-[#5C2A32]"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
               </div>
@@ -179,39 +161,32 @@ export default function CartPage() {
 
           {/* Order summary */}
           <div className="lg:col-span-1">
-            <div
-              className="p-8 rounded-sm sticky top-32"
-              style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "0 20px 45px rgba(28,28,26,0.07)" }}
-            >
-              <h2
-                className="text-xs uppercase tracking-[0.25em] mb-6 pb-4"
-                style={{ color: "var(--color-ink-faint)", borderBottom: "1px solid var(--color-border)" }}
-              >
+            <div className="sticky top-32 border border-[#1B1B18]/10 bg-white p-8 shadow-[0_20px_45px_rgba(27,27,24,0.05)]">
+              <h2 className="mb-6 border-b border-[#1B1B18]/10 pb-4 font-sans text-[11px] uppercase tracking-[0.25em] text-[#1B1B18]/45">
                 Order Summary
               </h2>
 
-              <div className="space-y-4 text-sm" style={{ color: "var(--color-ink-muted)" }}>
+              <div className="space-y-4 font-sans text-sm text-[#1B1B18]/60">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span style={{ color: "var(--color-ink)" }}>£{subtotal.toFixed(2)}</span>
+                  <span className="text-[#1B1B18]">₹{subtotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
-                  <span style={{ color: "var(--color-ink)" }}>Calculated at checkout</span>
+                  <span className="text-[#1B1B18]">Calculated at checkout</span>
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 flex justify-between items-end" style={{ borderTop: "1px solid var(--color-border)" }}>
-                <span className="text-[10px] uppercase tracking-[0.25em]" style={{ color: "var(--color-ink-faint)" }}>Total</span>
-                <span className="font-display text-3xl" style={{ color: "var(--color-green)" }}>£{subtotal.toFixed(2)}</span>
+              <div className="mt-8 flex items-end justify-between border-t border-[#1B1B18]/10 pt-6">
+                <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#1B1B18]/45">Total</span>
+                <span className="font-serif text-2xl text-[#2E4B3F]">₹{subtotal.toLocaleString()}</span>
               </div>
 
               <Link
                 href="/checkout"
-                className="mt-10 w-full flex items-center justify-center gap-2 rounded-sm py-4 text-xs font-semibold tracking-[0.2em] uppercase transition-transform duration-300 hover:-translate-y-0.5"
-                style={{ background: "var(--color-green)", color: "#F7F7F4" }}
+                className="mt-10 flex w-full items-center justify-center gap-2 bg-[#1B1B18] py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[#F6F2E9] transition-colors duration-300 hover:bg-[#2E4B3F]"
               >
-                Proceed to Checkout <ArrowRight className="w-3.5 h-3.5" />
+                Proceed to Checkout <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
           </div>

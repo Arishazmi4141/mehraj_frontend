@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/src/context/CartContext";
 import { requestAPI } from "@/src/lib/api-client";
-import { guestService } from "@/src/services/guest.service"; 
+import { guestService } from "@/src/services/guest.service";
 import { cartService } from "@/src/services/cart.service";
 import {
   CheckoutForm,
@@ -47,7 +47,7 @@ export default function CheckoutPage() {
 
     try {
       const payload = {
-        guestId: guestService.getOrCreateGuestId(), 
+        guestId: guestService.getOrCreateGuestId(),
         amount: total,
         currency: "INR",
         name: submitted.fullName,
@@ -77,7 +77,7 @@ export default function CheckoutPage() {
 
   async function handlePaymentSuccess(data: { razorpay_payment_id: string }) {
     try {
-      const guestId = guestService.getOrCreateGuestId(); // ✅ fixed
+      const guestId = guestService.getOrCreateGuestId();
       await requestAPI(`/cart/${guestId}`, { method: "DELETE" }, true);
     } catch {
       // non-blocking — order-success page clears again as a safety net
@@ -98,28 +98,23 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen py-10 px-4 sm:px-6" style={{ background: "#EEEEEE" }}>
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-2xl sm:text-3xl font-bold text-center mb-8" style={{ color: "#222831" }}>
+    <div className="min-h-screen bg-[#F6F2E9] px-4 py-10 pt-32 sm:px-6">
+      <div className="mx-auto max-w-6xl">
+        <h1 className="mb-8 text-center font-serif text-2xl font-light text-[#1B1B18] sm:text-3xl">
           Checkout
         </h1>
 
         <CheckoutSteps currentStep={currentStep} />
 
         {errorMessage && currentStep === 1 && (
-          <div
-            className="max-w-2xl mx-auto mb-6 px-4 py-3 rounded-lg text-sm"
-            style={{ background: "#fdecea", color: "#7a2e29", border: "1px solid #f3c4c0" }}
-          >
+          <div className="mx-auto mb-6 max-w-2xl border border-[#5C2A32]/25 bg-[#5C2A32]/8 px-4 py-3 font-sans text-sm text-[#5C2A32]">
             {errorMessage}
           </div>
         )}
 
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
-          <div className="flex-1 w-full">
-            {currentStep === 1 && (
-              <ShippingForm form={form} loading={loading} onSubmit={handleShippingSubmitted} />
-            )}
+        <div className="flex flex-col items-start gap-6 lg:flex-row">
+          <div className="w-full flex-1">
+            {currentStep === 1 && <ShippingForm form={form} loading={loading} onSubmit={handleShippingSubmitted} />}
             {currentStep === 2 && (
               <PaymentForm
                 form={form}

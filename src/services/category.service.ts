@@ -4,7 +4,8 @@ import { requestAPI } from "@/src/lib/api-client";
 export interface Category {
   id: number;
   name: string;
-  slug?: string;
+  description?: string;
+  imageUrl?: string;
 }
 
 export const categoryService = {

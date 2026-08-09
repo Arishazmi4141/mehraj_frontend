@@ -5,6 +5,9 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { categoryService, Category } from "@/src/services/category.service";
 
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&q=80&w=900";
+
 export default function CollectionsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,16 +55,29 @@ export default function CollectionsPage() {
                 className="group relative flex flex-col overflow-hidden border border-[#1B1B18]/10 bg-white"
               >
                 <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#EDE6D8]">
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#1B1B18]/70 via-[#1B1B18]/10 to-transparent" />
+                  <img
+                    src={category.imageUrl || FALLBACK_IMAGE}
+                    alt={category.name}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1B1B18]/75 via-[#1B1B18]/15 to-transparent" />
                   <span className="absolute bottom-5 left-5 right-5 font-serif text-2xl font-light text-[#F6F2E9]">
                     {category.name}
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-6">
-                  <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.25em] text-[#2E4B3F]">
-                    View Collection
-                  </span>
-                  <ArrowRight className="h-3.5 w-3.5 text-[#2E4B3F] transition-transform duration-300 group-hover:translate-x-1" />
+                <div className="flex flex-1 flex-col p-6">
+                  {category.description && (
+                    <p className="mb-4 flex-1 font-sans text-[12px] leading-[1.75] text-[#1B1B18]/55">
+                      {category.description}
+                    </p>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.25em] text-[#2E4B3F]">
+                      View Collection
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5 text-[#2E4B3F] transition-transform duration-300 group-hover:translate-x-1" />
+                  </div>
                 </div>
               </Link>
             ))}

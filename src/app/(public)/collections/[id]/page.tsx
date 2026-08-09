@@ -32,6 +32,13 @@ export default function CollectionDetailPage() {
 
   return (
     <main className="min-h-screen bg-[#F6F2E9]">
+      {!loading && category?.imageUrl && (
+        <div className="relative h-[42vh] w-full overflow-hidden bg-[#EDE6D8]">
+          <img src={category.imageUrl} alt={category.name} className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1B1B18]/70 via-[#1B1B18]/10 to-transparent" />
+        </div>
+      )}
+
       <section className="mx-auto max-w-7xl px-6 py-24 md:px-12 md:py-32">
         <div className="mb-16 text-center">
           <div className="mb-4 flex items-center justify-center gap-3">
@@ -44,6 +51,11 @@ export default function CollectionDetailPage() {
           <h1 className="font-serif text-3xl font-light leading-[1.12] text-[#1B1B18] md:text-[2.8rem]">
             {loading ? "Loading…" : category?.name || "This Collection"}
           </h1>
+          {category?.description && (
+            <p className="mx-auto mt-4 max-w-lg font-sans text-xs leading-[1.85] text-[#1B1B18]/60">
+              {category.description}
+            </p>
+          )}
         </div>
 
         {loading ? (

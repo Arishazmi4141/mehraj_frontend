@@ -6,10 +6,12 @@ import SalonSection from "@/src/app/(public)/home/components/SalonSection";
 import CraftSection from "@/src/app/(public)/home/components/CraftSection";
 import JournalSection from "@/src/app/(public)/home/components/JournalSection";
 import ClientServicesSection from "@/src/app/(public)/home/components/ClientServicesSection";
+import FloatingSidebarNav from "@/src/app/(public)/home/components/FloatingSidebarNav";
 
 export default function HomePage() {
   return (
     <main className="bg-[#F6F2E9] min-h-screen">
+      <FloatingSidebarNav />
       <HeroSection />
       <TheHouseSection />
       <CollectionsSection />

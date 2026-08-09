@@ -12,7 +12,7 @@ interface ShippingFormProps {
 }
 
 const inputClass =
-  "w-full h-11 px-3.5 rounded-lg text-sm bg-white border outline-none transition-colors focus:ring-2";
+  "w-full h-11 px-3.5 font-sans text-sm bg-[#F6F2E9] border outline-none transition-colors focus:ring-2 text-[#1B1B18] placeholder:text-[#1B1B18]/35";
 
 export default function ShippingForm({ form: initialForm, loading, onSubmit }: ShippingFormProps) {
   const [form, setForm] = useState<CheckoutForm>(initialForm);
@@ -28,8 +28,8 @@ export default function ShippingForm({ form: initialForm, loading, onSubmit }: S
   const invalid = (ok: boolean) => submitted && !ok;
 
   const borderStyle = (ok: boolean) => ({
-    borderColor: invalid(ok) ? "#e0554f" : "#dcdcdc",
-    ["--tw-ring-color" as any]: "#00ADB540",
+    borderColor: invalid(ok) ? "#5C2A32" : "rgba(27,27,24,0.15)",
+    ["--tw-ring-color" as any]: "rgba(46,75,63,0.25)",
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -40,10 +40,8 @@ export default function ShippingForm({ form: initialForm, loading, onSubmit }: S
   }
 
   return (
-    <div className="rounded-2xl p-6 sm:p-8" style={{ background: "#ffffff", border: "1px solid #e2e2e2" }}>
-      <h2 className="text-lg font-semibold mb-6" style={{ color: "#222831" }}>
-        Shipping &amp; Billing Details
-      </h2>
+    <div className="border border-[#1B1B18]/10 bg-white p-6 sm:p-8">
+      <h2 className="mb-6 font-serif text-lg font-light text-[#1B1B18]">Shipping &amp; Billing Details</h2>
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
         <Field label="Full Name" required>
@@ -57,7 +55,7 @@ export default function ShippingForm({ form: initialForm, loading, onSubmit }: S
           />
         </Field>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Field label="Email" required>
             <input
               type="email"
@@ -91,7 +89,7 @@ export default function ShippingForm({ form: initialForm, loading, onSubmit }: S
           />
         </Field>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
           <Field label="City" required>
             <input
               type="text"
@@ -125,20 +123,17 @@ export default function ShippingForm({ form: initialForm, loading, onSubmit }: S
         </div>
 
         {submitted && !isCheckoutFormValid(form) && (
-          <p className="text-sm" style={{ color: "#e0554f" }}>
-            Please fill all required fields correctly.
-          </p>
+          <p className="font-sans text-sm text-[#5C2A32]">Please fill all required fields correctly.</p>
         )}
 
         <button
           type="submit"
           disabled={loading}
-          className="mt-2 h-12 rounded-lg text-sm font-semibold text-white transition-opacity disabled:opacity-60 flex items-center justify-center gap-2"
-          style={{ background: "#222831" }}
+          className="mt-2 flex h-12 items-center justify-center gap-2 bg-[#1B1B18] font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[#F6F2E9] transition-colors disabled:opacity-60 hover:bg-[#2E4B3F]"
         >
           {loading ? (
             <>
-              <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
               Setting up payment...
             </>
           ) : (
@@ -150,19 +145,11 @@ export default function ShippingForm({ form: initialForm, loading, onSubmit }: S
   );
 }
 
-function Field({
-  label,
-  required,
-  children,
-}: {
-  label: string;
-  required?: boolean;
-  children: React.ReactNode;
-}) {
+function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-xs font-medium" style={{ color: "#393E46" }}>
-        {label} {required && <span style={{ color: "#00ADB5" }}>*</span>}
+      <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-[#1B1B18]/55">
+        {label} {required && <span className="text-[#2E4B3F]">*</span>}
       </span>
       {children}
     </label>
