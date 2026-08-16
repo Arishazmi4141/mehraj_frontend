@@ -17,7 +17,6 @@ export default function HomePage() {
       <TheHouseSection />
       <CollectionsSection />
       <TrendingSection />
-      <AtelierSection />
       <SalonSection />
       <CraftSection />
       <JournalSection />
