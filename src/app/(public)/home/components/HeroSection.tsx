@@ -5,17 +5,22 @@ import Link from "next/link";
 import gsap from "gsap";
 
 /**
- * Design tokens for MehRāj (light theme) — pulled from :root CSS variables
- * var(--color-ink)         Royal Charcoal   — headings, primary text
- * var(--color-bg)          Ivory Silk       — base background
- * var(--color-brass)       Antique Bronze   — dividers, secondary accent
- * var(--color-green)       Imperial Gold    — primary accent (CTAs, active states)
- * var(--color-green-deep)  Imperial Gold, deep — CTA fill
- * Wine #5C2A32 kept as a one-off jewel accent for this hero only (no CSS var defined for it yet)
+ * Design tokens for MehRāj (premium dark theme) — from the logo palette
+ * var(--color-ink)         #0A0200  — near-black canvas, base background
+ * var(--color-wine)        #3D1214  — deep wine, panels / CTA fill / accents
+ * var(--color-brass)       #756961  — warm taupe, dividers, secondary text
+ * var(--color-ivory)       #EDE7DF  — off-white, used ONLY for body text
+ *                                      readability on the dark canvas
+ *                                      (not in your 3-color logo palette,
+ *                                      kept as close to ivory/brass as
+ *                                      possible so it doesn't read as a
+ *                                      4th brand color — swap the hex if
+ *                                      you already have an ivory token)
  *
- * NOTE: swap the two <img> src values below for real product photography
- * (e.g. /products/hero-main.jpg, /products/hero-accent.jpg). Until then the
- * gradient fallback keeps the panels looking intentional, not broken.
+ * Logo: /public/logo-bg.png — two-soldier crest with "MEHRĀJ" wordmark
+ * baked into the PNG. It now replaces the old text wordmark entirely,
+ * sitting where "MehRāj" used to be, with a soft wine glow behind it
+ * for a premium/emblem feel.
  */
 
 function waitUntilVisible(el: HTMLElement, cb: () => void): () => void {
@@ -39,9 +44,9 @@ function waitUntilVisible(el: HTMLElement, cb: () => void): () => void {
 export default function HeroSection() {
   const containerRef = useRef<HTMLElement>(null);
   const eyebrowRef = useRef<HTMLSpanElement>(null);
-  const monogramRef = useRef<HTMLDivElement>(null);
+  const logoGlowRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLImageElement>(null);
   const ruleRef = useRef<HTMLDivElement>(null);
-  const wordmarkRef = useRef<HTMLHeadingElement>(null);
   const taglineRef = useRef<HTMLParagraphElement>(null);
   const descRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -62,22 +67,22 @@ export default function HeroSection() {
 
         tl.fromTo(eyebrowRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.8 });
         tl.fromTo(
-          monogramRef.current,
-          { opacity: 0, scale: 0.9 },
-          { opacity: 1, scale: 1, duration: 1 },
+          logoGlowRef.current,
+          { opacity: 0, scale: 0.85 },
+          { opacity: 1, scale: 1, duration: 1.2 },
           "-=0.4"
+        );
+        tl.fromTo(
+          logoRef.current,
+          { opacity: 0, y: 20, scale: 0.94 },
+          { opacity: 1, y: 0, scale: 1, duration: 1.1 },
+          "-=0.9"
         );
         tl.fromTo(
           ruleRef.current,
           { width: 0, opacity: 0 },
           { width: "3rem", opacity: 1, duration: 0.8 },
-          "-=0.6"
-        );
-        tl.fromTo(
-          wordmarkRef.current,
-          { opacity: 0, y: 24 },
-          { opacity: 1, y: 0, duration: 1.1 },
-          "-=0.4"
+          "-=0.5"
         );
         tl.fromTo(
           taglineRef.current,
@@ -133,51 +138,68 @@ export default function HeroSection() {
   return (
     <section
       ref={containerRef}
-      className="relative flex min-h-screen w-full flex-col overflow-hidden bg-[var(--color-bg)] text-[var(--color-ink)]"
+      className="relative flex min-h-[95vh] w-full flex-col overflow-hidden"
+      style={{ background: "#0A0200", color: "#EDE7DF" }}
       id="hero"
     >
       {/* Subtle woven-fabric texture line grid */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.05]"
+        className="pointer-events-none absolute inset-0 opacity-[0.06]"
         style={{
           backgroundImage:
-            "linear-gradient(to right, var(--color-ink) 1px, transparent 1px), linear-gradient(to bottom, var(--color-ink) 1px, transparent 1px)",
+            "linear-gradient(to right, #756961 1px, transparent 1px), linear-gradient(to bottom, #756961 1px, transparent 1px)",
           backgroundSize: "64px 64px",
         }}
         aria-hidden="true"
       />
 
-      <div className="relative z-10 grid flex-1 grid-cols-1 items-center gap-16 px-6 pt-28 sm:px-10 lg:grid-cols-[1.05fr_1fr] lg:gap-10 lg:px-20 lg:pt-24">
+      {/* Deep wine vignette so the near-black canvas doesn't feel flat */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(120% 90% at 15% 20%, rgba(61,18,20,0.55) 0%, rgba(10,2,0,0) 55%)",
+        }}
+        aria-hidden="true"
+      />
+
+      <div className="relative z-10 grid flex-1 grid-cols-1 items-center gap-10 px-6 pt-16 sm:px-10 sm:pt-20 lg:grid-cols-[1.05fr_1fr] lg:gap-10 lg:px-20 lg:pt-14">
         {/* Left: identity + copy */}
         <div className="flex flex-col items-start text-left">
           <span
             ref={eyebrowRef}
-            className="font-sans text-[10px] font-semibold uppercase tracking-[0.4em] text-[#5C2A32] opacity-0"
+            className="font-sans text-[10px] font-semibold uppercase tracking-[0.4em] opacity-0"
+            style={{ color: "#B98F8F" }}
           >
             Atelier · Est. Rajkot
           </span>
 
-          <div className="mt-8 flex items-center gap-4">
+          {/* Logo crest — replaces the old text wordmark */}
+          <div className="relative mt-8">
             <div
-              ref={monogramRef}
-              className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border"
-              style={{ borderColor: "color-mix(in srgb, var(--color-brass) 50%, transparent)" }}
-            >
-              <span className="font-serif text-xl italic text-[#5C2A32]">M</span>
-            </div>
-            <div ref={ruleRef} className="h-px w-0 bg-[var(--color-brass)]" aria-hidden="true" />
+              ref={logoGlowRef}
+              className="pointer-events-none absolute -inset-10 opacity-0"
+              style={{
+                background:
+                  "radial-gradient(closest-side, rgba(61,18,20,0.65), rgba(61,18,20,0) 72%)",
+              }}
+              aria-hidden="true"
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              ref={logoRef}
+              src="/logo-bg.png"
+              alt="MehRāj — twin soldier crest"
+              className="relative h-28 w-auto object-contain drop-shadow-[0_12px_30px_rgba(0,0,0,0.6)] sm:h-32 lg:h-40"
+            />
           </div>
 
-          <h1
-            ref={wordmarkRef}
-            className="mt-6 font-serif text-[3rem] font-light leading-[1.02] tracking-[0.02em] text-[var(--color-ink)] sm:text-[4rem] lg:text-[5.25rem]"
-          >
-            Meh<span className="italic text-[#5C2A32]">Rāj</span>
-          </h1>
+          <div ref={ruleRef} className="mt-6 h-px w-0" style={{ background: "#756961" }} aria-hidden="true" />
 
           <p
             ref={taglineRef}
-            className="mt-6 font-sans text-[11px] font-semibold uppercase tracking-[0.4em] text-[var(--color-brass)]"
+            className="mt-6 font-sans text-[11px] font-semibold uppercase tracking-[0.4em]"
+            style={{ color: "#756961" }}
           >
             Not Cut From The Common Cloth
           </p>
@@ -185,7 +207,7 @@ export default function HeroSection() {
           <p
             ref={descRef}
             className="mt-6 max-w-md font-sans text-[15px] leading-relaxed"
-            style={{ color: "color-mix(in srgb, var(--color-ink) 70%, transparent)" }}
+            style={{ color: "rgba(237,231,223,0.72)" }}
           >
             Heirloom textiles and hand-finished tailoring, cut for the modern
             silhouette. Every piece made to order in-house.
@@ -195,18 +217,18 @@ export default function HeroSection() {
             <Link
               href="/collections"
               className="inline-flex items-center rounded-sm px-8 py-3.5 font-sans text-[12px] font-semibold uppercase tracking-[0.2em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{ background: "var(--color-green-deep)", color: "var(--color-surface)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--color-green)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "var(--color-green-deep)")}
+              style={{ background: "#3D1214", color: "#EDE7DF" }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#54181B")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#3D1214")}
             >
               Explore The Edit
             </Link>
             <Link
               href="/lookbook"
-              className="inline-flex items-center rounded-sm border px-8 py-3.5 font-sans text-[12px] font-semibold uppercase tracking-[0.2em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-ink)]"
-              style={{ borderColor: "color-mix(in srgb, var(--color-ink) 30%, transparent)", color: "var(--color-ink)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--color-ink)")}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = "color-mix(in srgb, var(--color-ink) 30%, transparent)")}
+              className="inline-flex items-center rounded-sm border px-8 py-3.5 font-sans text-[12px] font-semibold uppercase tracking-[0.2em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ borderColor: "rgba(117,105,97,0.5)", color: "#EDE7DF" }}
+              onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#756961")}
+              onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(117,105,97,0.5)")}
             >
               View Lookbook
             </Link>
@@ -214,13 +236,14 @@ export default function HeroSection() {
         </div>
 
         {/* Right: product mosaic */}
-        <div className="relative mx-auto h-[420px] w-full max-w-md sm:h-[480px] lg:mx-0 lg:h-[620px] lg:max-w-none">
+        <div className="relative mx-auto h-[320px] w-full max-w-md sm:h-[380px] lg:mx-0 lg:h-[460px] lg:max-w-none">
           {/* Accent panel */}
           <div
             ref={panelAccentRef}
             className="absolute right-0 top-0 h-[42%] w-[58%] overflow-hidden rounded-sm shadow-xl opacity-0"
           >
-            <div className="h-full w-full bg-gradient-to-br from-[#5C2A32] via-[#5C2A32]/90 to-[var(--color-ink)]">
+            <div className="h-full w-full" style={{ background: "linear-gradient(135deg, #3D1214, rgba(61,18,20,0.9), #0A0200)" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/products/hero-accent.jpg"
                 alt="Wine silk stole, close detail"
@@ -241,9 +264,10 @@ export default function HeroSection() {
               className="h-full w-full"
               style={{
                 backgroundImage:
-                  "linear-gradient(to bottom, color-mix(in srgb, var(--color-brass) 40%, transparent), var(--color-bg), color-mix(in srgb, var(--color-green) 30%, transparent))",
+                  "linear-gradient(to bottom, rgba(117,105,97,0.4), #0A0200, rgba(61,18,20,0.35))",
               }}
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/products/hero-main.jpg"
                 alt="Charcoal linen kurta on model"
@@ -258,17 +282,17 @@ export default function HeroSection() {
           {/* Floating product tag */}
           <div
             ref={tagRef}
-            className="absolute bottom-6 left-[52%] w-[15rem] -translate-x-1/2 rounded-sm border bg-[var(--color-bg)] px-5 py-4 opacity-0 shadow-lg lg:left-[62%]"
-            style={{ borderColor: "color-mix(in srgb, var(--color-brass) 40%, transparent)" }}
+            className="absolute bottom-6 left-[52%] w-[15rem] -translate-x-1/2 rounded-sm border px-5 py-4 opacity-0 shadow-lg lg:left-[62%]"
+            style={{ borderColor: "rgba(117,105,97,0.4)", background: "#150605" }}
           >
-            <p className="font-serif text-[15px] italic leading-tight text-[var(--color-ink)]">
+            <p className="font-serif text-[15px] italic leading-tight" style={{ color: "#EDE7DF" }}>
               The Zardozi Sherwani
             </p>
             <div className="mt-2 flex items-center justify-between">
-              <span className="font-sans text-[11px] uppercase tracking-[0.2em] text-[var(--color-brass)]">
+              <span className="font-sans text-[11px] uppercase tracking-[0.2em]" style={{ color: "#756961" }}>
                 Festive Edit
               </span>
-              <span className="font-sans text-[13px] font-semibold text-[var(--color-green)]">
+              <span className="font-sans text-[13px] font-semibold" style={{ color: "#C99A6A" }}>
                 ₹24,500
               </span>
             </div>
@@ -279,8 +303,8 @@ export default function HeroSection() {
       {/* Category ticker */}
       <div
         ref={tickerRef}
-        className="relative z-10 mt-16 overflow-hidden border-y py-3 opacity-0"
-        style={{ borderColor: "color-mix(in srgb, var(--color-ink) 10%, transparent)" }}
+        className="relative z-10 mt-8 overflow-hidden border-y py-3 opacity-0"
+        style={{ borderColor: "rgba(117,105,97,0.2)" }}
       >
         <div className="ticker-track flex w-max gap-16 whitespace-nowrap">
           {Array.from({ length: 2 }).map((_, i) => (
@@ -290,7 +314,7 @@ export default function HeroSection() {
                   <span
                     key={label}
                     className="font-sans text-[11px] font-medium uppercase tracking-[0.35em]"
-                    style={{ color: "color-mix(in srgb, var(--color-ink) 50%, transparent)" }}
+                    style={{ color: "rgba(117,105,97,0.8)" }}
                   >
                     {label}
                   </span>

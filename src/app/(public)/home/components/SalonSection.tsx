@@ -83,15 +83,6 @@ export default function SalonSection() {
           >
             Book a Consultant
           </Link>
-          <a
-            href="https://wa.me/910000000000"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 border border-[#1B1B18]/25 px-8 py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[#1B1B18] transition-colors duration-300 hover:border-[#5C2A32] hover:text-[#5C2A32]"
-          >
-            <MessageCircle className="h-4 w-4" strokeWidth={1.5} />
-            Message Us Directly
-          </a>
         </div>
       </div>
     </section>
