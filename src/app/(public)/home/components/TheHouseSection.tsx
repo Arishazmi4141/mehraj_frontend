@@ -6,6 +6,14 @@ import { useGsap } from "@/src/hooks/useGsap";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/**
+ * Sits directly below HeroSection (bg #0A0200). The gradient here now
+ * starts at that exact same dark ink so the seam between Hero and The
+ * House disappears — it then eases through a wine-tinted transition
+ * (#2B1210, echoing the #3D1214 brand wine) before opening up into the
+ * original gold-to-ivory light theme.
+ */
+
 export default function TheHouseSection() {
   const scopeRef = useGsap<HTMLElement>(() => {
     gsap.fromTo(
@@ -41,23 +49,23 @@ export default function TheHouseSection() {
       className="relative overflow-hidden"
       style={{
         background:
-          "linear-gradient(180deg, #1B1B18 0%, #3A342C 22%, #C9AE8C 55%, #F6F2E9 100%)",
+          "linear-gradient(180deg, #0A0200 0%, #2B1210 16%, #C9AE8C 55%, #F6F2E9 100%)",
       }}
     >
       <div className="house-inner mx-auto max-w-3xl px-6 py-28 text-center md:py-40">
         <div className="house-eyebrow mb-6 flex items-center justify-center gap-3">
-          <span className="h-px w-8 bg-[#F6F2E9]/60" />
-          <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.4em] text-[#F6F2E9]/80">
+          <span className="h-px w-8 bg-[#EDE7DF]/60" />
+          <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.4em] text-[#EDE7DF]/80">
             The House
           </span>
-          <span className="h-px w-8 bg-[#F6F2E9]/60" />
+          <span className="h-px w-8 bg-[#EDE7DF]/60" />
         </div>
 
-        <h2 className="house-title font-serif text-3xl font-light leading-[1.15] text-[#F6F2E9] md:text-5xl">
+        <h2 className="house-title font-serif text-3xl font-light leading-[1.15] text-[#EDE7DF] md:text-5xl">
           The House of <span className="italic">MehRāj</span>
         </h2>
 
-        <p className="house-body mx-auto mt-8 max-w-xl font-sans text-sm leading-[1.9] text-[#F6F2E9]/85 md:text-base">
+        <p className="house-body mx-auto mt-8 max-w-xl font-sans text-sm leading-[1.9] text-[#EDE7DF]/85 md:text-base">
           MehRāj was founded on a simple conviction — that clothing should carry the
           weight of intention. Every collection begins not with a trend, but with a
           question of craft: how a seam falls, how a fabric ages, how a garment is

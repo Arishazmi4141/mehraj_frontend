@@ -19,11 +19,13 @@ import { useCart } from "@/src/context/CartContext";
 const NAV_LINKS = [
   { label: "The House", href: "/the-house" },
   { label: "Collections", href: "/collections" },
-  { label: "The Atelier", href: "/atelier" },
+  { label: "About-us", href: "/about" },
+  { label: "Services", href: "/services" },
   { label: "The Salon", href: "/salon" },
   { label: "The Craft", href: "/the-craft" },
   { label: "The Journal", href: "/journal" },
   { label: "Client Services", href: "/client-services" },
+  { label: "Contact Us", href: "/contact" },
 ];
 
 export default function Navbar() {

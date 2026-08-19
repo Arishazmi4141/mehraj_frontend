@@ -220,9 +220,7 @@ body {
   /* Primary accent — Imperial Gold (CTAs, active states, hovers) */
   --color-green: #C6A15B;
   --color-green-deep: #A9853F;
-  --color-green-soft: rgba(198, 161, 91, 0.08);
-  --color-green-soft-2: rgba(198, 161, 91, 0.22);
-
+ 
   /* Secondary accent — Antique Bronze (subheadings, meta accents) */
   --color-brass: #A67C4E;
   --color-brass-soft: rgba(166, 124, 78, 0.12);
