@@ -3,132 +3,118 @@
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ArrowRight } from "lucide-react";
 import { useGsap } from "@/src/hooks/useGsap";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ARTICLES = [
-  {
-    slug: "art-of-the-bandhgala",
-    title: "The Art of the Bandhgala",
-    kicker: "Style Guide",
-    image: "https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&q=80&w=800",
-  },
-  {
-    slug: "inside-the-embroidery-room",
-    title: "Inside the Embroidery Room",
-    kicker: "Craftsmanship",
-    image: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=800",
-  },
-  {
-    slug: "a-history-of-the-sherwani",
-    title: "A History of the Sherwani",
-    kicker: "Cultural History",
-    image: "https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&q=80&w=800",
-  },
-];
-
 export default function JournalSection() {
   const scopeRef = useGsap<HTMLElement>(() => {
     gsap.fromTo(
-      ".journal-header > *",
+      ".journal-content > *",
       { opacity: 0, y: 22 },
       {
         opacity: 1,
         y: 0,
-        duration: 0.7,
-        stagger: 0.1,
+        duration: 0.8,
+        stagger: 0.12,
         ease: "power3.out",
-        scrollTrigger: { trigger: ".journal-header", start: "top 85%" },
+        scrollTrigger: { trigger: ".journal-content", start: "top 82%" },
       }
     );
     gsap.fromTo(
-      ".journal-card",
-      { opacity: 0, y: 34 },
+      ".journal-svg path",
+      { strokeDashoffset: 60 },
       {
-        opacity: 1,
-        y: 0,
-        duration: 0.7,
-        stagger: 0.1,
-        ease: "expo.out",
-        scrollTrigger: { trigger: ".journal-grid", start: "top 82%" },
-      }
-    );
-    gsap.fromTo(
-      ".journal-cta",
-      { opacity: 0, y: 16 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.7,
-        ease: "power3.out",
-        scrollTrigger: { trigger: ".journal-cta", start: "top 90%" },
+        strokeDashoffset: 0,
+        duration: 1.6,
+        ease: "power2.out",
+        scrollTrigger: { trigger: ".journal-svg", start: "top 85%" },
       }
     );
   }, []);
 
   return (
-    <section ref={scopeRef} id="the-journal" className="relative bg-[#F6F2E9] py-24 md:py-32">
-      <div className="mx-auto max-w-7xl px-6 md:px-12">
-        <div className="journal-header mb-16 text-center">
-          <div className="mb-4 flex items-center justify-center gap-3">
-            <span className="h-px w-8 bg-[#5C2A32]" />
-            <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#5C2A32]">
-              The Journal
-            </span>
-            <span className="h-px w-8 bg-[#5C2A32]" />
-          </div>
-          <h2 className="font-serif text-3xl font-light leading-[1.12] text-[#1B1B18] md:text-[2.8rem]">
-            Style, Craft & <span className="italic text-[#5C2A32]">Cultural History</span>
-          </h2>
-          <p className="mx-auto mt-4 max-w-lg font-sans text-[13px] leading-[1.85] text-[#1B1B18]/60">
-            Notes from the atelier — on fabric, form, and the traditions
-            behind every piece we make.
-          </p>
-        </div>
+    <section
+      ref={scopeRef}
+      id="the-journal"
+      className="relative overflow-hidden bg-[#F6F2E9] py-28 md:py-36"
+    >
+      {/* soft radial glow behind the emblem */}
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[380px] w-[380px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{ background: "radial-gradient(closest-side, rgba(92,42,50,0.06), transparent 70%)" }}
+        aria-hidden="true"
+      />
 
-        <div className="journal-grid grid grid-cols-1 gap-6 sm:grid-cols-3">
-          {ARTICLES.map((a) => (
-            <Link
-              key={a.slug}
-              href={`/journal/${a.slug}`}
-              className="journal-card group relative flex flex-col overflow-hidden border border-[#1B1B18]/10 bg-white transition-shadow duration-500 hover:shadow-[0_24px_60px_-30px_rgba(27,27,24,0.35)]"
-            >
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#EDE6D8]">
-                <img
-                  src={a.image}
-                  alt={a.title}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1B1B18]/25 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-              </div>
-              <div className="flex flex-1 flex-col p-6">
-                <span className="font-sans text-[9px] font-semibold uppercase tracking-[0.3em] text-[#5C2A32]">
-                  {a.kicker}
-                </span>
-                <h3 className="mt-2 font-serif text-lg font-light leading-snug text-[#1B1B18] transition-colors group-hover:text-[#5C2A32]">
-                  {a.title}
-                </h3>
-                <span className="mt-4 inline-flex items-center gap-1.5 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1B1B18]/50 transition-colors group-hover:text-[#5C2A32]">
-                  Read More
-                  <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-1" />
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        <div className="journal-cta mt-16 flex justify-center">
-          <Link
-            href="/journal"
-            className="group inline-flex items-center gap-2.5 rounded-sm border border-[#1B1B18]/20 px-9 py-3.5 font-sans text-[11px] font-semibold uppercase tracking-[0.25em] text-[#1B1B18] transition-colors hover:border-[#5C2A32] hover:bg-[#5C2A32] hover:text-[#F6F2E9]"
+      <div className="journal-content relative mx-auto flex max-w-2xl flex-col items-center px-6 text-center md:px-12">
+        {/* Open-book emblem */}
+        <div className="journal-svg mb-8">
+          <svg
+            viewBox="0 0 120 90"
+            className="h-16 w-auto md:h-20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Open book emblem"
           >
-            Read The Journal
-            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
+            <path
+              d="M60 18 C50 10 30 8 14 12 L14 70 C30 66 50 68 60 76"
+              stroke="#5C2A32"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray="220"
+            />
+            <path
+              d="M60 18 C70 10 90 8 106 12 L106 70 C90 66 70 68 60 76"
+              stroke="#5C2A32"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray="220"
+            />
+            <path d="M60 18 L60 76" stroke="#1B1B18" strokeWidth="1.2" strokeOpacity="0.35" />
+            {/* page lines, left */}
+            <path d="M22 26 L48 22" stroke="#1B1B18" strokeOpacity="0.3" strokeWidth="1" strokeLinecap="round" />
+            <path d="M22 36 L48 32" stroke="#1B1B18" strokeOpacity="0.3" strokeWidth="1" strokeLinecap="round" />
+            <path d="M22 46 L48 42" stroke="#1B1B18" strokeOpacity="0.3" strokeWidth="1" strokeLinecap="round" />
+            {/* page lines, right */}
+            <path d="M98 26 L72 22" stroke="#1B1B18" strokeOpacity="0.3" strokeWidth="1" strokeLinecap="round" />
+            <path d="M98 36 L72 32" stroke="#1B1B18" strokeOpacity="0.3" strokeWidth="1" strokeLinecap="round" />
+            <path d="M98 46 L72 42" stroke="#1B1B18" strokeOpacity="0.3" strokeWidth="1" strokeLinecap="round" />
+          </svg>
         </div>
+
+        <div className="mb-4 flex items-center justify-center gap-3">
+          <span className="h-px w-8 bg-[#5C2A32]" />
+          <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#5C2A32]">
+            The Journal
+          </span>
+          <span className="h-px w-8 bg-[#5C2A32]" />
+        </div>
+
+        <h2 className="font-serif text-3xl font-light leading-[1.15] text-[#1B1B18] md:text-[2.6rem]">
+          Style, Craft & <span className="italic text-[#5C2A32]">Cultural History</span>
+        </h2>
+
+        <p className="mx-auto mt-5 max-w-md font-sans text-[13px] leading-[1.9] text-[#1B1B18]/60">
+          Notes from the atelier — on fabric, form, and the traditions
+          behind every piece we make.
+        </p>
+
+        <Link
+          href="/journal"
+          className="group relative mt-10 inline-flex items-center gap-3 border border-[#1B1B18]/25 px-10 py-4 font-serif text-[15px] italic text-[#1B1B18] transition-all duration-400 hover:border-[#5C2A32] hover:bg-[#1B1B18] hover:text-[#F6F2E9]"
+        >
+          Read The Journal
+          <svg
+            width="18" height="18" viewBox="0 0 18 18" fill="none"
+            className="transition-transform duration-400 group-hover:translate-x-1.5"
+          >
+            <path d="M3 9 H15" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+            <path d="M10 4 L15 9 L10 14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </Link>
       </div>
     </section>
   );
