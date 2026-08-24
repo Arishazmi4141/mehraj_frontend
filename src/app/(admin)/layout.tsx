@@ -6,7 +6,9 @@ import { usePathname, useRouter } from "next/navigation";
 import gsap from "gsap";
 import {
   LayoutDashboard, ShoppingCart, Sliders, Truck, CheckCircle2,
-  AlertOctagon, Layers, LogOut, Menu, X, ChevronLeft, ChevronRight, ShieldCheck
+  AlertOctagon, Layers, LogOut, Menu, X, ChevronLeft, ChevronRight, ShieldCheck,
+  BookOpen,
+  Newspaper
 } from "lucide-react";
 
 interface MenuItem {
@@ -24,6 +26,9 @@ const menuItems: MenuItem[] = [
   { id: "delivered",  label: "Delivered Orders",   icon: CheckCircle2,    route: "/admin/delivered" },
   { id: "cancelled",  label: "Cancelled Orders",   icon: AlertOctagon,    route: "/admin/cancelled" },
   { id: "categories", label: "Categories",         icon: Layers,          route: "/admin/categories" },
+  { id: "journal",    label: "Journal",            icon: BookOpen,        route: "/admin/journal" },
+  { id: "magazine",   label: "Magazine",           icon: Newspaper,       route: "/admin/magazine" },
+
 ];
 
 export default function AdminGlobalLayout({ children }: { children: React.ReactNode }) {
