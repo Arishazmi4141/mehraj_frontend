@@ -2,13 +2,15 @@
 
 import React, { useState } from "react";
 import { X, Plus, Loader2 } from "lucide-react";
-import { Product, ProductVariant, Category } from "@/src/types/product";
+import { Product, ProductVariant, Category, SubCategory } from "@/src/types/product";
 import { IMAGE_BASE_URL } from "@/src/lib/api-client";
 
 interface ProductFormModalProps {
   show: boolean;
   actionLoading: boolean;
   categories: Category[];
+  subCategories: SubCategory[];        // NEW — parent se filtered list aayegi
+  subCategoriesLoading: boolean;       // NEW
   editingProduct: Product | null;
   formData: any;
   setFormData: (val: any) => void;
@@ -27,7 +29,7 @@ interface ProductFormModalProps {
 }
 
 export default function ProductFormModal({
-  show, actionLoading, categories, editingProduct, formData, setFormData,
+  show, actionLoading, categories, subCategories, subCategoriesLoading, editingProduct, formData, setFormData,
   formVariants, setFormVariants, selectedFilesPreviews, localImages, deleteImageIds,
   toggleDeleteImageId, handleFileAttachment, onDropFiles, setSelectedFiles, setSelectedFilesPreviews, onSubmit, onClose
 }: ProductFormModalProps) {
@@ -47,16 +49,8 @@ export default function ProductFormModal({
     return `${IMAGE_BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
-
+  const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); };
+  const handleDragLeave = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(false); };
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
@@ -87,19 +81,46 @@ export default function ProductFormModal({
               <label className={labelClass}>Product Name</label>
               <input required type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className={inputClass} style={inputBorder} />
             </div>
-          <div>
-  <label className={labelClass}>Category</label>
- <select
-  required
-  value={formData.categoryId || ""}
-  onChange={(e) => setFormData({ ...formData, categoryId: Number(e.target.value) })}
-  className={inputClass}
-  style={inputBorder}
->
-  <option value="" disabled>Select a category</option>
-  {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-</select>
-</div>
+
+            <div>
+              <label className={labelClass}>Category</label>
+              <select
+                required
+                value={formData.categoryId || ""}
+                onChange={(e) => setFormData({ ...formData, categoryId: Number(e.target.value), subCategoryId: 0 })}
+                className={inputClass}
+                style={inputBorder}
+              >
+                <option value="" disabled>Select a category</option>
+                {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+
+            {/* NEW — Sub-Category, category select hone ke baad hi enable */}
+            <div>
+              <label className={labelClass}>
+                Sub-Category <span className="normal-case text-[var(--color-ink-faint)]/70">(optional)</span>
+              </label>
+              <select
+                value={formData.subCategoryId || ""}
+                onChange={(e) => setFormData({ ...formData, subCategoryId: Number(e.target.value) })}
+                disabled={!formData.categoryId || subCategoriesLoading}
+                className={`${inputClass} disabled:opacity-50 disabled:cursor-not-allowed`}
+                style={inputBorder}
+              >
+                <option value="">
+                  {subCategoriesLoading
+                    ? "Loading..."
+                    : !formData.categoryId
+                    ? "Select category first"
+                    : subCategories.length === 0
+                    ? "No sub-categories"
+                    : "None"}
+                </option>
+                {subCategories.map((sc) => <option key={sc.id} value={sc.id}>{sc.name}</option>)}
+              </select>
+            </div>
+
             <div>
               <label className={labelClass}>Trending</label>
               <select value={formData.trending} onChange={(e) => setFormData({ ...formData, trending: e.target.value })} className={inputClass} style={inputBorder}>

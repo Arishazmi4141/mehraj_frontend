@@ -71,7 +71,12 @@ export default function ProductTable({
                       </p>
                     </div>
                   </td>
-                  <td className="py-5 text-[var(--color-ink-muted)]">{p.category?.name}</td>
+          <td className="py-5 text-[var(--color-ink-muted)]">
+  {p.category?.name}
+  {p.subCategory?.name && (
+    <span className="block text-[10px] text-[var(--color-brass)] font-mono mt-0.5">{p.subCategory.name}</span>
+  )}
+</td>
                   <td className="py-5 font-mono text-[var(--color-ink-faint)] inline-flex items-center gap-1 mt-4">
                     <span>{p.variants?.length || 0} Variants</span>
                     {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}

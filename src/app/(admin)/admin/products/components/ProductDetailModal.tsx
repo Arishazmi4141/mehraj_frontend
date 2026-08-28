@@ -41,7 +41,10 @@ export default function ProductDetailModal({ show, product, onClose }: ProductDe
             />
           </div>
           <div>
-            <span className="font-body text-[9px] uppercase tracking-widest text-[var(--color-brass)]">{product.category?.name}</span>
+            <span className="font-body text-[9px] uppercase tracking-widest text-[var(--color-brass)]">
+    {product.category?.name}
+    {product.subCategory?.name && ` / ${product.subCategory.name}`}
+  </span>
             <h3 className="font-display text-[15px] font-bold text-[var(--color-ink)] mt-0.5">{product.name}</h3>
           </div>
         </div>

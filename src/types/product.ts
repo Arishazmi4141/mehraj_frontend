@@ -27,6 +27,7 @@ export interface Product {
   trending: 'YES' | 'NO';
   createdAt: string;
   category: Category;
+   subCategory?: SubCategory;
   productImages: ProductImage[];
   variants: ProductVariant[];
   image?: string[]; // Frontend computed array
@@ -60,4 +61,12 @@ export interface CartItem {
   quantity: number;
   stockAvailable: number;
   currentPrice: number;
+}
+
+export interface SubCategory {
+  id: number;
+  name: string;
+  description?: string;
+  imageUrl?: string;
+  category: Category; 
 }

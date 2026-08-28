@@ -6,7 +6,8 @@ import { Plus, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { requestAPI } from "@/src/lib/api-client";
 import { Product, ProductVariant, Category } from "@/src/types/product";
 import { useRequireAdminAuth, useAdminAuthErrorHandler } from "@/src/hooks/useAdminAuth";
-
+import { subCategoryService } from "@/src/services/subcategory.service";
+import { SubCategory } from "@/src/types/product";
 import ProductFilters from "./components/ProductFilters";
 import ProductTable from "./components/ProductTable";
 import ProductFormModal from "./components/ProductFormModal";
@@ -23,6 +24,8 @@ export default function AdminProductsPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [actionLoading, setActionLoading] = useState<boolean>(false);
   const [expandedProductId, setExpandedProductId] = useState<number | null>(null);
+const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+const [subCategoriesLoading, setSubCategoriesLoading] = useState<boolean>(false);
 
   const [filters, setFilters] = useState({ searchQuery: "", filterCategory: "", filterTrending: "", filterStatus: "" });
 
@@ -36,7 +39,7 @@ export default function AdminProductsPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  const [formData, setFormData] = useState({ name: "", description: "", categoryId: 0, trending: "NO", isActive: true });
+  const [formData, setFormData] = useState({ name: "", description: "", categoryId: 0,subCategoryId: 0, trending: "NO", isActive: true });
   const [formVariants, setFormVariants] = useState<ProductVariant[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedFilesPreviews, setSelectedFilesPreviews] = useState<string[]>([]);
@@ -75,6 +78,17 @@ export default function AdminProductsPage() {
   }, []);
 
   useEffect(() => {
+  if (!formData.categoryId) {
+    setSubCategories([]);
+    return;
+  }
+  setSubCategoriesLoading(true);
+  subCategoryService.getSubCategoriesByCategory(formData.categoryId)
+    .then((res) => setSubCategories(res))
+    .finally(() => setSubCategoriesLoading(false));
+}, [formData.categoryId]);
+
+  useEffect(() => {
     if (!loading && containerRef.current) {
       gsap.fromTo(
         ".animate-prod-node",
@@ -103,6 +117,7 @@ export default function AdminProductsPage() {
         name: formData.name.trim(),
         description: formData.description.trim(),
         categoryId: Number(formData.categoryId),
+          subCategoryId: formData.subCategoryId ? Number(formData.subCategoryId) : null,
         trending: formData.trending,
         isActive: formData.isActive,
         variants: formVariants.map((v: ProductVariant) => ({
@@ -170,7 +185,7 @@ export default function AdminProductsPage() {
         <button
           onClick={() => {
             setEditingProduct(null);
-            setFormData({ name: "", description: "", categoryId: categories[0]?.id || 0, trending: "NO", isActive: true });
+            setFormData({ name: "", description: "", categoryId: categories[0]?.id || 0,subCategoryId: 0, trending: "NO", isActive: true });
             setFormVariants([{ size: "", price: 0, stock: 10 } as unknown as ProductVariant]);
             setSelectedFiles([]);
             setSelectedFilesPreviews([]);
@@ -195,7 +210,7 @@ export default function AdminProductsPage() {
           onViewDetails={(p: Product) => { setSelectedProduct(p); setShowDetailsModal(true); }}
           onEdit={(p: Product) => {
             setEditingProduct(p);
-            setFormData({ name: p.name, description: p.description || "", categoryId: p.category?.id || 0, trending: p.trending || "NO", isActive: p.isActive });
+            setFormData({ name: p.name, description: p.description || "", categoryId: p.category?.id || 0, subCategoryId: p.subCategory?.id || 0,  trending: p.trending || "NO", isActive: p.isActive });
             setFormVariants(p.variants ? p.variants.map((v: ProductVariant) => ({ ...v })) : []);
             setLocalImages(p.productImages ? [...p.productImages] : []);
             setDeleteImageIds([]);
@@ -239,6 +254,8 @@ export default function AdminProductsPage() {
         show={showFormModal}
         actionLoading={actionLoading}
         categories={categories}
+          subCategories={subCategories}             
+  subCategoriesLoading={subCategoriesLoading} 
         editingProduct={editingProduct}
         formData={formData}
         setFormData={setFormData}

@@ -8,7 +8,8 @@ import {
   LayoutDashboard, ShoppingCart, Sliders, Truck, CheckCircle2,
   AlertOctagon, Layers, LogOut, Menu, X, ChevronLeft, ChevronRight, ShieldCheck,
   BookOpen,
-  Newspaper
+  Newspaper,
+  Boxes
 } from "lucide-react";
 
 interface MenuItem {
@@ -18,6 +19,7 @@ interface MenuItem {
   route: string;
 }
 
+
 const menuItems: MenuItem[] = [
   { id: "dashboard",  label: "Dashboard",         icon: LayoutDashboard, route: "/admin/dashboard" },
   { id: "products",   label: "Products",          icon: Sliders,         route: "/admin/products" },
@@ -26,9 +28,9 @@ const menuItems: MenuItem[] = [
   { id: "delivered",  label: "Delivered Orders",   icon: CheckCircle2,    route: "/admin/delivered" },
   { id: "cancelled",  label: "Cancelled Orders",   icon: AlertOctagon,    route: "/admin/cancelled" },
   { id: "categories", label: "Categories",         icon: Layers,          route: "/admin/categories" },
+  { id: "subcategories", label: "Sub-Categories",  icon: Boxes,           route: "/admin/subcategories" },
   { id: "journal",    label: "Journal",            icon: BookOpen,        route: "/admin/journal" },
   { id: "magazine",   label: "Magazine",           icon: Newspaper,       route: "/admin/magazine" },
-
 ];
 
 export default function AdminGlobalLayout({ children }: { children: React.ReactNode }) {
