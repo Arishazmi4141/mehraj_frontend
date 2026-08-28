@@ -1,4 +1,3 @@
-// src/app/(admin)/admin/page.tsx
 "use client";
 
 import { useEffect } from "react";
@@ -9,7 +8,12 @@ export default function AdminRootPage() {
 
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
-    router.replace(token ? "/admin/dashboard" : "/admin/login");
+
+    if (token) {
+      router.replace("/admin/dashboard");
+    } else {
+      router.replace("/admin/login");
+    }
   }, [router]);
 
   return null;
