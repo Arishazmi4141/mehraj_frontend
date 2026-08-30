@@ -52,6 +52,37 @@ const CRAFT_STEPS = [
   },
 ];
 
+const LEGACY_STATS = [
+  { value: "12+", label: "Years of Craft" },
+  { value: "40+", label: "Master Tailors" },
+  { value: "3,000+", label: "Garments Delivered" },
+  { value: "100%", label: "Made In-House" },
+];
+
+const FABRICS = [
+  {
+    image: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=800",
+    name: "Handloom Cotton",
+    origin: "Sourced from Kutch",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1544966503-7cc531ecfd9d?auto=format&fit=crop&q=80&w=800",
+    name: "Raw Silk",
+    origin: "Sourced from Varanasi",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&q=80&w=800",
+    name: "Pure Linen",
+    origin: "Sourced from Ahmedabad",
+  },
+];
+
+const PRESS = [
+  { outlet: "Vogue India", quote: "A quiet revival of hand-tailoring for the modern Indian man." },
+  { outlet: "GQ India", quote: "MehRāj proves restraint can be its own kind of luxury." },
+  { outlet: "Elle Man", quote: "Every seam feels deliberate — nothing here is accidental." },
+];
+
 export default function TheHousePage() {
   const scopeRef = useGsap<HTMLElement>(() => {
     gsap.fromTo(
@@ -79,6 +110,18 @@ export default function TheHousePage() {
       }
     );
     gsap.fromTo(
+      ".legacy-stat",
+      { opacity: 0, y: 24 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        stagger: 0.1,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".legacy-stats", start: "top 85%" },
+      }
+    );
+    gsap.fromTo(
       ".craft-eyebrow, .craft-title, .craft-body",
       { opacity: 0, y: 22 },
       {
@@ -103,6 +146,18 @@ export default function TheHousePage() {
       }
     );
     gsap.fromTo(
+      ".fabric-card",
+      { opacity: 0, scale: 1.03 },
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 0.7,
+        stagger: 0.1,
+        ease: "power2.out",
+        scrollTrigger: { trigger: ".fabric-grid", start: "top 85%" },
+      }
+    );
+    gsap.fromTo(
       ".founder-note",
       { opacity: 0, y: 20 },
       {
@@ -111,6 +166,18 @@ export default function TheHousePage() {
         duration: 0.9,
         ease: "power3.out",
         scrollTrigger: { trigger: ".founder-note", start: "top 82%" },
+      }
+    );
+    gsap.fromTo(
+      ".press-card",
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        stagger: 0.1,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".press-grid", start: "top 85%" },
       }
     );
   }, []);
@@ -165,6 +232,24 @@ export default function TheHousePage() {
         </div>
       </section>
 
+      {/* Legacy in Numbers */}
+      <section className="relative overflow-hidden border-t border-[#1B1B18]/10 bg-[#1B1B18] py-20 md:py-24">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="legacy-stats grid grid-cols-2 gap-10 sm:grid-cols-4">
+            {LEGACY_STATS.map((stat) => (
+              <div key={stat.label} className="legacy-stat text-center">
+                <p className="font-serif text-3xl font-light italic text-[#C9AE8C] md:text-4xl">
+                  {stat.value}
+                </p>
+                <p className="mt-2 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#F6F2E9]/60">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* The Craft (process) */}
       <section className="relative overflow-hidden border-t border-[#1B1B18]/10 bg-[#EFE8D8] py-24 md:py-28">
         <div className="craft-inner mx-auto max-w-2xl px-6 text-center">
@@ -199,6 +284,46 @@ export default function TheHousePage() {
         </div>
       </section>
 
+      {/* Fabric Library */}
+      <section className="relative border-t border-[#1B1B18]/10 bg-[#F6F2E9] py-24 md:py-28">
+        <div className="mx-auto max-w-2xl px-6 text-center">
+          <div className="mb-6 flex items-center justify-center gap-3">
+            <span className="h-px w-8 bg-[#A6906F]" />
+            <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.4em] text-[#A6906F]">
+              The Fabric Library
+            </span>
+            <span className="h-px w-8 bg-[#A6906F]" />
+          </div>
+          <h2 className="font-serif text-2xl font-light leading-[1.15] text-[#1B1B18] md:text-3xl">
+            Chosen for how they age
+          </h2>
+          <p className="mx-auto mt-5 max-w-lg font-sans text-sm leading-[1.9] text-[#1B1B18]/70">
+            Every fabric in the atelier is hand-selected from mills we&apos;ve
+            worked with for years, not picked off a seasonal swatch book.
+          </p>
+        </div>
+
+        <div className="fabric-grid mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-6 px-6 sm:grid-cols-3">
+          {FABRICS.map((fabric) => (
+            <div key={fabric.name} className="fabric-card group relative aspect-3/4 overflow-hidden">
+              <img
+                src={fabric.image}
+                alt={fabric.name}
+                loading="lazy"
+                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
+              <div className="absolute bottom-4 left-4 right-4">
+                <p className="font-serif text-base italic text-white">{fabric.name}</p>
+                <p className="mt-1 font-sans text-[10px] uppercase tracking-[0.15em] text-white/70">
+                  {fabric.origin}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Founder note */}
       <section className="relative border-t border-[#1B1B18]/10 bg-[#F6F2E9]">
         <div className="founder-note mx-auto max-w-2xl px-6 py-24 text-center md:py-28">
@@ -209,6 +334,27 @@ export default function TheHousePage() {
           <p className="mt-4 font-sans text-[11px] font-semibold uppercase tracking-[0.35em] text-[#A6906F]">
             The Atelier, Rajkot
           </p>
+        </div>
+      </section>
+
+      {/* Press mentions */}
+      <section className="relative border-t border-[#1B1B18]/10 bg-[#EFE8D8] py-20 md:py-24">
+        <div className="mx-auto max-w-2xl px-6 text-center">
+          <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#A6906F]">
+            As Seen In
+          </span>
+        </div>
+        <div className="press-grid mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-6 px-6 sm:grid-cols-3">
+          {PRESS.map((p) => (
+            <div key={p.outlet} className="press-card border border-[#1B1B18]/10 bg-[#F6F2E9] p-6 text-center">
+              <p className="font-serif text-sm italic leading-[1.7] text-[#1B1B18]/80">
+                &ldquo;{p.quote}&rdquo;
+              </p>
+              <p className="mt-4 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#A6906F]">
+                {p.outlet}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
 

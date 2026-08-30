@@ -3,19 +3,10 @@
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Play } from "lucide-react";
+import { Play, Sparkles } from "lucide-react";
 import { useGsap } from "@/src/hooks/useGsap";
 
 gsap.registerPlugin(ScrollTrigger);
-
-/**
- * /the-craft — standalone page (previously an in-page section on the home
- * route). Palette kept as-is from the original section:
- * #1B1B18 charcoal bg, #F6F2E9 ivory text, #A6906F antique gold accent.
- *
- * NOTE: if the Navbar's "The Craft" link still points to "/#the-craft",
- * update it to href: "/the-craft" once this page is wired up.
- */
 
 const CRAFT_STEPS = [
   { title: "Fabric", body: "Every bolt inspected by hand before it earns a place in the House." },
@@ -54,6 +45,32 @@ const MATERIALS = [
   { title: "Zari & Zardozi Thread", body: "Metallic and silk threads for hand embroidery on festive pieces." },
 ];
 
+// ── NEW SECTION DATA 1: CRAFT METRICS ──
+const CRAFT_METRICS = [
+  { value: "120+", label: "Hours Per Garment", detail: "Dedicated hand embroidery & multi-stage fitting" },
+  { value: "100%", label: "Pure Natural Fibers", detail: "Sourced directly from heritage weaving clusters" },
+  { value: "3rd Gen", label: "Master Artisans", detail: "Preserving royal court embroidery techniques" },
+  { value: "Zero", label: "Mass Production", detail: "Every piece cut and crafted strictly to order" },
+];
+
+// ── NEW SECTION DATA 2: MASTER ARTISANS SPOTLIGHT ──
+const ARTISANS = [
+  {
+    name: "Ustad Rashid Khan",
+    role: "Head Zardozi Master",
+    experience: "34 Years in Royal Embroidery",
+    quote: "A needle in hand is not just a tool; it carries the weight of five centuries of court artistry.",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800",
+  },
+  {
+    name: "Master Gurpreet Singh",
+    role: "Master Pattern Cutter",
+    experience: "28 Years in Bespoke Tailoring",
+    quote: "If a cut is off by a single millimeter, the silk will never drape with the reverence it deserves.",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=800",
+  },
+];
+
 export default function TheCraftPage() {
   const scopeRef = useGsap<HTMLElement>(() => {
     gsap.fromTo(
@@ -68,6 +85,7 @@ export default function TheCraftPage() {
         scrollTrigger: { trigger: ".craft-header", start: "top 82%" },
       }
     );
+
     gsap.fromTo(
       ".craft-gallery-item",
       { opacity: 0, scale: 1.04 },
@@ -80,6 +98,7 @@ export default function TheCraftPage() {
         scrollTrigger: { trigger: ".craft-gallery", start: "top 85%" },
       }
     );
+
     gsap.fromTo(
       ".craft-step",
       { opacity: 0, y: 24 },
@@ -92,6 +111,7 @@ export default function TheCraftPage() {
         scrollTrigger: { trigger: ".craft-grid", start: "top 88%" },
       }
     );
+
     gsap.fromTo(
       ".material-row",
       { opacity: 0, y: 16 },
@@ -102,6 +122,33 @@ export default function TheCraftPage() {
         stagger: 0.08,
         ease: "power3.out",
         scrollTrigger: { trigger: ".material-list", start: "top 85%" },
+      }
+    );
+
+    // ── NEW GSAP ANIMATIONS FOR NEW SECTIONS ──
+    gsap.fromTo(
+      ".craft-metric",
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.65,
+        stagger: 0.1,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".craft-metrics-grid", start: "top 85%" },
+      }
+    );
+
+    gsap.fromTo(
+      ".artisan-card",
+      { opacity: 0, y: 24 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.75,
+        stagger: 0.12,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".artisans-grid", start: "top 85%" },
       }
     );
   }, []);
@@ -142,7 +189,7 @@ export default function TheCraftPage() {
           {GALLERY.map((item) => (
             <div
               key={item.label}
-              className="craft-gallery-item group relative aspect-[3/4] overflow-hidden border border-[#F6F2E9]/10 bg-[#0F0F0D]"
+              className="craft-gallery-item group relative aspect-3/4 overflow-hidden border border-[#F6F2E9]/10 bg-[#0F0F0D]"
             >
               <img
                 src={item.image}
@@ -150,7 +197,7 @@ export default function TheCraftPage() {
                 loading="lazy"
                 className="h-full w-full object-cover opacity-80 transition-all duration-700 ease-out group-hover:scale-105 group-hover:opacity-100"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1B1B18]/85 via-[#1B1B18]/10 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-[#1B1B18]/85 via-[#1B1B18]/10 to-transparent" />
               {item.isVideo && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#F6F2E9]/40 bg-[#1B1B18]/50 backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
@@ -166,7 +213,7 @@ export default function TheCraftPage() {
         </div>
 
         {/* Process steps */}
-        <div className="craft-grid mb-24 grid grid-cols-1 gap-px border border-[#F6F2E9]/10 bg-[#F6F2E9]/10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="craft-grid mb-20 grid grid-cols-1 gap-px border border-[#F6F2E9]/10 bg-[#F6F2E9]/10 sm:grid-cols-2 lg:grid-cols-4">
           {CRAFT_STEPS.map((step) => (
             <div key={step.title} className="craft-step bg-[#1B1B18] p-8">
               <p className="font-serif text-lg italic text-[#A6906F]">{step.title}</p>
@@ -175,6 +222,34 @@ export default function TheCraftPage() {
               </p>
             </div>
           ))}
+        </div>
+
+        {/* ── NAYA SECTION 1: CRAFT METRICS & NUMBERS ── */}
+        <div className="mb-24 border-t border-[#F6F2E9]/10 pt-16">
+          <div className="mx-auto mb-12 max-w-lg text-center">
+            <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#A6906F]">
+              The Atelier Standard
+            </span>
+            <h2 className="mt-2 font-serif text-2xl font-light text-[#F6F2E9] md:text-3xl">
+              Crafted By Scale of Perfection
+            </h2>
+          </div>
+
+          <div className="craft-metrics-grid grid grid-cols-1 gap-px border border-[#F6F2E9]/10 bg-[#F6F2E9]/10 sm:grid-cols-2 lg:grid-cols-4">
+            {CRAFT_METRICS.map((m) => (
+              <div key={m.label} className="craft-metric bg-[#1B1B18] p-8 text-center">
+                <span className="font-serif text-3xl font-light text-[#A6906F] md:text-4xl">
+                  {m.value}
+                </span>
+                <h3 className="mt-2 font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[#F6F2E9]">
+                  {m.label}
+                </h3>
+                <p className="mt-2 font-sans text-[11.5px] leading-[1.7] text-[#F6F2E9]/50">
+                  {m.detail}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Materials */}
@@ -201,6 +276,58 @@ export default function TheCraftPage() {
             ))}
           </div>
         </div>
+
+        {/* ── NAYA SECTION 2: MASTER ARTISANS SPOTLIGHT ── */}
+        <div className="mb-24 border-t border-[#F6F2E9]/10 pt-16">
+          <div className="mx-auto mb-12 max-w-lg text-center">
+            <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#A6906F]">
+              Guarding The Heritage
+            </span>
+            <h2 className="mt-2 font-serif text-2xl font-light text-[#F6F2E9] md:text-3xl">
+              The Hands Behind The House
+            </h2>
+            <p className="mt-3 font-sans text-xs leading-[1.8] text-[#F6F2E9]/60">
+              Meet the master ustads whose lifelong dedication turns rare raw threads into heirloom garments.
+            </p>
+          </div>
+
+          <div className="artisans-grid grid grid-cols-1 gap-8 md:grid-cols-2">
+            {ARTISANS.map((artisan) => (
+              <div
+                key={artisan.name}
+                className="artisan-card group flex flex-col sm:flex-row border border-[#F6F2E9]/10 bg-[#0F0F0D]"
+              >
+                <div className="relative aspect-4/5 sm:w-2/5 overflow-hidden shrink-0">
+                  <img
+                    src={artisan.image}
+                    alt={artisan.name}
+                    className="h-full w-full object-cover opacity-85 transition-all duration-700 group-hover:scale-105 group-hover:opacity-100"
+                  />
+                </div>
+                <div className="flex flex-col justify-between p-6 sm:w-3/5">
+                  <div>
+                    <span className="font-sans text-[9px] font-semibold uppercase tracking-[0.25em] text-[#A6906F]">
+                      {artisan.experience}
+                    </span>
+                    <h3 className="mt-1 font-serif text-xl font-light text-[#F6F2E9]">
+                      {artisan.name}
+                    </h3>
+                    <p className="font-sans text-[11px] font-medium text-[#F6F2E9]/50">
+                      {artisan.role}
+                    </p>
+                    <blockquote className="mt-4 font-serif text-[13px] italic leading-[1.7] text-[#F6F2E9]/80 border-l border-[#A6906F] pl-3">
+                      &ldquo;{artisan.quote}&rdquo;
+                    </blockquote>
+                  </div>
+                  <div className="mt-6 flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#A6906F]">
+                    <Sparkles className="h-3 w-3" /> Master Craftsman
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
 
       {/* CTA */}

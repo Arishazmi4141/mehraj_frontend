@@ -36,6 +36,7 @@ const NAV_LINKS: NavItem[] = [
       { label: "The House", href: "/the-house" },
       { label: "The Journal", href: "/journal" },
       { label: "Our Story", href: "/about" },
+      { label: "Our Policy", href: "/privacy-policy" },
     ],
   },
   { label: "Collections", href: "/collections" },
@@ -45,10 +46,12 @@ const NAV_LINKS: NavItem[] = [
     href: "/services",
     children: [
       { label: "The Salon", href: "/salon" },
+      { label: "The Atelier", href: "/atelier" },
       { label: "Client Services", href: "/client-services" },
       { label: "The Craft", href: "/the-craft" },
     ],
   },
+  { label: "Book A Consultant", href: "/consultation" },
   { label: "Contact Us", href: "/contact" },
 ];
 

@@ -78,7 +78,7 @@ export default function SalonSection() {
 
         <div className="mt-14 flex flex-wrap items-center justify-center gap-5">
           <Link
-            href="/salon"
+            href="/consultation"
             className="inline-flex items-center gap-2 bg-[#1B1B18] px-8 py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[#F6F2E9] transition-colors duration-300 hover:bg-[#5C2A32]"
           >
             Book a Consultant

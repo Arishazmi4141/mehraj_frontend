@@ -231,7 +231,7 @@ export default function HeroSection() {
               onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#756961")}
               onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(117,105,97,0.5)")}
             >
-              View Lookbook
+              BOOK A CONSULTANT
             </Link>
           </div>
         </div>

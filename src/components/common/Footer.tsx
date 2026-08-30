@@ -14,9 +14,7 @@ const LINKS = [
 ];
 
 const LEGAL = [
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "Terms of Service", href: "/terms" },
-  { label: "Garment Care", href: "/client-services#garment-care" },
+  { label: "Privacy Policy", href: "/privacy" }
 ];
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -77,7 +75,7 @@ export default function Footer() {
       />
 
       <div
-        className="pointer-events-none absolute bottom-0 left-1/2 h-[220px] w-[500px] -translate-x-1/2 rounded-full opacity-40"
+        className="pointer-events-none absolute bottom-0 left-1/2 h-55 w-125 -translate-x-1/2 rounded-full opacity-40"
         style={{
           background: "radial-gradient(circle at center, rgba(166,144,111,0.14) 0%, transparent 70%)",
           filter: "blur(50px)",
@@ -154,7 +152,7 @@ export default function Footer() {
               ))}
             </div>
 
-            <div className="mt-8 h-px w-16 bg-gradient-to-r from-[#A6906F]/60 to-transparent" />
+            <div className="mt-8 h-px w-16 bg-linear-to-r from-[#A6906F]/60 to-transparent" />
           </div>
 
           <div>
@@ -198,7 +196,17 @@ export default function Footer() {
                   className="group block font-sans text-xs text-[#1B1B18]/60 transition-colors duration-300 hover:text-[#1B1B18]"
                 >
                   <span className="block transition-transform duration-300 group-hover:translate-x-1">
-                    Contact Form
+                    Contact Us
+                  </span>
+                </Link>
+              </li>
+                <li>
+                <Link
+                  href="/consultation"
+                  className="group block font-sans text-xs text-[#1B1B18]/60 transition-colors duration-300 hover:text-[#1B1B18]"
+                >
+                  <span className="block transition-transform duration-300 group-hover:translate-x-1">
+                    Consult Us
                   </span>
                 </Link>
               </li>
