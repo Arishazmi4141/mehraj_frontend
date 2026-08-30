@@ -3,13 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Phone, Mail, MapPin, ArrowUpRight, PackageX } from "lucide-react";
+import { contactService } from "@/src/services/contact.service";
 
-/**
- * Background/text still pull from the home page's :root vars, but every
- * accent that was green/gold is now hardcoded to the dark palette:
- * #3D1214 wine (primary accent, icons, CTA fill)
- * #756961 brass/taupe (secondary accent — hover, meta/eyebrow text)
- */
 
 const CONTACT_INFO = [
   {
@@ -35,21 +30,58 @@ const CONTACT_INFO = [
 const MAP_EMBED_SRC = "https://www.google.com/maps?q=142+Bentworth+Rd,+London+W12+7AH&output=embed";
 const MAP_DIRECTIONS_HREF = "https://www.google.com/maps?cid=9669745368976377344&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAMYASAFKgSoqNcy";
 
+// Point this at your Spring Boot backend base URL.
+// e.g. NEXT_PUBLIC_API_BASE_URL=https://api.yourdomain.com in .env.local
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+
+// Backend regex: ^[6-9]\d{9}$  (10-digit Indian mobile number)
+const PHONE_PATTERN = /^[6-9]\d{9}$/;
+
+type FormState = {
+  name: string;
+  phone: string;
+  email: string;
+  message: string;
+};
+
+const INITIAL_FORM: FormState = { name: "", phone: "", email: "", message: "" };
+
 export default function ContactPage() {
-  // NOTE: the contact API isn't built yet — this just holds local state
-  // and shows a confirmation message on submit. Wire handleSubmit up to
-  // your API route / email service once it's ready.
+  const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null);
+
+    if (!PHONE_PATTERN.test(form.phone.trim())) {
+      setError("Enter a valid 10-digit Indian phone number.");
+      return;
+    }
+
     setSending(true);
-    // TODO: replace with a real request once the contact API exists.
-    setTimeout(() => {
-      setSending(false);
+    try {
+      await contactService.submitContactUs({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phoneNumber: form.phone.trim(),
+        message: form.message.trim(),
+      });
+
+      setForm(INITIAL_FORM);
       setSubmitted(true);
-    }, 400);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -94,37 +126,37 @@ export default function ContactPage() {
       {/* ─────────────────── Contact info cards ─────────────────── */}
       <section className="px-6 md:px-12">
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-5 sm:grid-cols-3">
-          {CONTACT_INFO.map(({ icon: Icon, label, value, href }) => (
-            <a
-              key={label}
-              href={href}
-              target={label === "Location" ? "_blank" : undefined}
-              rel={label === "Location" ? "noopener noreferrer" : undefined}
-              className="group flex flex-col items-center gap-4 rounded-sm border px-7 py-9 text-center transition-shadow duration-400 hover:shadow-[0_20px_48px_-24px_rgba(33,29,24,0.18)]"
-              style={{ background: "var(--color-surface)", borderColor: "var(--color-border)" }}
-            >
-              <div
-                className="flex h-12 w-12 items-center justify-center rounded-full border transition-transform duration-400 group-hover:scale-110"
-                style={{ background: "rgba(61,18,20,0.06)", borderColor: "rgba(61,18,20,0.15)" }}
-              >
-                <Icon className="h-5 w-5" style={{ color: "#3D1214" }} strokeWidth={1.5} aria-hidden />
-              </div>
-              <div>
-                <p
-                  className="font-body text-[10px] font-semibold uppercase tracking-[0.2em]"
-                  style={{ color: "#756961" }}
-                >
-                  {label}
-                </p>
-                <p
-                  className="mt-2 font-display text-[14px] font-semibold break-words"
-                  style={{ color: "var(--color-ink)" }}
-                >
-                  {value}
-                </p>
-              </div>
-            </a>
-          ))}
+       {CONTACT_INFO.map(({ icon: Icon, label, value, href }) => (
+  <a
+    key={label}
+    href={href}
+    target={label === "Location" ? "_blank" : undefined}
+    rel={label === "Location" ? "noopener noreferrer" : undefined}
+    className="group flex flex-col items-center gap-4 rounded-sm border px-7 py-9 text-center transition-shadow duration-400 hover:shadow-[0_20px_48px_-24px_rgba(33,29,24,0.18)]"
+    style={{ background: "var(--color-surface)", borderColor: "var(--color-border)" }}
+  >
+    <div
+      className="flex h-12 w-12 items-center justify-center rounded-full border transition-transform duration-400 group-hover:scale-110"
+      style={{ background: "rgba(61,18,20,0.06)", borderColor: "rgba(61,18,20,0.15)" }}
+    >
+      <Icon className="h-5 w-5" style={{ color: "#3D1214" }} strokeWidth={1.5} aria-hidden />
+    </div>
+    <div>
+      <p
+        className="font-body text-[10px] font-semibold uppercase tracking-[0.2em]"
+        style={{ color: "#756961" }}
+      >
+        {label}
+      </p>
+      <p
+        className="mt-2 font-display text-[14px] font-semibold break-words"
+        style={{ color: "var(--color-ink)" }}
+      >
+        {value}
+      </p>
+    </div>
+  </a>
+))}
         </div>
       </section>
 
@@ -225,6 +257,14 @@ export default function ContactPage() {
                 <p className="mt-2 max-w-xs font-body text-[13px] leading-[1.7]" style={{ color: "var(--color-ink-faint)" }}>
                   We&apos;ve received your message and will get back to you shortly.
                 </p>
+                <button
+                  type="button"
+                  onClick={() => setSubmitted(false)}
+                  className="mt-6 font-body text-[11px] font-semibold uppercase tracking-[0.14em] underline underline-offset-4"
+                  style={{ color: "#3D1214" }}
+                >
+                  Send another message
+                </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
@@ -237,6 +277,8 @@ export default function ContactPage() {
                       type="text"
                       name="name"
                       required
+                      value={form.name}
+                      onChange={handleChange}
                       className="w-full rounded-sm border px-4 py-3 font-body text-[13px] outline-none transition-colors"
                       style={{ borderColor: "var(--color-border)", color: "var(--color-ink)" }}
                       onFocus={(e) => (e.currentTarget.style.borderColor = "#3D1214")}
@@ -246,11 +288,16 @@ export default function ContactPage() {
 
                   <label className="flex flex-col gap-1.5">
                     <span className="font-body text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: "var(--color-ink)" }}>
-                      Phone
+                      Phone <span style={{ color: "#756961" }}>*</span>
                     </span>
                     <input
                       type="tel"
                       name="phone"
+                      required
+                      pattern="[6-9]\d{9}"
+                      title="Enter a valid 10-digit Indian phone number"
+                      value={form.phone}
+                      onChange={handleChange}
                       className="w-full rounded-sm border px-4 py-3 font-body text-[13px] outline-none transition-colors"
                       style={{ borderColor: "var(--color-border)", color: "var(--color-ink)" }}
                       onFocus={(e) => (e.currentTarget.style.borderColor = "#3D1214")}
@@ -267,6 +314,8 @@ export default function ContactPage() {
                     type="email"
                     name="email"
                     required
+                    value={form.email}
+                    onChange={handleChange}
                     className="w-full rounded-sm border px-4 py-3 font-body text-[13px] outline-none transition-colors"
                     style={{ borderColor: "var(--color-border)", color: "var(--color-ink)" }}
                     onFocus={(e) => (e.currentTarget.style.borderColor = "#3D1214")}
@@ -282,12 +331,20 @@ export default function ContactPage() {
                     name="message"
                     rows={4}
                     required
+                    value={form.message}
+                    onChange={handleChange}
                     className="w-full resize-none rounded-sm border px-4 py-3 font-body text-[13px] outline-none transition-colors"
                     style={{ borderColor: "var(--color-border)", color: "var(--color-ink)" }}
                     onFocus={(e) => (e.currentTarget.style.borderColor = "#3D1214")}
                     onBlur={(e) => (e.currentTarget.style.borderColor = "var(--color-border)")}
                   />
                 </label>
+
+                {error && (
+                  <p className="font-body text-[12px]" style={{ color: "#B3261E" }}>
+                    {error}
+                  </p>
+                )}
 
                 <button
                   type="submit"

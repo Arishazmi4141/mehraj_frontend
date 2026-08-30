@@ -1,4 +1,4 @@
-// (public)/journal/page.tsx
+// app/(public)/journal/page.tsx
 "use client";
 
 import { Suspense, useCallback, useEffect, useState } from "react";
@@ -11,6 +11,40 @@ import JournalGrid from "./components/JournalGrid";
 import MagazineGrid from "./components/MagazineGrid";
 
 const PAGE_SIZE = 12;
+
+function Pagination({
+  page,
+  totalPages,
+  onChange,
+}: {
+  page: number;
+  totalPages: number;
+  onChange: (page: number) => void;
+}) {
+  return (
+    <div className="mt-16 flex items-center justify-center gap-4">
+      <button
+        type="button"
+        disabled={page === 0}
+        onClick={() => onChange(page - 1)}
+        className="border border-[#1B1B18]/20 px-6 py-3 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1B1B18] transition-colors hover:border-[#5C2A32] disabled:opacity-30"
+      >
+        Previous
+      </button>
+      <span className="font-sans text-[11px] uppercase tracking-[0.2em] text-[#1B1B18]/50">
+        {page + 1} / {totalPages}
+      </span>
+      <button
+        type="button"
+        disabled={page >= totalPages - 1}
+        onClick={() => onChange(page + 1)}
+        className="border border-[#1B1B18]/20 px-6 py-3 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1B1B18] transition-colors hover:border-[#5C2A32] disabled:opacity-30"
+      >
+        Next
+      </button>
+    </div>
+  );
+}
 
 function JournalPageContent() {
   const router = useRouter();
@@ -69,7 +103,7 @@ function JournalPageContent() {
 
   const handleTabChange = (tab: ContentTab) => {
     setActiveTab(tab);
-    router.replace(`/journal?tab=${tab}`, { scroll: false });
+    router.replace(`/blogs?tab=${tab}`, { scroll: false });
     if (tab === "journal" && !journalLoaded) fetchJournals(0);
     if (tab === "magazine" && !magazineLoaded) fetchMagazines(0);
   };
@@ -81,7 +115,7 @@ function JournalPageContent() {
           <div className="mb-4 flex items-center justify-center gap-3">
             <span className="h-px w-6 bg-[#5C2A32]" />
             <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#5C2A32]">
-              The Journal
+              The Blogs
             </span>
             <span className="h-px w-6 bg-[#5C2A32]" />
           </div>
@@ -114,43 +148,9 @@ function JournalPageContent() {
   );
 }
 
-function Pagination({
-  page,
-  totalPages,
-  onChange,
-}: {
-  page: number;
-  totalPages: number;
-  onChange: (page: number) => void;
-}) {
-  return (
-    <div className="mt-16 flex items-center justify-center gap-4">
-      <button
-        type="button"
-        disabled={page === 0}
-        onClick={() => onChange(page - 1)}
-        className="border border-[#1B1B18]/20 px-6 py-3 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1B1B18] transition-colors hover:border-[#5C2A32] disabled:opacity-30"
-      >
-        Previous
-      </button>
-      <span className="font-sans text-[11px] uppercase tracking-[0.2em] text-[#1B1B18]/50">
-        {page + 1} / {totalPages}
-      </span>
-      <button
-        type="button"
-        disabled={page >= totalPages - 1}
-        onClick={() => onChange(page + 1)}
-        className="border border-[#1B1B18]/20 px-6 py-3 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1B1B18] transition-colors hover:border-[#5C2A32] disabled:opacity-30"
-      >
-        Next
-      </button>
-    </div>
-  );
-}
-
 export default function JournalPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<div className="min-h-screen bg-[#F6F2E9]" />}>
       <JournalPageContent />
     </Suspense>
   );

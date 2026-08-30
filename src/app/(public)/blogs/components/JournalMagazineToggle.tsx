@@ -38,7 +38,7 @@ export default function JournalMagazineToggle({
       className="relative flex w-[300px] items-center rounded-full border p-1"
       style={{ borderColor: "rgba(27,27,24,0.12)", background: "#FFFFFF" }}
       role="tablist"
-      aria-label="Journal or Magazine"
+      aria-label="Blogs or Magazine"
     >
       <span
         className="absolute top-1 bottom-1 rounded-full bg-[#1B1B18] transition-all duration-400 ease-out"
@@ -54,7 +54,7 @@ export default function JournalMagazineToggle({
         style={{ color: active === "journal" ? "#F6F2E9" : "#1B1B18" }}
       >
         <BookIcon active={active === "journal"} />
-        Journal
+        Blogs
       </button>
       <button
         type="button"

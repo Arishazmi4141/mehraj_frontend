@@ -61,54 +61,54 @@ export default function AdminSubCategoriesPage() {
   };
 
   // Submit (Add / Edit) — multipart: "subCategory" JSON part + optional "image" file part
-  const handleSubCategorySubmit = async (payload: {
-    name: string;
-    description: string;
-    categoryId: number;
-    imageFile: File | null;
-  }) => {
-    try {
-      setSaving(true);
-      const token = localStorage.getItem("admin_token") || "";
-      const isEdit = !!editData;
+ const handleSubCategorySubmit = async (payload: {
+  name: string;
+  description: string;
+  categoryId: number;
+  imageFile: File | null;
+}) => {
+  try {
+    setSaving(true);
+    const token = localStorage.getItem("admin_token") || "";
+    const isEdit = !!editData;
 
-      const formData = new FormData();
-      formData.append(
-        "subCategory",
-        new Blob([JSON.stringify({ name: payload.name, description: payload.description })], { type: "application/json" })
-      );
-      if (payload.imageFile) {
-        formData.append("image", payload.imageFile);
-      }
-
-      const url = isEdit
-        ? `/admin/updateSubCategory/${editData.id}`
-        : `/admin/addSubCategory?categoryId=${payload.categoryId}`;
-      const method = isEdit ? "PUT" : "POST";
-
-      const savedSubCat = await requestAPI<SubCategory>(url, {
-        method,
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
-
-      if (isEdit) {
-        setSubCategories((prev) => prev.map((sc) => (sc.id === savedSubCat.id ? savedSubCat : sc)));
-        showToast("Sub-category updated successfully.");
-      } else {
-        setSubCategories((prev) => [...prev, savedSubCat]);
-        showToast("Sub-category added successfully.");
-      }
-
-      setShowFormModal(false);
-      setEditData(null);
-    } catch (err) {
-      if (handleAuthError(err)) return;
-      showToast("Something went wrong. Please try again.");
-    } finally {
-      setSaving(false);
+    const formData = new FormData();
+    formData.append(
+      "subCategory",
+      new Blob([JSON.stringify({ name: payload.name, description: payload.description })], { type: "application/json" })
+    );
+    if (payload.imageFile) {
+      formData.append("image", payload.imageFile);
     }
-  };
+
+    const url = isEdit
+      ? `/admin/updateSubCategory/${editData.id}`
+      : `/admin/addSubCategory/${payload.categoryId}`;   // ✅ path variable — backend @PathVariable Long categoryId leta hai
+    const method = isEdit ? "PUT" : "POST";
+
+    const savedSubCat = await requestAPI<SubCategory>(url, {
+      method,
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+
+    if (isEdit) {
+      setSubCategories((prev) => prev.map((sc) => (sc.id === savedSubCat.id ? savedSubCat : sc)));
+      showToast("Sub-category updated successfully.");
+    } else {
+      setSubCategories((prev) => [...prev, savedSubCat]);
+      showToast("Sub-category added successfully.");
+    }
+
+    setShowFormModal(false);
+    setEditData(null);
+  } catch (err) {
+    if (handleAuthError(err)) return;
+    showToast("Something went wrong. Please try again.");
+  } finally {
+    setSaving(false);
+  }
+};
 
   const handleDeleteSubCategory = async (id: number) => {
     if (!confirm("Delete this sub-category? Products linked to it may be affected.")) return;

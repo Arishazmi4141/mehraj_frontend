@@ -121,13 +121,18 @@ export default function ProductFormModal({
               </select>
             </div>
 
-            <div>
-              <label className={labelClass}>Trending</label>
-              <select value={formData.trending} onChange={(e) => setFormData({ ...formData, trending: e.target.value })} className={inputClass} style={inputBorder}>
-                <option value="N">Not Trending</option>
-                <option value="Y">Trending</option>
-              </select>
-            </div>
+           <div>
+  <label className={labelClass}>Trending</label>
+  <select
+    value={formData.trending}
+    onChange={(e) => setFormData({ ...formData, trending: e.target.value })}
+    className={inputClass}
+    style={inputBorder}
+  >
+    <option value="NO">Not Trending</option>
+    <option value="YES">Trending</option>
+  </select>
+</div>
             <div className="sm:col-span-2">
               <label className={labelClass}>Description</label>
               <textarea rows={3} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className={`${inputClass} p-4 resize-none`} style={inputBorder} />

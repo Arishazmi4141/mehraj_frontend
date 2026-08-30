@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import gsap from "gsap";
+import TrendingShowcase from "./TrendingShowcase";
 
 /**
  * Design tokens for MehRāj (premium dark theme) — from the logo palette
@@ -236,68 +237,7 @@ export default function HeroSection() {
         </div>
 
         {/* Right: product mosaic */}
-        <div className="relative mx-auto h-[320px] w-full max-w-md sm:h-[380px] lg:mx-0 lg:h-[460px] lg:max-w-none">
-          {/* Accent panel */}
-          <div
-            ref={panelAccentRef}
-            className="absolute right-0 top-0 h-[42%] w-[58%] overflow-hidden rounded-sm shadow-xl opacity-0"
-          >
-            <div className="h-full w-full" style={{ background: "linear-gradient(135deg, #3D1214, rgba(61,18,20,0.9), #0A0200)" }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/products/hero-accent.jpg"
-                alt="Wine silk stole, close detail"
-                className="h-full w-full object-cover mix-blend-luminosity opacity-90"
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).style.display = "none";
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Main panel */}
-          <div
-            ref={panelMainRef}
-            className="absolute bottom-0 left-0 h-[72%] w-[68%] overflow-hidden rounded-sm shadow-2xl opacity-0"
-          >
-            <div
-              className="h-full w-full"
-              style={{
-                backgroundImage:
-                  "linear-gradient(to bottom, rgba(117,105,97,0.4), #0A0200, rgba(61,18,20,0.35))",
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/products/hero-main.jpg"
-                alt="Charcoal linen kurta on model"
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).style.display = "none";
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Floating product tag */}
-          <div
-            ref={tagRef}
-            className="absolute bottom-6 left-[52%] w-[15rem] -translate-x-1/2 rounded-sm border px-5 py-4 opacity-0 shadow-lg lg:left-[62%]"
-            style={{ borderColor: "rgba(117,105,97,0.4)", background: "#150605" }}
-          >
-            <p className="font-serif text-[15px] italic leading-tight" style={{ color: "#EDE7DF" }}>
-              The Zardozi Sherwani
-            </p>
-            <div className="mt-2 flex items-center justify-between">
-              <span className="font-sans text-[11px] uppercase tracking-[0.2em]" style={{ color: "#756961" }}>
-                Festive Edit
-              </span>
-              <span className="font-sans text-[13px] font-semibold" style={{ color: "#C99A6A" }}>
-                ₹24,500
-              </span>
-            </div>
-          </div>
-        </div>
+       <TrendingShowcase />
       </div>
 
       {/* Category ticker */}

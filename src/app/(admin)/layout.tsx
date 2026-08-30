@@ -9,7 +9,8 @@ import {
   AlertOctagon, Layers, LogOut, Menu, X, ChevronLeft, ChevronRight, ShieldCheck,
   BookOpen,
   Newspaper,
-  Boxes
+  Boxes,
+  MessageSquare
 } from "lucide-react";
 
 interface MenuItem {
@@ -29,6 +30,7 @@ const menuItems: MenuItem[] = [
   { id: "cancelled",  label: "Cancelled Orders",   icon: AlertOctagon,    route: "/admin/cancelled" },
   { id: "categories", label: "Categories",         icon: Layers,          route: "/admin/categories" },
   { id: "subcategories", label: "Sub-Categories",  icon: Boxes,           route: "/admin/subcategories" },
+  { id: "inquiries",  label: "Inquiries",          icon: MessageSquare,   route: "/admin/inquiries" },
   { id: "journal",    label: "Journal",            icon: BookOpen,        route: "/admin/journal" },
   { id: "magazine",   label: "Magazine",           icon: Newspaper,       route: "/admin/magazine" },
 ];

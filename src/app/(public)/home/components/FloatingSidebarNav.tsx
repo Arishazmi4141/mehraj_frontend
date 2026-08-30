@@ -9,9 +9,10 @@ const SECTIONS = [
   { id: "the-house", label: "The House" },
   { id: "collections", label: "Collections" },
   { id: "shop-the-edit", label: "Shop The Edit" },
+  { id: "the-atelier", label: "The Atelier" },
   { id: "the-salon", label: "The Salon" },
   { id: "the-craft", label: "The Craft" },
-  { id: "the-journal", label: "The Journal" },
+  { id: "the-blogs", label: "The Blogs" },
   { id: "client-services", label: "Client Services" },
 ];
 
@@ -39,8 +40,7 @@ export default function FloatingSidebarNav() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Show sidebar only once the visitor has scrolled past the Hero —
-  // the Hero should stay fully immersive with nothing competing for attention.
+  // Show sidebar only once the visitor has scrolled past the Hero
   useEffect(() => {
     const hero = document.getElementById("hero");
     if (!hero) {
@@ -56,18 +56,12 @@ export default function FloatingSidebarNav() {
     return () => heroObserver.disconnect();
   }, []);
 
-  // Reset to expanded each time the nav leaves view, so it's fresh next time
+  // Reset to expanded each time the nav leaves view
   useEffect(() => {
     if (!visible) setCollapsed(false);
   }, [visible]);
 
-  // Track which section is currently in view to highlight the active item.
-  // Deliberately NOT ratio-based IntersectionObserver: a tall section (e.g. the
-  // Craft gallery + steps) only ever shows a small fraction of its own height
-  // inside the viewport at once, so it never wins a threshold/ratio comparison
-  // against shorter neighbours. Instead we track which section's top has
-  // crossed a fixed reference line near the top of the viewport — this works
-  // the same regardless of how tall any individual section is.
+  // Track active section on scroll
   useEffect(() => {
     if (sections.length === 0) return;
 
@@ -106,7 +100,7 @@ export default function FloatingSidebarNav() {
     };
   }, [sections]);
 
-  // Measure the active item's exact position so the line locks to it precisely
+  // Measure active indicator position
   const measureIndicator = () => {
     const el = itemRefs.current[activeId];
     if (el) {
@@ -133,16 +127,16 @@ export default function FloatingSidebarNav() {
   return (
     <nav
       aria-label="Section navigation"
-      className={`fixed left-8 top-1/2 z-[80] hidden -translate-y-1/2 transition-opacity duration-[1200ms] ease-out lg:block ${
+      className={`fixed top-1/2 z-[80] hidden -translate-y-1/2 transition-all duration-500 ease-out lg:block ${
         visible ? "opacity-100" : "pointer-events-none opacity-0"
-      }`}
+      } ${collapsed ? "left-0" : "left-8"}`}
     >
       <div className="relative">
         <ul
           ref={listRef}
           className={`relative flex flex-col gap-1 rounded-2xl border py-3 pl-5 pr-3 shadow-[0_15px_45px_rgba(33,29,24,0.08)] backdrop-blur-md transition-all duration-500 ease-out ${
             collapsed
-              ? "pointer-events-none -translate-x-[130%] opacity-0"
+              ? "pointer-events-none -translate-x-[120%] opacity-0"
               : "translate-x-0 opacity-100"
           }`}
           style={{
@@ -156,7 +150,7 @@ export default function FloatingSidebarNav() {
             style={{ background: "var(--color-border)" }}
             aria-hidden="true"
           />
-          {/* moving active indicator — locked exactly to the active item */}
+          {/* moving active indicator */}
           <span
             className="absolute left-1.5 w-[2px] rounded-full transition-[top,height] duration-400 ease-out"
             style={{
@@ -170,7 +164,12 @@ export default function FloatingSidebarNav() {
           {sections.map((s) => {
             const isActive = activeId === s.id;
             return (
-              <li key={s.id} ref={(el) => { itemRefs.current[s.id] = el; }}>
+              <li
+                key={s.id}
+                ref={(el) => {
+                  itemRefs.current[s.id] = el;
+                }}
+              >
                 <a
                   href={`#${s.id}`}
                   onClick={handleClick(s.id)}
@@ -198,13 +197,17 @@ export default function FloatingSidebarNav() {
           })}
         </ul>
 
-        {/* Collapse / expand handle — stays put while the panel slides behind it */}
+        {/* Collapse / expand handle — docks to screen left edge when collapsed */}
         <button
           type="button"
           onClick={() => setCollapsed((c) => !c)}
           aria-label={collapsed ? "Show section navigation" : "Hide section navigation"}
           aria-expanded={!collapsed}
-          className="absolute -right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border shadow-[0_4px_14px_rgba(33,29,24,0.1)] transition-colors duration-300"
+          className={`absolute top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center border shadow-[0_4px_14px_rgba(33,29,24,0.12)] transition-all duration-500 ease-out hover:scale-105 ${
+            collapsed
+              ? "left-0 rounded-r-xl rounded-l-none border-l-0"
+              : "-right-3.5 rounded-full"
+          }`}
           style={{
             background: "var(--color-surface)",
             borderColor: "var(--color-border)",
@@ -212,8 +215,8 @@ export default function FloatingSidebarNav() {
           }}
         >
           <svg
-            width="10"
-            height="10"
+            width="11"
+            height="11"
             viewBox="0 0 10 10"
             fill="none"
             className={`transition-transform duration-500 ease-out ${collapsed ? "rotate-180" : ""}`}
