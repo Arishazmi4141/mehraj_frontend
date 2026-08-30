@@ -129,8 +129,8 @@ export default function ProductFormModal({
     className={inputClass}
     style={inputBorder}
   >
-    <option value="NO">Not Trending</option>
-    <option value="YES">Trending</option>
+    <option value="N">Not Trending</option>
+    <option value="Y">Trending</option>
   </select>
 </div>
             <div className="sm:col-span-2">
