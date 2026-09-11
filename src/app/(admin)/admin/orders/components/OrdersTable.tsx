@@ -62,8 +62,8 @@ export default function OrdersTable({
                       <p className="text-[10px] text-[var(--color-ink-faint)] mt-0.5">{parseDtOfOpsLabel(o.dtOfOps)}</p>
                     </td>
                     <td className="py-5 font-mono text-[var(--color-ink)]">
-                      £{o.amount.toLocaleString("en-GB")}
-                    </td>
+  £{Number(o.amount ?? 0).toLocaleString("en-GB")}
+</td>
                     <td className="py-5 font-mono">
                       <button
                         type="button"

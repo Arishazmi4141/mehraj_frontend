@@ -216,8 +216,8 @@ export default function AdminDashboardPage() {
                     <p className="text-[10px] text-[var(--color-ink-faint)] mt-0.5 font-mono">#PAS-{order.orderId}</p>
                   </div>
                   <span className="font-mono text-[var(--color-ink-muted)] font-semibold text-right">
-                    £{order.amount.toLocaleString("en-GB")}
-                  </span>
+  £{Number(order.amount ?? 0).toLocaleString("en-GB")}
+</span>
                 </div>
               ))
             )}
