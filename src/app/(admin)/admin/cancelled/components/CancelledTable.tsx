@@ -60,9 +60,10 @@ export default function CancelledTable({
                       <p className="text-[var(--color-ink)] font-semibold">{o.name}</p>
                       <p className="text-[10px] text-[var(--color-ink-faint)] mt-0.5">{parseDtOfOpsLabel(o.dtOfOps)}</p>
                     </td>
-                    <td className="py-5 font-mono text-[var(--color-ink-muted)]">
-                      £{o.amount.toLocaleString("en-GB")}
-                    </td>
+              
+<td className="py-5 font-mono text-[var(--color-ink-muted)]">
+  £{Number(o.amount ?? 0).toLocaleString("en-GB")}
+</td>
                     <td className="py-5 font-mono">
                       <button
                         type="button"

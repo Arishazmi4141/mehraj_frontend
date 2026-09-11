@@ -107,7 +107,8 @@ export default function AdminOrdersTabsPage() {
                   >
                     <td className="py-4 font-mono text-[#A9773C]">#PAS-{o.orderId}</td>
                     <td className="py-4 text-[#171712] font-medium">{o.name}</td>
-                    <td className="py-4 font-mono text-[#4A4740]">£{o.amount.toLocaleString("en-GB")}</td>
+              
+<td className="py-4 font-mono text-[#4A4740]">£{Number(o.amount ?? 0).toLocaleString("en-GB")}</td>
                     <td className="py-4 text-right">
                       <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold tracking-widest uppercase border rounded-sm ${
                         currentTab === "DELIVERED" ? "border-emerald-300 bg-emerald-50 text-emerald-700" : "border-red-300 bg-red-50 text-red-700"

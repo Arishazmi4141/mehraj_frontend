@@ -65,9 +65,10 @@ export default function CancelledOrderDetailPage() {
   if (loading) return <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center text-[var(--color-green)]"><Loader2 className="h-6 w-6 animate-spin" /></div>;
   if (!order) return <div className="min-h-screen bg-[var(--color-bg)] text-center p-12 text-[var(--color-ink-faint)]">RECORD INVARIANT CORRUPTED</div>;
 
-  const subtotal = order.items?.reduce((sum: number, item: CancelledOrderItem) => sum + (item.price * item.quantity), 0) || 0;
-  const aggregateTotal = order.payment?.amount || subtotal;
-
+// 1. subtotal
+const subtotal = order.items?.reduce((sum: number, item: CancelledOrderItem) => sum + ((item.price ?? 0) * item.quantity), 0) || 0;
+// 2. aggregateTotal
+const aggregateTotal = order.payment?.amount ?? subtotal;
   // Short dynamic layout for non-operational / broken requests mapping
   const staticTimelineSteps = [
     { label: "Order Placed Matrix", done: true, active: false },
@@ -126,7 +127,8 @@ export default function CancelledOrderDetailPage() {
                       <p className="font-body text-[9px] text-[var(--color-ink-faint)] uppercase tracking-wider mt-0.5">Dimension Profile: <span className="font-mono text-[var(--color-ink-faint)]">{item.size || "Standard"}</span></p>
                     </div>
                   </div>
-                  <span className="font-mono text-xs text-[var(--color-ink-faint)] line-through">{item.quantity} x £{item.price.toLocaleString("en-GB")}</span>
+         // 3. items list mein
+<span className="font-mono text-xs text-[var(--color-ink-faint)] line-through">{item.quantity} x £{Number(item.price ?? 0).toLocaleString("en-GB")}</span>
                 </div>
               ))}
             </div>

@@ -7,8 +7,11 @@ import { requestAPI } from "@/src/lib/api-client";
 import { OrderSummaryDto } from "@/src/services/admin.service";
 import CancelledFilters from "./components/CancelledFilters";
 import CancelledTable from "./components/CancelledTable";
+import { useAdminAuthErrorHandler, useRequireAdminAuth } from "@/src/hooks/useAdminAuth";
 
 export default function AdminCancelledOrdersPage() {
+  useRequireAdminAuth();                              // ADD
+  const handleAuthError = useAdminAuthErrorHandler(); 
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [orders, setOrders] = useState<OrderSummaryDto[]>([]);
@@ -41,6 +44,7 @@ export default function AdminCancelledOrdersPage() {
       setOrders(res?.content || []);
       setTotalPages(res?.totalPages || 1);
     } catch (err) {
+        if (handleAuthError(err)) return;
       console.error("Cancelled registry serialization failure:", err);
     } finally {
       // ✅ FIXED: Accidental 'military' typo removed completely and switched back to standard 'finally'

@@ -8,8 +8,11 @@ import { OrderSummaryDto } from "@/src/services/admin.service";
 import DispatchedFilters from "./components/DispatchedFilters";
 import DispatchedTable from "./components/DispatchedTable";
 import DeliverConfirmModal from "./components/DeliverConfirmModal";
+import { useAdminAuthErrorHandler, useRequireAdminAuth } from "@/src/hooks/useAdminAuth";
 
 export default function AdminDispatchedOrdersPage() {
+   useRequireAdminAuth();                        
+  const handleAuthError = useAdminAuthErrorHandler();  
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [orders, setOrders] = useState<OrderSummaryDto[]>([]);
@@ -43,6 +46,7 @@ export default function AdminDispatchedOrdersPage() {
       setOrders(res.content || []);
       setTotalPages(res.totalPages || 1);
     } catch (err) {
+      if (handleAuthError(err)) return;
       console.error("Dispatched pipeline serialization fault:", err);
     } finally {
       setLoading(false);
@@ -91,6 +95,7 @@ export default function AdminDispatchedOrdersPage() {
       setShowConfirmPopup(false);
       setPendingOrder(null);
     } catch (err) {
+       if (handleAuthError(err)) return;
       alert("Terminal execution rejected by core infrastructure pipeline blocks.");
     } finally {
       setActionLoading(false);

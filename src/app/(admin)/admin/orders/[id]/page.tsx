@@ -110,7 +110,7 @@ export default function AdminOrderDetailPage() {
     );
   }
 
-  const subtotal = order.items?.reduce((sum, i) => sum + i.price * i.quantity, 0) || 0;
+const subtotal = order.items?.reduce((sum, i) => sum + (i.price ?? 0) * i.quantity, 0) || 0;
 
   const statusPillStyles: Record<string, string> = {
     PENDING: "border-amber-300 bg-amber-50 text-amber-700",
@@ -182,7 +182,8 @@ export default function AdminOrderDetailPage() {
                         </p>
                       </div>
                     </div>
-                    <span className="font-mono text-[13px] text-[#4A4740]">{item.quantity} x £{item.price.toLocaleString("en-GB")}</span>
+              
+<span className="font-mono text-[13px] text-[#4A4740]">{item.quantity} x £{Number(item.price ?? 0).toLocaleString("en-GB")}</span>
                   </div>
                 );
               })}
@@ -205,7 +206,8 @@ export default function AdminOrderDetailPage() {
             </div>
             <div className="flex justify-between items-baseline pt-2 border-t" style={{ borderColor: "#EFECE3" }}>
               <span className="font-display text-[11px] font-bold uppercase tracking-wider text-[#171712]">Total</span>
-              <span className="font-display text-xl font-bold text-[#A9773C]">£{(order.payment?.amount || subtotal).toLocaleString("en-GB")}</span>
+    
+<span className="font-display text-xl font-bold text-[#A9773C]">£{Number(order.payment?.amount ?? subtotal).toLocaleString("en-GB")}</span>
             </div>
           </div>
 

@@ -7,8 +7,11 @@ import { requestAPI } from "@/src/lib/api-client";
 import { OrderSummaryDto } from "@/src/services/admin.service";
 import DeliveredFilters from "./components/DeliveredFilters";
 import DeliveredTable from "./components/DeliveredTable";
+import { useAdminAuthErrorHandler, useRequireAdminAuth } from "@/src/hooks/useAdminAuth";
 
 export default function AdminDeliveredOrdersPage() {
+     useRequireAdminAuth();                              
+  const handleAuthError = useAdminAuthErrorHandler(); 
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [orders, setOrders] = useState<OrderSummaryDto[]>([]);
@@ -20,6 +23,7 @@ export default function AdminDeliveredOrdersPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const pageSize = 10;
+
 
   const fetchDeliveredGrid = async () => {
     try {
@@ -36,6 +40,7 @@ export default function AdminDeliveredOrdersPage() {
       setOrders(res.content || []);
       setTotalPages(res.totalPages || 1);
     } catch (err) {
+       if (handleAuthError(err)) return; 
       console.error("Delivered sequence breakdown error:", err);
     } finally {
       setLoading(false);
