@@ -27,7 +27,10 @@ export default function CheckoutPage() {
   const [form, setForm] = useState<CheckoutForm>(emptyCheckoutForm);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
   const [razorpayOrderId, setRazorpayOrderId] = useState("");
+  const [razorpayKeyId, setRazorpayKeyId] = useState("");
+  const [razorpayAmount, setRazorpayAmount] = useState(0);
 
   const subtotal = +totalPrice.toFixed(2);
   const shipping = 0;
@@ -116,14 +119,16 @@ export default function CheckoutPage() {
           <div className="w-full flex-1">
             {currentStep === 1 && <ShippingForm form={form} loading={loading} onSubmit={handleShippingSubmitted} />}
             {currentStep === 2 && (
-              <PaymentForm
-                form={form}
-                razorpayOrderId={razorpayOrderId}
-                total={total}
-                onGoBack={handleGoBack}
-                onPaymentSuccess={handlePaymentSuccess}
-                onPaymentFailed={handlePaymentFailed}
-              />
+             <PaymentForm
+  form={form}
+  razorpayOrderId={razorpayOrderId}
+  razorpayKeyId={razorpayKeyId}
+  razorpayAmount={razorpayAmount}
+  total={total}
+  onGoBack={handleGoBack}
+  onPaymentSuccess={handlePaymentSuccess}
+  onPaymentFailed={handlePaymentFailed}
+/>
             )}
           </div>
 

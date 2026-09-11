@@ -10,6 +10,8 @@ type ErrorType = "declined" | "generic" | null;
 interface PaymentFormProps {
   form: CheckoutForm;
   razorpayOrderId: string;
+  razorpayKeyId: string;
+  razorpayAmount: number;
   total: number;
   onGoBack: () => void;
   onPaymentSuccess: (data: { razorpay_payment_id: string }) => void;
@@ -19,6 +21,8 @@ interface PaymentFormProps {
 export default function PaymentForm({
   form,
   razorpayOrderId,
+  razorpayKeyId,
+  razorpayAmount,
   total,
   onGoBack,
   onPaymentSuccess,
@@ -59,29 +63,42 @@ export default function PaymentForm({
       return;
     }
 
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
-      amount: total * 100,
-      currency: "INR",
-      name: "MehRāj",
-      description: "Order Payment",
-      order_id: razorpayOrderId,
-      prefill: {
-        name: form.fullName,
-        email: form.email,
-        contact: form.phone,
-      },
-      theme: { color: "#2E4B3F" },
+   const options = {
+  key: razorpayKeyId,
+  amount: razorpayAmount,
+  currency: "INR",
+  name: "MehRāj",
+  description: "Order Payment",
+  order_id: razorpayOrderId,
 
-      handler: (response: { razorpay_payment_id: string }) => {
-        paymentSucceeded.current = true;
-        if (dismissTimer.current) {
-          clearTimeout(dismissTimer.current);
-          dismissTimer.current = null;
-        }
-        setPaymentLoading(false);
-        onPaymentSuccess({ razorpay_payment_id: response.razorpay_payment_id });
-      },
+  prefill: {
+    name: form.fullName,
+    email: form.email,
+    contact: form.phone,
+  },
+
+  theme: {
+    color: "#2E4B3F",
+  },
+
+  handler: (response: {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+  }) => {
+    paymentSucceeded.current = true;
+
+    if (dismissTimer.current) {
+      clearTimeout(dismissTimer.current);
+      dismissTimer.current = null;
+    }
+
+    setPaymentLoading(false);
+
+    onPaymentSuccess({
+      razorpay_payment_id: response.razorpay_payment_id,
+    });
+  },
 
       modal: {
         ondismiss: () => {
