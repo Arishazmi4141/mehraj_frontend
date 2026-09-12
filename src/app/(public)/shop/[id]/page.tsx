@@ -1,28 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ShoppingBag, Check, Loader2, Star, ChevronRight } from "lucide-react";
+import { ShoppingBag, Zap, Check, Loader2, Star, ChevronRight, Minus, Plus } from "lucide-react";
 import { productService } from "@/src/services/product.service";
 import { cartService } from "@/src/services/cart.service";
 import { Product, ProductVariant } from "@/src/types/product";
 import { IMAGE_BASE_URL } from "@/src/lib/api-client";
+import { isTrending } from "@/src/lib/utils";
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&q=80&w=900";
 
 export default function ProductDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const productId = Number(params.id);
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
+  const [qty, setQty] = useState(1);
 
   const [isAdding, setIsAdding] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
+  const [isBuyingNow, setIsBuyingNow] = useState(false);
+  const [actionError, setActionError] = useState("");
 
   // Review form
   const [reviewerName, setReviewerName] = useState("");
@@ -44,23 +49,54 @@ export default function ProductDetailPage() {
       .finally(() => setLoading(false));
   }, [productId]);
 
+  // Variant badalte hi qty reset karo — naye size ka stock alag ho sakta hai
+  useEffect(() => {
+    setQty(1);
+  }, [selectedVariant?.id]);
+
   const resolveImageUrl = (url: string | undefined | null) => {
     if (!url) return FALLBACK_IMAGE;
     if (url.startsWith("http://") || url.startsWith("https://")) return url;
     return `${IMAGE_BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
   };
 
+  const incrementQty = () => {
+    const max = selectedVariant?.stock ?? 1;
+    if (qty < max) setQty((q) => q + 1);
+  };
+
+  const decrementQty = () => {
+    if (qty > 1) setQty((q) => q - 1);
+  };
+
   const handleAddToCart = async () => {
-    if (!selectedVariant || selectedVariant.stock <= 0 || isAdding) return;
+    if (!selectedVariant || selectedVariant.stock <= 0 || isAdding || isBuyingNow) return;
     setIsAdding(true);
+    setActionError("");
     try {
-      await cartService.addItem(selectedVariant.id, 1);
+      // jitni qty select ki hai, usi variant (size) ke against utni hi add hogi
+      await cartService.addItem(selectedVariant.id, qty);
       setIsAdded(true);
       setTimeout(() => setIsAdded(false), 2500);
-    } catch {
-      alert("Couldn't add this item to your bag — please try again.");
+    } catch (err: any) {
+      setActionError(err?.message || "Couldn't add this item to your bag — please try again.");
+      setTimeout(() => setActionError(""), 3500);
     } finally {
       setIsAdding(false);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!selectedVariant || selectedVariant.stock <= 0 || isAdding || isBuyingNow) return;
+    setIsBuyingNow(true);
+    setActionError("");
+    try {
+      await cartService.addItem(selectedVariant.id, qty);
+      router.push("/cart");
+    } catch (err: any) {
+      setActionError(err?.message || "Couldn't proceed — please try again.");
+      setTimeout(() => setActionError(""), 3500);
+      setIsBuyingNow(false);
     }
   };
 
@@ -109,6 +145,8 @@ export default function ProductDetailPage() {
     ? product.productImages.map((img) => img.imageUrl)
     : [""];
   const isOutOfStock = !product.variants?.some((v) => v.stock > 0);
+  const isSelectedOutOfStock = !selectedVariant || selectedVariant.stock <= 0;
+  const actionsDisabled = isOutOfStock || isSelectedOutOfStock || isAdding || isBuyingNow;
 
   return (
     <main className="min-h-screen bg-[#F6F2E9] pb-24 pt-32">
@@ -151,11 +189,19 @@ export default function ProductDetailPage() {
 
           {/* Details */}
           <div>
-            {product.category?.name && (
-              <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-[#2E4B3F]">
-                {product.category.name}
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {product.category?.name && (
+                <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-[#2E4B3F]">
+                  {product.category.name}
+                </span>
+              )}
+              {isTrending(product.trending) && (
+                <span className="bg-[#5C2A32] px-2 py-1 font-sans text-[8px] font-semibold uppercase tracking-[0.2em] text-white">
+                  Trending
+                </span>
+              )}
+            </div>
+
             <h1 className="mt-3 font-serif text-3xl font-light leading-[1.15] text-[#1B1B18] md:text-4xl">
               {product.name}
             </h1>
@@ -197,31 +243,91 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            <button
-              onClick={handleAddToCart}
-              disabled={isOutOfStock || !selectedVariant || isAdding || isAdded}
-              className={`mt-9 flex w-full max-w-sm items-center justify-center gap-2 py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-300 sm:w-auto sm:px-12 ${
-                isAdded
-                  ? "bg-[#EBF3ED] text-[#1E4D2B]"
-                  : isOutOfStock
-                  ? "cursor-not-allowed bg-[#EDE6D8] text-[#1B1B18]/40"
-                  : "bg-[#1B1B18] text-[#F6F2E9] hover:bg-[#2E4B3F]"
-              }`}
-            >
-              {isAdded ? (
-                <>
-                  <Check className="h-4 w-4" /> Added To Bag
-                </>
-              ) : isAdding ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : isOutOfStock ? (
-                "Out of Stock"
-              ) : (
-                <>
-                  <ShoppingBag className="h-4 w-4" /> Add To Bag
-                </>
-              )}
-            </button>
+            {/* Quantity stepper */}
+            {!isSelectedOutOfStock && selectedVariant && (
+              <div className="mt-8">
+                <p className="mb-3 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1B1B18]/55">
+                  Quantity
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center border border-[#1B1B18]/20 w-fit">
+                    <button
+                      type="button"
+                      onClick={decrementQty}
+                      disabled={qty <= 1}
+                      className="flex h-11 w-11 items-center justify-center text-[#1B1B18]/70 hover:text-[#1B1B18] disabled:opacity-30"
+                    >
+                      <Minus className="h-3.5 w-3.5" />
+                    </button>
+                    <span className="w-10 text-center font-sans text-sm text-[#1B1B18]">{qty}</span>
+                    <button
+                      type="button"
+                      onClick={incrementQty}
+                      disabled={qty >= selectedVariant.stock}
+                      className="flex h-11 w-11 items-center justify-center text-[#1B1B18]/70 hover:text-[#1B1B18] disabled:opacity-30"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <span className="font-sans text-[10px] uppercase tracking-[0.1em] text-[#1B1B18]/45">
+                    {selectedVariant.stock} in stock
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {actionError && (
+              <p className="mt-4 font-sans text-[11px] text-red-600">{actionError}</p>
+            )}
+
+            {/* Add to Cart + Buy Now */}
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:max-w-xl">
+              <button
+                onClick={handleAddToCart}
+                disabled={actionsDisabled || isAdded}
+                className={`flex flex-1 items-center justify-center gap-2 py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-300 ${
+                  isAdded
+                    ? "bg-[#EBF3ED] text-[#1E4D2B]"
+                    : actionsDisabled
+                    ? "cursor-not-allowed bg-[#EDE6D8] text-[#1B1B18]/40"
+                    : "border border-[#1B1B18] bg-transparent text-[#1B1B18] hover:bg-[#1B1B18] hover:text-[#F6F2E9]"
+                }`}
+              >
+                {isAdded ? (
+                  <>
+                    <Check className="h-4 w-4" /> Added To Bag
+                  </>
+                ) : isAdding ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : isOutOfStock || isSelectedOutOfStock ? (
+                  "Out of Stock"
+                ) : (
+                  <>
+                    <ShoppingBag className="h-4 w-4" /> Add To Cart
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={handleBuyNow}
+                disabled={actionsDisabled}
+                className={`flex flex-1 items-center justify-center gap-2 py-4 font-sans text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-300 ${
+                  actionsDisabled
+                    ? "cursor-not-allowed bg-[#EDE6D8] text-[#1B1B18]/40"
+                    : "bg-[#1B1B18] text-[#F6F2E9] hover:bg-[#2E4B3F]"
+                }`}
+              >
+                {isBuyingNow ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : isOutOfStock || isSelectedOutOfStock ? (
+                  "Out of Stock"
+                ) : (
+                  <>
+                    <Zap className="h-4 w-4" /> Buy Now
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
 

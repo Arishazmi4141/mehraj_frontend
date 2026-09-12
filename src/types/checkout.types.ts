@@ -11,10 +11,12 @@ export interface CheckoutForm {
   pincode: string;
 }
 
+// src/types/checkout.ts
+
 export interface CheckoutResponse {
   razorpayOrderId: string;
+  keyId: string;
   amount: number;
-  currency: string;
 }
 
 export const emptyCheckoutForm: CheckoutForm = {

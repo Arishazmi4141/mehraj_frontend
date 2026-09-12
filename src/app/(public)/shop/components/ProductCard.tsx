@@ -6,6 +6,7 @@ import { ShoppingCart, Check, Loader2, Minus, Plus } from "lucide-react";
 import { Product, ProductVariant } from "@/src/types/product";
 import { IMAGE_BASE_URL } from "@/src/lib/api-client";
 import { cartService } from "@/src/services/cart.service";
+import { isTrending } from "@/src/lib/utils";
 
 interface ProductCardProps {
   product: Product;
@@ -18,7 +19,6 @@ export default function ProductCard({ product, viewMode }: ProductCardProps) {
   const [cartState, setCartState] = useState<"idle" | "loading" | "added">("idle");
   const [cartError, setCartError] = useState("");
 
-  // Auto-select first in-stock variant on mount / product change
   useEffect(() => {
     const firstInStock = product.variants?.find((v) => v.stock > 0) || product.variants?.[0] || null;
     setSelectedVariant(firstInStock);
@@ -66,6 +66,7 @@ export default function ProductCard({ product, viewMode }: ProductCardProps) {
     setCartError("");
 
     try {
+      // jitni qty select ki hai, usi variant (size) ke against utni hi add hogi
       await cartService.addItem(selectedVariant.id!, qty);
       setCartState("added");
       setQty(1);
@@ -87,7 +88,6 @@ export default function ProductCard({ product, viewMode }: ProductCardProps) {
         }`}
         style={{ borderColor: "#E7E3D8", boxShadow: "0 1px 2px rgba(23,23,18,0.04)" }}
       >
-        {/* Image */}
         <div
           className={`relative overflow-hidden bg-[#F1EFE9] ${
             isListMode ? "w-40 shrink-0 sm:w-52" : "aspect-[4/3] w-full"
@@ -106,7 +106,7 @@ export default function ProductCard({ product, viewMode }: ProductCardProps) {
           )}
 
           <div className="absolute top-3 right-3 z-10 flex flex-col gap-1.5 items-end">
-            {product.trending === "YES" && (
+            {isTrending(product.trending) && (
               <span className="rounded-sm bg-[#1F4A38] px-2 py-1 font-body text-[8px] font-semibold uppercase tracking-[0.15em] text-white">
                 Trending
               </span>
@@ -125,7 +125,6 @@ export default function ProductCard({ product, viewMode }: ProductCardProps) {
           )}
         </div>
 
-        {/* Details */}
         <div className={`flex flex-1 flex-col ${isListMode ? "p-5" : "p-6"}`}>
           <h3 className="font-display text-[15px] font-semibold leading-snug text-[#171712] line-clamp-1">
             {product.name}
@@ -139,7 +138,6 @@ export default function ProductCard({ product, viewMode }: ProductCardProps) {
             {product.description}
           </p>
 
-          {/* Variant selector */}
           {product.variants && product.variants.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-1.5" onClick={(e) => e.preventDefault()}>
               {product.variants.map((v) => (
@@ -175,7 +173,6 @@ export default function ProductCard({ product, viewMode }: ProductCardProps) {
             )}
           </div>
 
-          {/* Qty stepper */}
           {!isFullyOutOfStock && (
             <div className="mt-4 flex items-center gap-3" onClick={(e) => e.preventDefault()}>
               <div className="flex items-center rounded-sm border" style={{ borderColor: "#E7E3D8" }}>

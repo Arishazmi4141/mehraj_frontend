@@ -64,12 +64,15 @@ export default function CheckoutPage() {
         body: JSON.stringify(payload),
       });
 
-      if (!res?.razorpayOrderId) {
+      if (!res?.razorpayOrderId || !res?.keyId) {
         setErrorMessage("Could not initiate payment. Please try again.");
         return;
       }
 
+      // Pehle ye teeno missing the — ab teeno set ho rahe hai
       setRazorpayOrderId(res.razorpayOrderId);
+      setRazorpayKeyId(res.keyId);
+      setRazorpayAmount(res.amount);
       setCurrentStep(2);
     } catch (err: any) {
       setErrorMessage(err?.message || "Something went wrong. Please try again.");
@@ -98,6 +101,8 @@ export default function CheckoutPage() {
     setCurrentStep(1);
     setErrorMessage("");
     setRazorpayOrderId("");
+    setRazorpayKeyId("");
+    setRazorpayAmount(0);
   }
 
   return (
@@ -119,16 +124,16 @@ export default function CheckoutPage() {
           <div className="w-full flex-1">
             {currentStep === 1 && <ShippingForm form={form} loading={loading} onSubmit={handleShippingSubmitted} />}
             {currentStep === 2 && (
-             <PaymentForm
-  form={form}
-  razorpayOrderId={razorpayOrderId}
-  razorpayKeyId={razorpayKeyId}
-  razorpayAmount={razorpayAmount}
-  total={total}
-  onGoBack={handleGoBack}
-  onPaymentSuccess={handlePaymentSuccess}
-  onPaymentFailed={handlePaymentFailed}
-/>
+              <PaymentForm
+                form={form}
+                razorpayOrderId={razorpayOrderId}
+                razorpayKeyId={razorpayKeyId}
+                razorpayAmount={razorpayAmount}
+                total={total}
+                onGoBack={handleGoBack}
+                onPaymentSuccess={handlePaymentSuccess}
+                onPaymentFailed={handlePaymentFailed}
+              />
             )}
           </div>
 

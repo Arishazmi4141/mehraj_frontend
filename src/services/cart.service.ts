@@ -109,19 +109,19 @@ class CartService {
     }
   }
 
-  async removeItem(cartItemId: number): Promise<void> {
-    const guestId = this.getGuestId();
-    const originalItems = [...this.items];
-    this.items = this.items.filter((i) => i.cartItemId !== cartItemId);
-    this.notify();
+ async removeItem(cartItemId: number): Promise<void> {
+  const originalItems = [...this.items];
+  this.items = this.items.filter((i) => i.cartItemId !== cartItemId);
+  this.notify();
 
-    try {
-      await requestAPI(`/cart/${guestId}/${cartItemId}`, { method: "DELETE" }, true);
-    } catch (err) {
-      this.items = originalItems;
-      this.notify();
-    }
+  try {
+    // Backend route: DELETE /api/cart/item/{cartItemId} — guestId ki zaroorat nahi hai
+    await requestAPI(`/cart/item/${cartItemId}`, { method: "DELETE" }, true);
+  } catch (err) {
+    this.items = originalItems;
+    this.notify();
   }
+}
   
   async clearCart(): Promise<void> {
     const guestId = this.getGuestId();

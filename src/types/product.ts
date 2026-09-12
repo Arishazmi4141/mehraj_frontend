@@ -24,7 +24,7 @@ export interface Product {
   name: string;
   description: string;
   isActive: boolean;
-  trending: 'YES' | 'NO';
+   trending: string; 
   createdAt: string;
   category: Category;
    subCategory?: SubCategory;
