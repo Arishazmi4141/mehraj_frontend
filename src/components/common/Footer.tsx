@@ -11,6 +11,7 @@ const LINKS = [
   { label: "The Salon", href: "/salon" },
   { label: "The Journal", href: "/journal" },
   { label: "Client Services", href: "/client-services" },
+   { label: "Track Order", href: "/track-order" },
 ];
 
 const LEGAL = [

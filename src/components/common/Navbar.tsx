@@ -52,6 +52,7 @@ const NAV_LINKS: NavItem[] = [
     ],
   },
   { label: "Book A Consultant", href: "/consultation" },
+  { label: "Track Order", href: "/track-order" },
   { label: "Contact Us", href: "/contact" },
 ];
 
