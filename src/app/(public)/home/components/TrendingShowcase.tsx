@@ -19,20 +19,17 @@ function lowestPrice(product: Product) {
 }
 
 const VISIBLE_COUNT = 3;
-const ROTATE_MS = 3800;
 
 // staggered vertical offsets so the row doesn't feel like a flat grid
 const CARD_OFFSET = ["mt-8", "mt-0", "mt-14"];
 
 export default function TrendingShowcase() {
-  const [pool, setPool] = useState<Product[]>([]);
-  const [slots, setSlots] = useState<Product[]>([]); // the 3 currently visible
-  const [nextPoolIdx, setNextPoolIdx] = useState(VISIBLE_COUNT); // pointer into pool for the next swap-in
+  const [slots, setSlots] = useState<Product[]>([]); // exactly the 3 shown, no rotation
   const [loading, setLoading] = useState(true);
 
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Fetch trending, fallback to latest
+  // Fetch trending, fallback to latest — capped at VISIBLE_COUNT
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -41,13 +38,12 @@ export default function TrendingShowcase() {
         if (!list || list.length === 0) {
           list = await productService.getRecentProducts();
         }
-        const withImages = (list || []).filter((p) => p.productImages?.length);
-        if (!cancelled) {
-          setPool(withImages);
-          setSlots(withImages.slice(0, VISIBLE_COUNT));
-        }
+        const withImages = (list || [])
+          .filter((p) => p.productImages?.length)
+          .slice(0, VISIBLE_COUNT);
+        if (!cancelled) setSlots(withImages);
       } catch {
-        if (!cancelled) setPool([]);
+        if (!cancelled) setSlots([]);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -64,44 +60,16 @@ export default function TrendingShowcase() {
     gsap.fromTo(
       cardRefs.current.filter(Boolean),
       { opacity: 0, y: 24 },
-      { opacity: 1, y: 0, duration: prefersReduced ? 0 : 0.8, stagger: prefersReduced ? 0 : 0.12, ease: "power3.out" }
+      {
+        opacity: 1,
+        y: 0,
+        duration: prefersReduced ? 0 : 0.8,
+        stagger: prefersReduced ? 0 : 0.12,
+        ease: "power3.out",
+      }
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slots.length > 0]);
-
-  // Round-robin: swap one slot at a time with the next pool item
-  useEffect(() => {
-    if (pool.length <= VISIBLE_COUNT) return; // nothing extra to rotate in
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return;
-
-    let slotToSwap = 0;
-    const id = setInterval(() => {
-      const incoming = pool[nextPoolIdx % pool.length];
-      const target = cardRefs.current[slotToSwap];
-
-      const tl = gsap.timeline();
-      if (target) {
-        tl.to(target, { opacity: 0, y: -10, duration: 0.4, ease: "power2.in" });
-      }
-      tl.call(() => {
-        setSlots((prev) => {
-          const copy = [...prev];
-          copy[slotToSwap] = incoming;
-          return copy;
-        });
-      });
-      if (target) {
-        tl.fromTo(target, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" });
-      }
-
-      slotToSwap = (slotToSwap + 1) % VISIBLE_COUNT;
-      setNextPoolIdx((i) => i + 1);
-    }, ROTATE_MS);
-
-    return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pool.length]);
 
   if (!loading && slots.length === 0) {
     return (
@@ -127,7 +95,9 @@ export default function TrendingShowcase() {
           return (
             <div key={p?.id ?? `skeleton-${i}`} className={CARD_OFFSET[i] || ""}>
               <div
-                ref={(el) => { cardRefs.current[i] = el; }}
+                ref={(el) => {
+                  cardRefs.current[i] = el;
+                }}
                 className="group relative aspect-[3/4] overflow-hidden rounded-sm shadow-2xl"
                 style={{ background: "linear-gradient(160deg, rgba(117,105,97,0.25), #0A0200)" }}
               >
