@@ -15,6 +15,7 @@ export interface Category {
 export interface ProductVariant {
   id: number;
   size: string;
+  length?: "Short" | "Regular" | "Long" | string | null;
   price: number;
   stock: number;
 }
@@ -58,6 +59,7 @@ export interface CartItem {
   productName: string;
   imageUrl: string;
   size: string;
+  length?: string | null;
   quantity: number;
   stockAvailable: number;
   currentPrice: number;

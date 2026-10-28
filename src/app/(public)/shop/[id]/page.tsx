@@ -1,9 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ShoppingBag, Zap, Check, Loader2, Star, ChevronRight, Minus, Plus } from "lucide-react";
+import {
+  ShoppingBag,
+  Zap,
+  Check,
+  Loader2,
+  Star,
+  ChevronRight,
+  ChevronDown,
+  Minus,
+  Plus,
+  UserRound,
+} from "lucide-react";
 import { productService } from "@/src/services/product.service";
 import { cartService } from "@/src/services/cart.service";
 import { Product, ProductVariant } from "@/src/types/product";
@@ -12,6 +23,33 @@ import { isTrending } from "@/src/lib/utils";
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&q=80&w=900";
+
+// Length ke 3 hi type: label + inch
+const LENGTH_MAP: Record<string, { label: string; inch: number }> = {
+  short: { label: "Short", inch: 28 },
+  regular: { label: "Regular", inch: 30 },
+  long: { label: "Long", inch: 32 },
+};
+const LENGTH_ORDER = ["short", "regular", "long"];
+
+// Height -> recommended length (doc section 8)
+const HEIGHT_OPTIONS = [
+  { label: `5'0" – 5'5"`, key: "short" },
+  { label: `5'6" – 5'9"`, key: "regular" },
+  { label: `6'1" – 6'3"`, key: "long" },
+];
+
+// Backend value ("Regular", "regular", 30, "30\"") ko key (short/regular/long) mein badalta hai
+const normalizeLength = (val: unknown): string | null => {
+  if (val === null || val === undefined || val === "") return null;
+  const s = String(val).trim().toLowerCase();
+  if (LENGTH_MAP[s]) return s;
+  const n = parseFloat(s.replace(/[^0-9.]/g, ""));
+  if (n === 28) return "short";
+  if (n === 30) return "regular";
+  if (n === 32) return "long";
+  return null;
+};
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -23,6 +61,11 @@ export default function ProductDetailPage() {
   const [activeImage, setActiveImage] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [qty, setQty] = useState(1);
+
+  // Length
+  const [length, setLength] = useState<string | null>(null);
+  const [heightIdx, setHeightIdx] = useState("");
+  const [suggestion, setSuggestion] = useState<string | null>(null);
 
   const [isAdding, setIsAdding] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
@@ -54,6 +97,50 @@ export default function ProductDetailPage() {
     setQty(1);
   }, [selectedVariant?.id]);
 
+  // ---- LENGTHS: sirf backend se (variants[].length ya product.lengths) ----
+  // ---- LENGTHS: selected size (variant) ki comma-separated lengths, e.g. "Short,Regular,Long" ----
+  const availableLengths = useMemo<string[]>(() => {
+    if (!selectedVariant) return [];
+    const rawLength = (selectedVariant as any).length;
+    if (rawLength === null || rawLength === undefined || rawLength === "") return [];
+
+    const tokens = String(rawLength).split(",");
+    const keys = tokens.map(normalizeLength).filter((k): k is string => k !== null);
+    return LENGTH_ORDER.filter((k) => keys.includes(k)); // fixed order: short, regular, long
+  }, [selectedVariant]);
+
+  const hasLengths = availableLengths.length > 0;
+
+  // Default: regular available ho to wahi, warna pehli available
+  useEffect(() => {
+    if (!hasLengths) {
+      setLength(null);
+      return;
+    }
+    setLength((prev) =>
+      prev && availableLengths.includes(prev)
+        ? prev
+        : availableLengths.includes("regular")
+        ? "regular"
+        : availableLengths[0]
+    );
+  }, [hasLengths, availableLengths]);
+
+  const handleSuggest = () => {
+    if (heightIdx === "") return;
+    if (availableLengths.length === 0) return;
+    const target = HEIGHT_OPTIONS[Number(heightIdx)].key;
+    const targetInch = LENGTH_MAP[target].inch;
+    // Backend ki available lengths mein se sabse nazdeek wali
+    const rec = availableLengths.reduce((best, cur) =>
+      Math.abs(LENGTH_MAP[cur].inch - targetInch) < Math.abs(LENGTH_MAP[best].inch - targetInch)
+        ? cur
+        : best
+    );
+    setSuggestion(rec);
+    setLength(rec);
+  };
+
   const resolveImageUrl = (url: string | undefined | null) => {
     if (!url) return FALLBACK_IMAGE;
     if (url.startsWith("http://") || url.startsWith("https://")) return url;
@@ -74,7 +161,8 @@ export default function ProductDetailPage() {
     setIsAdding(true);
     setActionError("");
     try {
-      // jitni qty select ki hai, usi variant (size) ke against utni hi add hogi
+      // TODO: length production ke liye zaroori hai — cartService.addItem ko
+      // third param support karwa ke yahan `length` pass karein.
       await cartService.addItem(selectedVariant.id, qty);
       setIsAdded(true);
       setTimeout(() => setIsAdded(false), 2500);
@@ -242,6 +330,85 @@ export default function ProductDetailPage() {
                 </div>
               </div>
             )}
+
+            {/* Select Length — sirf backend se aayi lengths dikhengi */}
+            {hasLengths && (
+              <div className="mt-8">
+                <p className="mb-3 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1B1B18]/55">
+                  Select Length
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {availableLengths.map((key) => {
+                    const { label, inch } = LENGTH_MAP[key];
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => setLength(key)}
+                        className={`flex min-w-[6rem] flex-col items-center border px-5 py-2.5 font-sans text-xs font-semibold uppercase tracking-[0.1em] transition-colors ${
+                          length === key
+                            ? "border-[#1B1B18] bg-[#1B1B18] text-[#F6F2E9]"
+                            : "border-[#1B1B18]/25 text-[#1B1B18] hover:border-[#1B1B18]"
+                        }`}
+                      >
+                        <span>{label}</span>
+                        <span className="text-[10px] font-normal normal-case opacity-80">({inch}″)</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Not sure about your length? — hamesha dikhega */}
+            <div className="mt-5 max-w-md border border-[#1B1B18]/10 bg-[#EDE6D8] p-4">
+              <div className="flex items-start gap-3">
+                <UserRound className="mt-0.5 h-5 w-5 shrink-0 text-[#1B1B18]" strokeWidth={1.3} />
+                <div>
+                  <p className="font-sans text-[12px] text-[#1B1B18]">Not sure about your length?</p>
+                  <p className="font-sans text-[12px] text-[#1B1B18]/70">
+                    Tell us your height and we’ll suggest the best fit for you.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-3 flex gap-2">
+                <div className="relative flex-1">
+                  <select
+                    value={heightIdx}
+                    onChange={(e) => {
+                      setHeightIdx(e.target.value);
+                      setSuggestion(null);
+                    }}
+                    className="h-10 w-full appearance-none border border-[#1B1B18]/15 bg-white px-3 pr-8 font-sans text-[12px] text-[#1B1B18] outline-none focus:border-[#2E4B3F]"
+                  >
+                    <option value="">Select your height</option>
+                    {HEIGHT_OPTIONS.map((h, i) => (
+                      <option key={h.label} value={i}>
+                        {h.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1B1B18]/60" />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSuggest}
+                  disabled={heightIdx === ""}
+                  className="bg-[#1B1B18] px-5 font-sans text-[11px] font-semibold uppercase tracking-[0.1em] text-[#F6F2E9] transition-colors hover:bg-[#2E4B3F] disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Suggest Length
+                </button>
+              </div>
+              {suggestion && (
+                <p className="mt-3 font-sans text-[12px] text-[#2E4B3F]">
+                  Recommended length for you:{" "}
+                  <strong>
+                    {LENGTH_MAP[suggestion].label} ({LENGTH_MAP[suggestion].inch}″)
+                  </strong>
+                  {availableLengths.length > 1 && ". You can still choose a different length above."}
+                </p>
+              )}
+            </div>
 
             {/* Quantity stepper */}
             {!isSelectedOutOfStock && selectedVariant && (

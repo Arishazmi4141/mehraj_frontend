@@ -123,6 +123,7 @@ const [subCategoriesLoading, setSubCategoriesLoading] = useState<boolean>(false)
         variants: formVariants.map((v: ProductVariant) => ({
           ...(v.id ? { id: v.id } : {}),
           size: v.size.trim(),
+          length: v.length || null,
           price: Number(v.price),
           stock: Number(v.stock),
         })),
@@ -186,7 +187,7 @@ const [subCategoriesLoading, setSubCategoriesLoading] = useState<boolean>(false)
           onClick={() => {
             setEditingProduct(null);
             setFormData({ name: "", description: "", categoryId: categories[0]?.id || 0,subCategoryId: 0, trending: "NO", isActive: true });
-            setFormVariants([{ size: "", price: 0, stock: 10 } as unknown as ProductVariant]);
+            setFormVariants([{ size: "", length: "Short,Regular,Long", price: 0, stock: 10 } as unknown as ProductVariant]);
             setSelectedFiles([]);
             setSelectedFilesPreviews([]);
             setDeleteImageIds([]);

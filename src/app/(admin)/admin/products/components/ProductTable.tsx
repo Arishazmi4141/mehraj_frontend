@@ -102,6 +102,7 @@ export default function ProductTable({
                         {p.variants.map((v, idx) => (
                           <div key={idx} className="border bg-[var(--color-surface)] p-3 font-mono text-[11px] rounded-sm" style={{ borderColor: "var(--color-border)" }}>
                             <p className="text-[var(--color-ink-faint)] uppercase text-[9px] tracking-wider mb-1">Spec: <strong className="text-[var(--color-ink)]">{v.size}</strong></p>
+                            <p className="text-[var(--color-ink-faint)]">Length: <span className="text-[var(--color-ink-muted)]">{v.length || "—"}</span></p>
                             <p className="text-[var(--color-ink-faint)]">Price: <span className="text-[var(--color-brass)]">£{v.price}</span></p>
                             <p className="text-[var(--color-ink-faint)]">Stock: <span className="text-[var(--color-ink-muted)]">{v.stock} Pcs</span></p>
                           </div>

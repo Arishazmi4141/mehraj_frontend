@@ -140,10 +140,11 @@ export default function ProductDetailModal({ show, product, onClose }: ProductDe
               <div className="border rounded-sm overflow-hidden" style={{ borderColor: "var(--color-border)" }}>
                 {/* header row */}
                 <div
-                  className="grid grid-cols-3 gap-2 px-4 py-2 text-[10px] font-semibold uppercase tracking-widest text-[var(--color-ink-faint)] border-b"
+                  className="grid grid-cols-4 gap-2 px-4 py-2 text-[10px] font-semibold uppercase tracking-widest text-[var(--color-ink-faint)] border-b"
                   style={{ borderColor: "var(--color-border)", background: "var(--color-surface-alt)" }}
                 >
                   <span>Size</span>
+                  <span>Length</span>
                   <span className="text-right">Price</span>
                   <span className="text-right">Stock</span>
                 </div>
@@ -151,10 +152,11 @@ export default function ProductDetailModal({ show, product, onClose }: ProductDe
                   product.variants.map((v, i) => (
                     <div
                       key={i}
-                      className="grid grid-cols-3 gap-2 px-4 py-3 text-[13px] font-mono border-b last:border-b-0"
+                      className="grid grid-cols-4 gap-2 px-4 py-3 text-[13px] font-mono border-b last:border-b-0"
                       style={{ borderColor: "var(--color-border)" }}
                     >
                       <span className="text-[var(--color-ink)] font-semibold">{v.size}</span>
+                      <span className="text-[var(--color-ink-muted)]">{v.length || "—"}</span>
                       <span className="text-right text-[var(--color-brass)] font-semibold">£{v.price}</span>
                       <span
                         className={`text-right ${

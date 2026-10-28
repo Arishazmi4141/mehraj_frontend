@@ -28,6 +28,9 @@ interface ProductFormModalProps {
   onClose: () => void;
 }
 
+const LENGTH_OPTIONS = ["Short", "Regular", "Long"];
+const DEFAULT_LENGTH = "Short,Regular,Long";
+
 export default function ProductFormModal({
   show, actionLoading, categories, subCategories, subCategoriesLoading, editingProduct, formData, setFormData,
   formVariants, setFormVariants, selectedFilesPreviews, localImages, deleteImageIds,
@@ -39,7 +42,7 @@ export default function ProductFormModal({
   if (!show) return null;
 
   const addVariantRow = () => {
-    const newVariant = { size: "", price: 0, stock: 10 } as unknown as ProductVariant;
+    const newVariant = { size: "", length: DEFAULT_LENGTH, price: 0, stock: 10 } as unknown as ProductVariant;
     setFormVariants([...formVariants, newVariant]);
   };
 
@@ -211,7 +214,7 @@ export default function ProductFormModal({
 
             <div className="space-y-3 max-h-40 overflow-y-auto pr-1">
               {formVariants.map((v, i) => (
-                <div key={i} className="flex gap-4 items-center bg-[var(--color-bg)] border p-3 rounded-sm" style={{ borderColor: "var(--color-border)" }}>
+                <div key={i} className="flex flex-wrap gap-3 items-center bg-[var(--color-bg)] border p-3 rounded-sm" style={{ borderColor: "var(--color-border)" }}>
                   <input
                     required type="text" placeholder="Size / spec"
                     value={v.size}
@@ -219,6 +222,39 @@ export default function ProductFormModal({
                     className="flex-1 bg-[var(--color-surface)] border h-9 px-3 text-[13px] text-[var(--color-ink)] outline-none rounded-sm focus:border-[var(--color-green)]/40"
                     style={{ borderColor: "var(--color-border)" }}
                   />
+                  <div className="flex items-center gap-2">
+                    {LENGTH_OPTIONS.map((opt) => {
+                      const selected = (v.length || DEFAULT_LENGTH).split(",").filter(Boolean);
+                      const checked = selected.includes(opt);
+                      return (
+                        <label
+                          key={opt}
+                          className={`flex items-center gap-1.5 px-2.5 h-9 border rounded-sm cursor-pointer text-[11px] font-semibold uppercase tracking-wider transition-colors select-none ${
+                            checked
+                              ? "border-[var(--color-green)] bg-[var(--color-green-soft)] text-[var(--color-green-deep)]"
+                              : "bg-[var(--color-surface)] text-[var(--color-ink-faint)]"
+                          }`}
+                          style={!checked ? { borderColor: "var(--color-border)" } : undefined}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => {
+                              let next = checked ? selected.filter((s) => s !== opt) : [...selected, opt];
+                              if (next.length === 0) return; // kam se kam 1 selected rahe
+                              next = LENGTH_OPTIONS.filter((o) => next.includes(o)); // order fix
+                              setFormVariants(
+                                formVariants.map((cell, idx) => (idx === i ? { ...cell, length: next.join(",") } : cell))
+                              );
+                            }}
+                            className="accent-[var(--color-green)]"
+                          />
+                          {opt}
+                        </label>
+                      );
+                    })}
+                  </div>
+
                   <input
                     required type="number" placeholder="Price (£)"
                     value={v.price || ""}
